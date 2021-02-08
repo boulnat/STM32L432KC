@@ -61,8 +61,10 @@ static void MX_I2C1_Init(void);
 void StartDefaultTask(void *argument);
 
 /* USER CODE BEGIN PFP */
+uint8_t PCA9685_read(I2C_HandleTypeDef *hi2c, uint8_t address, unsigned char reg);
 void pca9685_init(I2C_HandleTypeDef *hi2c, uint8_t address);
 void pca9685_pwm(I2C_HandleTypeDef *hi2c, uint8_t address, uint8_t num, uint16_t on, uint16_t off);
+HAL_StatusTypeDef pca9685_all_pwm(I2C_HandleTypeDef *hi2c, uint8_t address, uint16_t on, uint16_t off);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -267,31 +269,51 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+uint8_t PCA9685_read(I2C_HandleTypeDef *hi2c, uint8_t address, unsigned char reg)
+{
+	uint8_t res;
+	HAL_I2C_Master_Transmit(hi2c, address, 0x00, 1, 1);
+	res = HAL_I2C_Master_Receive(hi2c,address,0x01,1,1);
+	return res;
+}
+
 void pca9685_init(I2C_HandleTypeDef *hi2c, uint8_t address)
 {
  #define PCA9685_MODE1 0x00
  uint8_t initStruct[2];
- uint8_t prescale = 3; // hardcoded
+ uint8_t prescale = 0x03; // hardcoded
  HAL_I2C_Master_Transmit(hi2c, address, PCA9685_MODE1, 1, 1);
- uint8_t oldmode = 0; // hardcoded
+ uint8_t oldmode = 0x00; // hardcoded
+ //uint8_t oldmode = PCA9685_read(hi2c,address,PCA9685_MODE1);
  // HAL_I2C_Master_Receive(hi2c, address, &oldmode, 1, 1);
  uint8_t newmode = ((oldmode & 0x7F) | 0x10);
  initStruct[0] = PCA9685_MODE1;
  initStruct[1] = newmode;
  HAL_I2C_Master_Transmit(hi2c, address, initStruct, 2, 1);
+ //initStruct[0] = 0xFE;
  initStruct[1] = prescale;
  HAL_I2C_Master_Transmit(hi2c, address, initStruct, 2, 1);
+ //initStruct[0] = PCA9685_MODE1;
  initStruct[1] = oldmode;
  HAL_I2C_Master_Transmit(hi2c, address, initStruct, 2, 1);
  osDelay(5);
  initStruct[1] = (oldmode | 0xA1);
  HAL_I2C_Master_Transmit(hi2c, address, initStruct, 2, 1);
+
 }
 
 void pca9685_pwm(I2C_HandleTypeDef *hi2c, uint8_t address, uint8_t num, uint16_t on, uint16_t off)
 {
- uint8_t outputBuffer[5] = {0x06 + 4*num, on, (on >> 8), off, (off >> 8)};
- HAL_I2C_Master_Transmit(&hi2c1, address, outputBuffer, 5, 1);
+	uint8_t outputBuffer[] = {0x06 + 4*num, on, (on >> 8), off, (off >> 8)};
+	HAL_I2C_Master_Transmit(hi2c, address, outputBuffer, sizeof(outputBuffer), 1);
+}
+
+HAL_StatusTypeDef pca9685_all_pwm(I2C_HandleTypeDef *hi2c, uint8_t address, uint16_t on, uint16_t off)
+{
+	uint8_t ALL_LED_ON = 0xFA;
+	uint8_t outputBuffer[] = {ALL_LED_ON, on, (on >> 8), off, (off >> 8)};
+	HAL_StatusTypeDef status = HAL_I2C_Master_Transmit(hi2c, address, outputBuffer, sizeof(outputBuffer), 1);
+	return status;
 }
 /* USER CODE END 4 */
 
@@ -305,26 +327,24 @@ void pca9685_pwm(I2C_HandleTypeDef *hi2c, uint8_t address, uint8_t num, uint16_t
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN 5 */
-	 pca9685_init(&hi2c1, 0x80);
-	 pca9685_pwm(&hi2c1, 0x80, 0, 0, 4095);
+	//boulnat
+	 uint8_t I2C_address = 0x80;
+	 pca9685_init(&hi2c1, I2C_address);
+	 //pca9685_pwm(&hi2c1, I2C_address, 0, 0, 4095);
 	 /* Infinite loop */
-	 for(;;){
-	 for(int i=0; i<255; i++){
-	 pca9685_pwm(&hi2c1, 0x80, 0, 0, 4095-(16*i));
-	 osDelay(5);
+	 for(;;)
+	 {
+		 for(int i=0; i<255; i++){
+			pca9685_all_pwm(&hi2c1, I2C_address, 0, 4095-(16*i));
+			osDelay(5);
+		 }
+
+	 	 for(int i=0; i<255; i++){
+	 		 pca9685_all_pwm(&hi2c1, I2C_address, 0, (16*i));
+	 		 osDelay(5);
+	 	 }
+
 	 }
-	 for(int i=0; i<255; i++){
-	 pca9685_pwm(&hi2c1, 0x80, 0, 0, (16*i));
-	 osDelay(5);
-	 }
-	 }
-  /* Infinite loop */
-  /**
-  for(;;)
-  {
-    osDelay(1);
-  }
-  */
   /* USER CODE END 5 */
 }
 
