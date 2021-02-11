@@ -393,8 +393,8 @@ void ComUsartTask(void *argument){
 		HAL_UART_Transmit(&huart2, &outputBuffer[2], 1,500);
 		HAL_UART_Transmit(&huart2, &outputBuffer[3], 1,500);
 		*/
-		HAL_UART_Transmit(&huart2, outputBuffer, sizeof(outputBuffer),500);
-		HAL_UART_Transmit(&huart2, buffer, 2,500);
+		//HAL_UART_Transmit(&huart2, outputBuffer, sizeof(outputBuffer),500);
+		HAL_UART_Transmit(&huart2, buffer, strlen(buffer),500);
 		//HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
 		osDelay(500);
 	}

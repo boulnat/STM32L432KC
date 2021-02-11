@@ -286,7 +286,7 @@ static void MX_USART2_UART_Init(void)
   huart2.Instance = USART2;
   huart2.Init.BaudRate = 115200;
   huart2.Init.WordLength = UART_WORDLENGTH_8B;
-  huart2.Init.StopBits = UART_STOPBITS_2;
+  huart2.Init.StopBits = UART_STOPBITS_1;
   huart2.Init.Parity = UART_PARITY_EVEN;
   huart2.Init.Mode = UART_MODE_TX_RX;
   huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
@@ -378,24 +378,11 @@ HAL_StatusTypeDef pca9685_all_pwm(I2C_HandleTypeDef *hi2c, uint8_t address, uint
 }
 
 void ComUsartTask(void *argument){
-	char buffer[100];
-	int a=15;
-	sprintf(buffer, '%d', a);
-
-	uint8_t outputBuffer[] = {'M','D','M','m','1','Q','1','4','P','r'};
+	uint8_t outputBuffer[] = {'M'};
 	for(;;)
 	{
-		/*
-		HAL_UART_Transmit(&huart2, &outputBuffer[3], 1,500);
-		HAL_UART_Transmit(&huart2, &outputBuffer[3], 1,500);
-		HAL_UART_Transmit(&huart2, &outputBuffer[0], 1,500);
-		HAL_UART_Transmit(&huart2, &outputBuffer[1], 1,500);
-		HAL_UART_Transmit(&huart2, &outputBuffer[2], 1,500);
-		HAL_UART_Transmit(&huart2, &outputBuffer[3], 1,500);
-		*/
-		HAL_UART_Transmit(&huart2, outputBuffer, sizeof(outputBuffer),500);
-		HAL_UART_Transmit(&huart2, buffer, 2,500);
-		//HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
+		HAL_UART_Transmit(&huart2, outputBuffer, sizeof(outputBuffer), 500);
+		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
 		osDelay(500);
 	}
 }
