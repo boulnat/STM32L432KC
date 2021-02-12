@@ -20,7 +20,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "cmsis_os.h"
-#include <stdlib.h>
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -29,6 +28,22 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
+
+typedef struct
+{
+  volatile uint8_t ID_channel;
+
+  volatile uint16_t Temp_C[10];                  /*!< Specifies the length of a time quantum.
+                                            This parameter must be a number between Min_Data = 1 and Max_Data = 1024. */
+  volatile uint16_t X[10];
+
+  volatile uint16_t Y[10];
+
+  volatile uint16_t Z[10];
+
+  volatile uint16_t Power[10];
+
+} LUT_TabTypeDef;
 
 /* USER CODE END PTD */
 
@@ -66,6 +81,9 @@ const osThreadAttr_t comUsartTask_attributes = {
 };
 
 uint16_t sharedvar=16;
+uint16_t sharedchannel=0x9395;
+uint16_t shareddelay = 5;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -80,13 +98,15 @@ void StartDefaultTask(void *argument);
 /* USER CODE BEGIN PFP */
 void ComUsartTask(void *argument);
 
-int findPosition(unsigned n);
 uint8_t PCA9685_read(I2C_HandleTypeDef *hi2c, uint8_t address, unsigned char reg);
 void pca9685_init(I2C_HandleTypeDef *hi2c, uint8_t address);
 void pca9685_pwm(I2C_HandleTypeDef *hi2c, uint8_t address, uint8_t num, uint16_t on, uint16_t off);
 void pca9685_mult_pwm(I2C_HandleTypeDef *hi2c, uint8_t address, uint16_t num, uint16_t on, uint16_t off);
 HAL_StatusTypeDef pca9685_all_pwm(I2C_HandleTypeDef *hi2c, uint8_t address, uint16_t on, uint16_t off);
 void all_led_off(I2C_HandleTypeDef *hi2c, uint8_t address);
+void scenario1();
+void scenario2();
+void scenario3();
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -400,29 +420,12 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 // Returns position of the only set bit in 'n'
-int findPosition(unsigned n)
-{
-    if (!isPowerOfTwo(n))
-        return -1;
-
-    unsigned count = 0;
-
-    // One by one move the only set bit to right till it reaches end
-    while (n) {
-        n = n >> 1;
-
-        // increment count of shifts
-        ++count;
-    }
-
-    return count;
-}
 
 uint8_t PCA9685_read(I2C_HandleTypeDef *hi2c, uint8_t address, unsigned char reg)
 {
 	uint8_t res={0};
 	HAL_I2C_Master_Transmit(hi2c, address, 0x00, 1, 1);
-	HAL_I2C_Master_Receive(hi2c,address,res,1,1);
+	//HAL_I2C_Master_Receive(hi2c,address,res,1,1);
 	return res;
 }
 
@@ -467,6 +470,11 @@ void pca9685_mult_pwm(I2C_HandleTypeDef *hi2c, uint8_t address, uint16_t num, ui
 			uint8_t outputBuffer[] = {0x06 + 4*((iter)-1), on, (on >> 8), off, (off >> 8)};
 			HAL_I2C_Master_Transmit(hi2c, address, outputBuffer, sizeof(outputBuffer), 1);
 		}
+		else
+		{
+			uint8_t outputBuffer[] = {0x06 + 4*((iter)-1), 0, (0 >> 8), 4096, (4096 >> 8)};
+			HAL_I2C_Master_Transmit(hi2c, address, outputBuffer, sizeof(outputBuffer), 1);
+		}
 	}
 
 
@@ -488,7 +496,7 @@ void pca9685_mult_pwm(I2C_HandleTypeDef *hi2c, uint8_t address, uint16_t num, ui
 void all_led_off(I2C_HandleTypeDef *hi2c, uint8_t address){
 
 	 uint8_t ALL_LED_OFF = 0xFC;
-	 uint8_t outputBuffer[] = {ALL_LED_OFF, 0, (0 >> 8), 0, (0 >> 8)};
+	 uint8_t outputBuffer[] = {ALL_LED_OFF, 0, (0 >> 8), 4096, (4096 >> 8)};
 	 HAL_I2C_Master_Transmit(hi2c, address, outputBuffer, sizeof(outputBuffer), 1);
 }
 
@@ -528,54 +536,89 @@ void scenario2(){
 	 //all_led_off(&hi2c1, I2C_address);
 
 	 //uint16_t channel = 0b1001001110010101;
-	 uint16_t channel = 0xFFFF;
+	 //uint16_t channel = sharedchannel;
 
 	 /* Infinite loop */
 	 for(;;)
 	 {
 		 for(int i=0; i<4096/sharedvar; i++){
-			pca9685_mult_pwm(&hi2c1, I2C_address, channel, 0, 4095-(sharedvar*i));
+			pca9685_mult_pwm(&hi2c1, I2C_address, sharedchannel, 0, 4095-(sharedvar*i));
 			//pca9685_pwm(&hi2c1, I2C_address, 15, 0, 4095-(sharedvar*i));
-			osDelay(5);
+			osDelay(shareddelay);
 		 }
 
 	 	 for(int i=0; i<4096/sharedvar; i++){
-	 		pca9685_mult_pwm(&hi2c1, I2C_address, channel, 0, (sharedvar*i));
+	 		pca9685_mult_pwm(&hi2c1, I2C_address, sharedchannel, 0, (sharedvar*i));
 	 		//pca9685_pwm(&hi2c1, I2C_address, 15 ,0, 4095-(sharedvar*i));
-	 		osDelay(5);
+	 		osDelay(shareddelay);
 	 	 }
 	 }
 }
 
+void scenario3(){
+uint8_t I2C_address = 0x80;
+	pca9685_init(&hi2c1, I2C_address);
+
+	uint8_t size = 2;
+	LUT_TabTypeDef pLUTChannel[size];
+
+	for(int a=0; a<size; a++){
+		pLUTChannel[a].ID_channel = 1 << (a);
+		for(int b=0; b<100; b++){
+			pLUTChannel[a].Temp_C[b]=b;
+			pLUTChannel[a].X[b]=b+b;
+			pLUTChannel[a].Y[b]=b+b+b;
+			pLUTChannel[a].Z[b]=b+b+b+b;
+			pLUTChannel[a].Power[b]=b+b+b+b+b;
+		}
+	}
+
+	/*
+	LUT_TabTypeDef pLUTChannel[] =	{
+									{1 << 0, {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99},{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99},{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99},{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99},{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99}}
+									};
+
+	pLUTChannel[0].Temp_C={0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99};
+	pLUTChannel[0].X={0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99};
+	pLUTChannel[0].Y={0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99};
+	pLUTChannel[0].Z={0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99};
+	pLUTChannel[0].Power={0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99};
+	 */
+	for(;;){
+		for(int i=0; i<4096/sharedvar; i++){
+			pca9685_mult_pwm(&hi2c1, I2C_address, pLUTChannel[0].Power[9], 0, 4095-(sharedvar*i));
+			//pca9685_mult_pwm(&hi2c1, I2C_address, pLUTChannel[2].ID_channel, 0, 4095-(sharedvar*i));
+			//pca9685_mult_pwm(&hi2c1, I2C_address, pLUTChannel[4].ID_channel, 0, 4095-(sharedvar*i));
+			//pca9685_mult_pwm(&hi2c1, I2C_address, pLUTChannel[7].ID_channel, 0, 4095-(sharedvar*i));
+			//pca9685_pwm(&hi2c1, I2C_address, 0x07, 0, 4095-(sharedvar*i));
+			osDelay(shareddelay);
+		}
+	}
+
+}
+
 void ComUsartTask(void *argument){
-	uint8_t outputBuffer[] = {'M','D','M','m','1','Q','1','4','P','r'};
 	uint8_t rxBuffer[8];
 	for(;;)
 	{
-		/*
-		HAL_UART_Transmit(&huart2, &outputBuffer[3], 1,500);
-		HAL_UART_Transmit(&huart2, &outputBuffer[3], 1,500);
-		HAL_UART_Transmit(&huart2, &outputBuffer[0], 1,500);
-		HAL_UART_Transmit(&huart2, &outputBuffer[1], 1,500);
-		HAL_UART_Transmit(&huart2, &outputBuffer[2], 1,500);
-		HAL_UART_Transmit(&huart2, &outputBuffer[3], 1,500);
-		*/
-
 		while (HAL_UART_Receive_DMA(&huart2, rxBuffer, sizeof(rxBuffer)) != HAL_OK)
 		{
 			HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
 			osDelay(5);
-
 		}
 		osDelay(5);
 		if(rxBuffer[0]==0x4D){
 			HAL_UART_Transmit(&huart2,&rxBuffer[1], 1,500);
-			sharedvar = 8;
+			sharedvar = 16;
+			sharedchannel = 0x9395;
+			shareddelay = 5;
 			//sharedvar = (uint16_t) atoi(rxBuffer[5]);
 		}
 		if(rxBuffer[0]==0x44){
 			HAL_UART_Transmit(&huart2,&rxBuffer[1], 1,500);
 			sharedvar = 16;
+			sharedchannel = 0x0F05;
+			shareddelay = 1;
 			//sharedvar = (uint16_t) atoi(rxBuffer[5]);
 		}
 		//HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
@@ -595,7 +638,7 @@ void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN 5 */
 	//scenario1();
-	scenario2();
+	scenario3();
   /* USER CODE END 5 */
 }
 
