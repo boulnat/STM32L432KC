@@ -20,6 +20,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "cmsis_os.h"
+#include <stdlib.h>
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -41,9 +42,13 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+CAN_HandleTypeDef hcan1;
+
 I2C_HandleTypeDef hi2c1;
 
 UART_HandleTypeDef huart2;
+DMA_HandleTypeDef hdma_usart2_rx;
+DMA_HandleTypeDef hdma_usart2_tx;
 
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
@@ -59,13 +64,17 @@ const osThreadAttr_t comUsartTask_attributes = {
   .priority = (osPriority_t) osPriorityNormal,
   .stack_size = 128 * 4
 };
+
+uint16_t sharedvar=16;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+static void MX_DMA_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_USART2_UART_Init(void);
+static void MX_CAN1_Init(void);
 void StartDefaultTask(void *argument);
 
 /* USER CODE BEGIN PFP */
@@ -111,8 +120,10 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_I2C1_Init();
   MX_USART2_UART_Init();
+  MX_CAN1_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -223,6 +234,43 @@ void SystemClock_Config(void)
 }
 
 /**
+  * @brief CAN1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_CAN1_Init(void)
+{
+
+  /* USER CODE BEGIN CAN1_Init 0 */
+
+  /* USER CODE END CAN1_Init 0 */
+
+  /* USER CODE BEGIN CAN1_Init 1 */
+
+  /* USER CODE END CAN1_Init 1 */
+  hcan1.Instance = CAN1;
+  hcan1.Init.Prescaler = 16;
+  hcan1.Init.Mode = CAN_MODE_NORMAL;
+  hcan1.Init.SyncJumpWidth = CAN_SJW_1TQ;
+  hcan1.Init.TimeSeg1 = CAN_BS1_1TQ;
+  hcan1.Init.TimeSeg2 = CAN_BS2_1TQ;
+  hcan1.Init.TimeTriggeredMode = DISABLE;
+  hcan1.Init.AutoBusOff = DISABLE;
+  hcan1.Init.AutoWakeUp = DISABLE;
+  hcan1.Init.AutoRetransmission = DISABLE;
+  hcan1.Init.ReceiveFifoLocked = DISABLE;
+  hcan1.Init.TransmitFifoPriority = DISABLE;
+  if (HAL_CAN_Init(&hcan1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN CAN1_Init 2 */
+
+  /* USER CODE END CAN1_Init 2 */
+
+}
+
+/**
   * @brief I2C1 Initialization Function
   * @param None
   * @retval None
@@ -304,6 +352,25 @@ static void MX_USART2_UART_Init(void)
 }
 
 /**
+  * Enable DMA controller clock
+  */
+static void MX_DMA_Init(void)
+{
+
+  /* DMA controller clock enable */
+  __HAL_RCC_DMA1_CLK_ENABLE();
+
+  /* DMA interrupt init */
+  /* DMA1_Channel6_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel6_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel6_IRQn);
+  /* DMA1_Channel7_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel7_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel7_IRQn);
+
+}
+
+/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
@@ -377,12 +444,47 @@ HAL_StatusTypeDef pca9685_all_pwm(I2C_HandleTypeDef *hi2c, uint8_t address, uint
 	return status;
 }
 
-void ComUsartTask(void *argument){
-	char buffer[100];
-	int a=15;
-	sprintf(buffer, '%d', a);
+void scenario1(){
+	 uint8_t I2C_address = 0x80;
+	 pca9685_init(&hi2c1, I2C_address);
+	 //pca9685_pwm(&hi2c1, I2C_address, 0, 0, 4095);
+	 /* Infinite loop */
+	 for(;;)
+	 {
+		 for(int i=0; i<4096/sharedvar; i++){
+			pca9685_all_pwm(&hi2c1, I2C_address, 0, 4095-(sharedvar*i));
+			osDelay(5);
+		 }
 
+	 	 for(int i=0; i<4096/sharedvar; i++){
+	 		 pca9685_all_pwm(&hi2c1, I2C_address, 0, (sharedvar*i));
+	 		 osDelay(5);
+	 	 }
+	 }
+}
+
+void scenario2(){
+	 uint8_t I2C_address = 0x80;
+	 pca9685_init(&hi2c1, I2C_address);
+	 //pca9685_pwm(&hi2c1, I2C_address, 0, 0, 4095);
+	 /* Infinite loop */
+	 for(;;)
+	 {
+		 for(int i=0; i<4096/sharedvar; i++){
+			pca9685_all_pwm(&hi2c1, I2C_address, 0, 4095-(sharedvar*i));
+			osDelay(5);
+		 }
+
+	 	 for(int i=0; i<4096/sharedvar; i++){
+	 		 pca9685_all_pwm(&hi2c1, I2C_address, 0, (sharedvar*i));
+	 		 osDelay(5);
+	 	 }
+	 }
+}
+
+void ComUsartTask(void *argument){
 	uint8_t outputBuffer[] = {'M','D','M','m','1','Q','1','4','P','r'};
+	uint8_t rxBuffer[8];
 	for(;;)
 	{
 		/*
@@ -393,10 +495,26 @@ void ComUsartTask(void *argument){
 		HAL_UART_Transmit(&huart2, &outputBuffer[2], 1,500);
 		HAL_UART_Transmit(&huart2, &outputBuffer[3], 1,500);
 		*/
-		HAL_UART_Transmit(&huart2, outputBuffer, sizeof(outputBuffer),500);
-		HAL_UART_Transmit(&huart2, buffer, 2,500);
+
+		while (HAL_UART_Receive_DMA(&huart2, rxBuffer, sizeof(rxBuffer)) != HAL_OK)
+		{
+			HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
+			osDelay(5);
+
+		}
+		osDelay(5);
+		if(rxBuffer[0]==0x4D){
+			HAL_UART_Transmit(&huart2,&rxBuffer[1], 1,500);
+			sharedvar = 8;
+			//sharedvar = (uint16_t) atoi(rxBuffer[5]);
+		}
+		if(rxBuffer[0]==0x44){
+			HAL_UART_Transmit(&huart2,&rxBuffer[1], 1,500);
+			sharedvar = 16;
+			//sharedvar = (uint16_t) atoi(rxBuffer[5]);
+		}
 		//HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
-		osDelay(500);
+		//osDelay(500);
 	}
 }
 /* USER CODE END 4 */
@@ -411,23 +529,8 @@ void ComUsartTask(void *argument){
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN 5 */
-	 uint8_t I2C_address = 0x80;
-	 pca9685_init(&hi2c1, I2C_address);
-	 //pca9685_pwm(&hi2c1, I2C_address, 0, 0, 4095);
-	 /* Infinite loop */
-	 for(;;)
-	 {
-		 for(int i=0; i<255; i++){
-			pca9685_all_pwm(&hi2c1, I2C_address, 0, 4095-(16*i));
-			osDelay(5);
-		 }
-
-	 	 for(int i=0; i<255; i++){
-	 		 pca9685_all_pwm(&hi2c1, I2C_address, 0, (16*i));
-	 		 osDelay(5);
-	 	 }
-
-	 }
+	//scenario1();
+	scenario2();
   /* USER CODE END 5 */
 }
 
