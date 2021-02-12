@@ -80,11 +80,13 @@ void StartDefaultTask(void *argument);
 /* USER CODE BEGIN PFP */
 void ComUsartTask(void *argument);
 
-
+int findPosition(unsigned n);
 uint8_t PCA9685_read(I2C_HandleTypeDef *hi2c, uint8_t address, unsigned char reg);
 void pca9685_init(I2C_HandleTypeDef *hi2c, uint8_t address);
 void pca9685_pwm(I2C_HandleTypeDef *hi2c, uint8_t address, uint8_t num, uint16_t on, uint16_t off);
+void pca9685_mult_pwm(I2C_HandleTypeDef *hi2c, uint8_t address, uint16_t num, uint16_t on, uint16_t off);
 HAL_StatusTypeDef pca9685_all_pwm(I2C_HandleTypeDef *hi2c, uint8_t address, uint16_t on, uint16_t off);
+void all_led_off(I2C_HandleTypeDef *hi2c, uint8_t address);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -397,6 +399,25 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+// Returns position of the only set bit in 'n'
+int findPosition(unsigned n)
+{
+    if (!isPowerOfTwo(n))
+        return -1;
+
+    unsigned count = 0;
+
+    // One by one move the only set bit to right till it reaches end
+    while (n) {
+        n = n >> 1;
+
+        // increment count of shifts
+        ++count;
+    }
+
+    return count;
+}
+
 uint8_t PCA9685_read(I2C_HandleTypeDef *hi2c, uint8_t address, unsigned char reg)
 {
 	uint8_t res={0};
@@ -427,13 +448,48 @@ void pca9685_init(I2C_HandleTypeDef *hi2c, uint8_t address)
  osDelay(5);
  initStruct[1] = (oldmode | 0xA1);
  HAL_I2C_Master_Transmit(hi2c, address, initStruct, 2, 1);
-
 }
 
 void pca9685_pwm(I2C_HandleTypeDef *hi2c, uint8_t address, uint8_t num, uint16_t on, uint16_t off)
 {
 	uint8_t outputBuffer[] = {0x06 + 4*num, on, (on >> 8), off, (off >> 8)};
 	HAL_I2C_Master_Transmit(hi2c, address, outputBuffer, sizeof(outputBuffer), 1);
+}
+
+void pca9685_mult_pwm(I2C_HandleTypeDef *hi2c, uint8_t address, uint16_t num, uint16_t on, uint16_t off)
+{
+	int i, iter;
+
+	for (i=1, iter=1; i<65535; i<<=1, iter++)
+	{
+		if (num & i)
+		{
+			uint8_t outputBuffer[] = {0x06 + 4*((iter)-1), on, (on >> 8), off, (off >> 8)};
+			HAL_I2C_Master_Transmit(hi2c, address, outputBuffer, sizeof(outputBuffer), 1);
+		}
+	}
+
+
+	/*
+	uint8_t channel = 0;
+	if(num & 0b00000001)
+	{
+		uint8_t outputBuffer[] = {0x06 + 4*((num & 0b00000001)-1), on, (on >> 8), off, (off >> 8)};
+		HAL_I2C_Master_Transmit(hi2c, address, outputBuffer, sizeof(outputBuffer), 1);
+	}
+	if(num & 0b00000010)
+	{
+		uint8_t outputBuffer[] = {0x06 + 4*((num & 0b00000010)-1), on, (on >> 8), off, (off >> 8)};
+		HAL_I2C_Master_Transmit(hi2c, address, outputBuffer, sizeof(outputBuffer), 1);
+	}
+	*/
+}
+
+void all_led_off(I2C_HandleTypeDef *hi2c, uint8_t address){
+
+	 uint8_t ALL_LED_OFF = 0xFC;
+	 uint8_t outputBuffer[] = {ALL_LED_OFF, 0, (0 >> 8), 0, (0 >> 8)};
+	 HAL_I2C_Master_Transmit(hi2c, address, outputBuffer, sizeof(outputBuffer), 1);
 }
 
 HAL_StatusTypeDef pca9685_all_pwm(I2C_HandleTypeDef *hi2c, uint8_t address, uint16_t on, uint16_t off)
@@ -447,7 +503,9 @@ HAL_StatusTypeDef pca9685_all_pwm(I2C_HandleTypeDef *hi2c, uint8_t address, uint
 void scenario1(){
 	 uint8_t I2C_address = 0x80;
 	 pca9685_init(&hi2c1, I2C_address);
-	 //pca9685_pwm(&hi2c1, I2C_address, 0, 0, 4095);
+	 //turn off all LED
+	 all_led_off(&hi2c1, I2C_address);
+
 	 /* Infinite loop */
 	 for(;;)
 	 {
@@ -466,18 +524,25 @@ void scenario1(){
 void scenario2(){
 	 uint8_t I2C_address = 0x80;
 	 pca9685_init(&hi2c1, I2C_address);
-	 //pca9685_pwm(&hi2c1, I2C_address, 0, 0, 4095);
+	 //turn off all LED
+	 //all_led_off(&hi2c1, I2C_address);
+
+	 //uint16_t channel = 0b1001001110010101;
+	 uint16_t channel = 0xFFFF;
+
 	 /* Infinite loop */
 	 for(;;)
 	 {
 		 for(int i=0; i<4096/sharedvar; i++){
-			pca9685_all_pwm(&hi2c1, I2C_address, 0, 4095-(sharedvar*i));
+			pca9685_mult_pwm(&hi2c1, I2C_address, channel, 0, 4095-(sharedvar*i));
+			//pca9685_pwm(&hi2c1, I2C_address, 15, 0, 4095-(sharedvar*i));
 			osDelay(5);
 		 }
 
 	 	 for(int i=0; i<4096/sharedvar; i++){
-	 		 pca9685_all_pwm(&hi2c1, I2C_address, 0, (sharedvar*i));
-	 		 osDelay(5);
+	 		pca9685_mult_pwm(&hi2c1, I2C_address, channel, 0, (sharedvar*i));
+	 		//pca9685_pwm(&hi2c1, I2C_address, 15 ,0, 4095-(sharedvar*i));
+	 		osDelay(5);
 	 	 }
 	 }
 }
