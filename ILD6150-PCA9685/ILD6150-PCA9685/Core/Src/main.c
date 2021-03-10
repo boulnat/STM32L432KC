@@ -29,21 +29,28 @@
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
 
-typedef struct
-{
-  volatile uint8_t ID_channel;
+//typedef struct
+//{
+//  volatile uint8_t ID_channel;
+//  volatile uint16_t Temp_C[20];
+//  volatile uint16_t X[20];
+//  volatile uint16_t Y[20];
+//  volatile uint16_t Z[20];
+//  volatile uint16_t Power[20];
+//} LUT_TabTypeDef;
 
-  volatile uint16_t Temp_C[10];                  /*!< Specifies the length of a time quantum.
-                                            This parameter must be a number between Min_Data = 1 and Max_Data = 1024. */
-  volatile uint16_t X[10];
-
-  volatile uint16_t Y[10];
-
-  volatile uint16_t Z[10];
-
-  volatile uint16_t Power[10];
-
-} LUT_TabTypeDef;
+typedef struct  {
+    uint16_t temp[100];
+    union {
+        struct {
+            uint8_t id;
+            float x[100];
+            float y[100];
+            float z[100];
+            float power[100];
+        }channel;
+    }item;
+}LUT_TabTypeDef;
 
 /* USER CODE END PTD */
 
@@ -72,12 +79,26 @@ const osThreadAttr_t defaultTask_attributes = {
   .priority = (osPriority_t) osPriorityNormal,
   .stack_size = 128 * 4
 };
+/* Definitions for readTempTask */
+osThreadId_t readTempTaskHandle;
+const osThreadAttr_t readTempTask_attributes = {
+  .name = "readTempTask",
+  .priority = (osPriority_t) osPriorityLow,
+  .stack_size = 128 * 4
+};
+/* Definitions for readLightTask */
+osThreadId_t readLightTaskHandle;
+const osThreadAttr_t readLightTask_attributes = {
+  .name = "readLightTask",
+  .priority = (osPriority_t) osPriorityLow,
+  .stack_size = 128 * 4
+};
 /* USER CODE BEGIN PV */
 osThreadId_t comUsartTaskHandle;
 const osThreadAttr_t comUsartTask_attributes = {
   .name = "comUsartTask",
   .priority = (osPriority_t) osPriorityNormal,
-  .stack_size = 128 * 4
+  .stack_size = 128 * 254
 };
 
 uint16_t sharedvar=16;
@@ -94,6 +115,8 @@ static void MX_I2C1_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_CAN1_Init(void);
 void StartDefaultTask(void *argument);
+void StartReadTempTask(void *argument);
+void StartReadLightTask(void *argument);
 
 /* USER CODE BEGIN PFP */
 void ComUsartTask(void *argument);
@@ -172,6 +195,12 @@ int main(void)
   /* Create the thread(s) */
   /* creation of defaultTask */
   defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
+
+  /* creation of readTempTask */
+  readTempTaskHandle = osThreadNew(StartReadTempTask, NULL, &readTempTask_attributes);
+
+  /* creation of readLightTask */
+  readLightTaskHandle = osThreadNew(StartReadLightTask, NULL, &readLightTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -556,45 +585,25 @@ void scenario2(){
 }
 
 void scenario3(){
-uint8_t I2C_address = 0x80;
-	pca9685_init(&hi2c1, I2C_address);
+	//uint8_t I2C_address = 0x80;
+	//pca9685_init(&hi2c1, I2C_address);
 
-	uint8_t size = 2;
-	LUT_TabTypeDef pLUTChannel[size];
+	int n = 10;
+	int m = 1;
+    uint16_t temp[n*m];
+    uint8_t id[n];
+    float x[n*m];
+    float y[n*m];
+    float z[n*m];
+    float power[n*m];
 
-	for(int a=0; a<size; a++){
-		pLUTChannel[a].ID_channel = 1 << (a);
-		for(int b=0; b<100; b++){
-			pLUTChannel[a].Temp_C[b]=b;
-			pLUTChannel[a].X[b]=b+b;
-			pLUTChannel[a].Y[b]=b+b+b;
-			pLUTChannel[a].Z[b]=b+b+b+b;
-			pLUTChannel[a].Power[b]=b+b+b+b+b;
-		}
-	}
+	uint8_t size = 1;
+	//LUT_TabTypeDef pLUTChannel[size];
 
-	/*
-	LUT_TabTypeDef pLUTChannel[] =	{
-									{1 << 0, {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99},{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99},{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99},{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99},{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99}}
-									};
-
-	pLUTChannel[0].Temp_C={0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99};
-	pLUTChannel[0].X={0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99};
-	pLUTChannel[0].Y={0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99};
-	pLUTChannel[0].Z={0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99};
-	pLUTChannel[0].Power={0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99};
-	 */
 	for(;;){
-		for(int i=0; i<4096/sharedvar; i++){
-			pca9685_mult_pwm(&hi2c1, I2C_address, pLUTChannel[0].Power[9], 0, 4095-(sharedvar*i));
-			//pca9685_mult_pwm(&hi2c1, I2C_address, pLUTChannel[2].ID_channel, 0, 4095-(sharedvar*i));
-			//pca9685_mult_pwm(&hi2c1, I2C_address, pLUTChannel[4].ID_channel, 0, 4095-(sharedvar*i));
-			//pca9685_mult_pwm(&hi2c1, I2C_address, pLUTChannel[7].ID_channel, 0, 4095-(sharedvar*i));
-			//pca9685_pwm(&hi2c1, I2C_address, 0x07, 0, 4095-(sharedvar*i));
-			osDelay(shareddelay);
-		}
+		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
+		osDelay(100);
 	}
-
 }
 
 void ComUsartTask(void *argument){
@@ -640,6 +649,42 @@ void StartDefaultTask(void *argument)
 	//scenario1();
 	scenario3();
   /* USER CODE END 5 */
+}
+
+/* USER CODE BEGIN Header_StartReadTempTask */
+/**
+* @brief Function implementing the readTempTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartReadTempTask */
+void StartReadTempTask(void *argument)
+{
+  /* USER CODE BEGIN StartReadTempTask */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END StartReadTempTask */
+}
+
+/* USER CODE BEGIN Header_StartReadLightTask */
+/**
+* @brief Function implementing the readLightTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartReadLightTask */
+void StartReadLightTask(void *argument)
+{
+  /* USER CODE BEGIN StartReadLightTask */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END StartReadLightTask */
 }
 
  /**
