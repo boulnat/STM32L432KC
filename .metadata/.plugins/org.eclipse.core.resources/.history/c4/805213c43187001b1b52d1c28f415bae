@@ -738,7 +738,7 @@ void scenario4(){
 
 		sprintf(msg,"Transmitted\r\n");
 		HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
-		osDelay(100);
+		osDelay(1000);
 	//}
 
 }
@@ -747,7 +747,13 @@ void scenario5(){
 
 	for(;;){
 		scenario4();
-		Receive_CAN_Message_Polling(RxHeader, *RxData);
+		uint8_t messages = HAL_CAN_GetRxFifoFillLevel(&hcan1, CAN_RX_FIFO0);
+			if(messages > 0){
+				if(HAL_CAN_GetRxMessage(&hcan1, CAN_RX_FIFO0, &RxHeader, RxData) == HAL_OK){
+					sprintf(msg,"Received\r\n");
+					HAL_UART_Transmit(&huart2, (uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
+			}
+		}
 
 	}
 	/*

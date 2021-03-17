@@ -126,10 +126,9 @@ uint16_t shareddelay = 5;
 CAN_FilterTypeDef sFilterConfig;
 CAN_TxHeaderTypeDef TxHeader;
 CAN_RxHeaderTypeDef RxHeader;
-uint8_t TxData[8]={1,2,3,4,5,6,7,8};
+uint8_t TxData[8];
 uint8_t RxData[8];
 uint32_t TxMailbox;
-char msg[50];
 
 
 /* USER CODE END PV */
@@ -211,8 +210,8 @@ int main(void)
   sFilterConfig.FilterMaskIdHigh = 0x0000;
   sFilterConfig.FilterMaskIdLow = 0x0000;
   sFilterConfig.FilterFIFOAssignment = CAN_RX_FIFO0;
-  sFilterConfig.FilterActivation = ENABLE;
-  sFilterConfig.SlaveStartFilterBank = 14;
+  sFilterConfig.FilterActivation = DISABLE;
+  sFilterConfig.SlaveStartFilterBank = 0;
   if (HAL_CAN_ConfigFilter(&hcan1, &sFilterConfig) != HAL_OK)
   {
 
@@ -229,7 +228,7 @@ int main(void)
   /* Notification Error */
   Error_Handler();
   }
-  TxHeader.StdId = 0x07; //07
+  TxHeader.StdId = 0x321; //07
   //TxHeader.ExtId = 0x01; //delete
   TxHeader.RTR = CAN_RTR_DATA;
   TxHeader.IDE = CAN_ID_STD;
@@ -722,8 +721,13 @@ void scenario3(){
 
 void scenario4(){
 
+	TxData[0]=1;
+	char msg[50];
+
 	sprintf(msg,"Init\r\n");
 	HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
+
+	TxData[0]=1;
 
 	//for(;;){
 
@@ -747,7 +751,8 @@ void scenario5(){
 
 	for(;;){
 		scenario4();
-		Receive_CAN_Message_Polling(RxHeader, *RxData);
+		Receive_CAN_Message_Polling(RxHeader, RxData);
+
 
 	}
 	/*
@@ -771,11 +776,11 @@ void scenario5(){
 
 // here is the Polling Function
 
-void Receive_CAN_Message_Polling(CAN_RxHeaderTypeDef RxMessage_, uint8_t *RxData){
+void Receive_CAN_Message_Polling(CAN_RxHeaderTypeDef RxMessage_, uint8_t *RxData_){
 	char msg[50];
 	uint8_t messages = HAL_CAN_GetRxFifoFillLevel(&hcan1, CAN_RX_FIFO0);
 	if(messages > 0){
-		if(HAL_CAN_GetRxMessage(&hcan1, CAN_RX_FIFO0, &RxMessage_, RxData) == HAL_OK){
+		if(HAL_CAN_GetRxMessage(&hcan1, CAN_RX_FIFO0, &RxMessage_, RxData_) == HAL_OK){
 			sprintf(msg,"Received\r\n");
 			HAL_UART_Transmit(&huart2, (uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
 		}
