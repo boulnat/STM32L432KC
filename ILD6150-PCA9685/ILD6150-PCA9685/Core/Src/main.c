@@ -52,6 +52,23 @@ typedef struct  {
     }item;
 }LUT_TabTypeDef;
 
+typedef enum _themotype {
+  MCP9600_TYPE_K,
+  MCP9600_TYPE_J,
+  MCP9600_TYPE_T,
+  MCP9600_TYPE_N,
+  MCP9600_TYPE_S,
+  MCP9600_TYPE_E,
+  MCP9600_TYPE_B,
+  MCP9600_TYPE_R,
+} MCP9600_ThemocoupleType;
+
+typedef enum _resolution {
+  MCP9600_ADCRESOLUTION_18,
+  MCP9600_ADCRESOLUTION_16,
+  MCP9600_ADCRESOLUTION_14,
+  MCP9600_ADCRESOLUTION_12,
+} MCP9600_ADCResolution;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -67,6 +84,7 @@ typedef struct  {
 CAN_HandleTypeDef hcan1;
 
 I2C_HandleTypeDef hi2c1;
+I2C_HandleTypeDef hi2c3;
 
 UART_HandleTypeDef huart2;
 DMA_HandleTypeDef hdma_usart2_rx;
@@ -76,22 +94,22 @@ DMA_HandleTypeDef hdma_usart2_tx;
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
   .name = "defaultTask",
+  .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityNormal,
-  .stack_size = 128 * 4
 };
 /* Definitions for readTempTask */
 osThreadId_t readTempTaskHandle;
 const osThreadAttr_t readTempTask_attributes = {
   .name = "readTempTask",
+  .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityLow,
-  .stack_size = 128 * 4
 };
 /* Definitions for readLightTask */
 osThreadId_t readLightTaskHandle;
 const osThreadAttr_t readLightTask_attributes = {
   .name = "readLightTask",
+  .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityLow,
-  .stack_size = 128 * 4
 };
 /* USER CODE BEGIN PV */
 osThreadId_t comUsartTaskHandle;
@@ -105,6 +123,14 @@ uint16_t sharedvar=16;
 uint16_t sharedchannel=0x9395;
 uint16_t shareddelay = 5;
 
+CAN_FilterTypeDef sFilterConfig;
+CAN_TxHeaderTypeDef TxHeader;
+CAN_RxHeaderTypeDef RxHeader;
+uint8_t TxData[8];
+uint8_t RxData[8];
+uint32_t TxMailbox;
+
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -114,6 +140,7 @@ static void MX_DMA_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_CAN1_Init(void);
+static void MX_I2C3_Init(void);
 void StartDefaultTask(void *argument);
 void StartReadTempTask(void *argument);
 void StartReadLightTask(void *argument);
@@ -130,11 +157,11 @@ void all_led_off(I2C_HandleTypeDef *hi2c, uint8_t address);
 void scenario1();
 void scenario2();
 void scenario3();
+void scenario4();
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
 /* USER CODE END 0 */
 
 /**
@@ -169,7 +196,42 @@ int main(void)
   MX_I2C1_Init();
   MX_USART2_UART_Init();
   MX_CAN1_Init();
+  MX_I2C3_Init();
   /* USER CODE BEGIN 2 */
+/*
+  sFilterConfig.FilterBank = 0;
+  sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
+  sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
+  sFilterConfig.FilterIdHigh = 0x0000;
+  sFilterConfig.FilterIdLow = 0x0000;
+  sFilterConfig.FilterMaskIdHigh = 0x0000;
+  sFilterConfig.FilterMaskIdLow = 0x0000;
+  sFilterConfig.FilterFIFOAssignment = CAN_RX_FIFO0;
+  sFilterConfig.FilterActivation = ENABLE;
+  sFilterConfig.SlaveStartFilterBank = 14;
+  if (HAL_CAN_ConfigFilter(&hcan1, &sFilterConfig) != HAL_OK)
+  {
+
+  Error_Handler();
+  }
+*/
+  if (HAL_CAN_Start(&hcan1) != HAL_OK)
+  {
+  /* Start Error */
+  Error_Handler();
+  }
+  if (HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_MSG_PENDING | CAN_IT_TX_MAILBOX_EMPTY) != HAL_OK)
+  {
+  /* Notification Error */
+  Error_Handler();
+  }
+  TxHeader.StdId = 0x321; //07
+  //TxHeader.ExtId = 0x01; //delete
+  TxHeader.RTR = CAN_RTR_DATA;
+  TxHeader.IDE = CAN_ID_STD;
+  TxHeader.DLC = 8;
+  TxHeader.TransmitGlobalTime = DISABLE;
+
 
   /* USER CODE END 2 */
 
@@ -266,9 +328,11 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART2|RCC_PERIPHCLK_I2C1;
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART2|RCC_PERIPHCLK_I2C1
+                              |RCC_PERIPHCLK_I2C3;
   PeriphClkInit.Usart2ClockSelection = RCC_USART2CLKSOURCE_SYSCLK;
   PeriphClkInit.I2c1ClockSelection = RCC_I2C1CLKSOURCE_PCLK1;
+  PeriphClkInit.I2c3ClockSelection = RCC_I2C3CLKSOURCE_PCLK1;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
   {
     Error_Handler();
@@ -300,10 +364,10 @@ static void MX_CAN1_Init(void)
 
   /* USER CODE END CAN1_Init 1 */
   hcan1.Instance = CAN1;
-  hcan1.Init.Prescaler = 16;
+  hcan1.Init.Prescaler = 1;
   hcan1.Init.Mode = CAN_MODE_NORMAL;
   hcan1.Init.SyncJumpWidth = CAN_SJW_1TQ;
-  hcan1.Init.TimeSeg1 = CAN_BS1_1TQ;
+  hcan1.Init.TimeSeg1 = CAN_BS1_6TQ;
   hcan1.Init.TimeSeg2 = CAN_BS2_1TQ;
   hcan1.Init.TimeTriggeredMode = DISABLE;
   hcan1.Init.AutoBusOff = DISABLE;
@@ -368,6 +432,52 @@ static void MX_I2C1_Init(void)
 }
 
 /**
+  * @brief I2C3 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_I2C3_Init(void)
+{
+
+  /* USER CODE BEGIN I2C3_Init 0 */
+
+  /* USER CODE END I2C3_Init 0 */
+
+  /* USER CODE BEGIN I2C3_Init 1 */
+
+  /* USER CODE END I2C3_Init 1 */
+  hi2c3.Instance = I2C3;
+  hi2c3.Init.Timing = 0x00000E14;
+  hi2c3.Init.OwnAddress1 = 0;
+  hi2c3.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+  hi2c3.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+  hi2c3.Init.OwnAddress2 = 0;
+  hi2c3.Init.OwnAddress2Masks = I2C_OA2_NOMASK;
+  hi2c3.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+  hi2c3.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+  if (HAL_I2C_Init(&hi2c3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /** Configure Analogue filter
+  */
+  if (HAL_I2CEx_ConfigAnalogFilter(&hi2c3, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /** Configure Digital filter
+  */
+  if (HAL_I2CEx_ConfigDigitalFilter(&hi2c3, 0) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN I2C3_Init 2 */
+
+  /* USER CODE END I2C3_Init 2 */
+
+}
+
+/**
   * @brief USART2 Initialization Function
   * @param None
   * @retval None
@@ -385,8 +495,8 @@ static void MX_USART2_UART_Init(void)
   huart2.Instance = USART2;
   huart2.Init.BaudRate = 115200;
   huart2.Init.WordLength = UART_WORDLENGTH_8B;
-  huart2.Init.StopBits = UART_STOPBITS_2;
-  huart2.Init.Parity = UART_PARITY_EVEN;
+  huart2.Init.StopBits = UART_STOPBITS_1;
+  huart2.Init.Parity = UART_PARITY_NONE;
   huart2.Init.Mode = UART_MODE_TX_RX;
   huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
   huart2.Init.OverSampling = UART_OVERSAMPLING_16;
@@ -606,6 +716,96 @@ void scenario3(){
 	}
 }
 
+void scenario4(){
+
+	uint8_t aData[6]={'A','C','G','U','Q','D'};
+	uint32_t pTxMailbox;
+	char msg[50];
+
+	sprintf(msg,"Init\r\n");
+	HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
+	HAL_CAN_Start(&hcan1);
+	TxData[0]=1;
+
+	for(;;){
+
+
+		if(HAL_CAN_AddTxMessage(&hcan1,&TxHeader,TxData,&TxMailbox)!= HAL_OK){
+			sprintf(msg,"HAL NOK\r\n");
+			HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
+		}
+
+		while(HAL_CAN_IsTxMessagePending(&hcan1,pTxMailbox));
+		TxData[0]+=1;
+
+		sprintf(msg,"Transmitted\r\n");
+		HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
+		osDelay(4000);
+
+
+
+	}
+
+}
+
+void scenario5(){
+	for(;;){
+		scenario4();
+		HAL_CAN_GetRxMessage(&hcan1, CAN_RX_FIFO0, &RxHeader, RxData);
+	}
+	/*
+}
+	char msg[] = {'A','B','C'};
+	CAN_RxHeaderTypeDef pHeader;
+	uint8_t aData[8]={0,0,0,0,0,0,0,0};
+
+
+	HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_FULL);
+
+	for(;;){
+		if(HAL_CAN_GetRxMessage(&hcan1,CAN_RX_FIFO0,&pHeader,aData)==HAL_OK){
+			uint8_t val[] = {0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08};
+			scenario4(val);
+		}
+*/
+}
+/*
+void HAL_CAN_TxMailbox0CompleteCallback(CAN_HandleTypeDef *hcan)
+{
+
+}
+*/
+
+void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
+{
+	HAL_CAN_GetRxMessage(&hcan1, CAN_RX_FIFO0, &RxHeader, RxData);
+
+}
+
+	/*
+	uint8_t TYPE_K = 0b000;
+	uint8_t MCP9600_I2CADDR_DEFAULT = 0x67;
+	uint8_t MCP9600_STATUS = 0x04;
+	uint8_t MCP9600_DEVICEID = 0x20;
+	uint8_t MCP9600_HOTJUNCTION = 0x00;
+	uint8_t MCP9600_RAWDATAADC = 0x03;
+
+	uint8_t outputBuffer[]={MCP9600_RAWDATAADC};
+	uint8_t  inputBuffer[4];
+
+	for(;;){
+
+
+	HAL_I2C_Master_Transmit(&hi2c1, MCP9600_I2CADDR_DEFAULT, outputBuffer, sizeof(inputBuffer), 1);
+
+	HAL_I2C_Master_Receive(&hi2c1, MCP9600_I2CADDR_DEFAULT, inputBuffer, sizeof(inputBuffer),1);
+
+
+	osDelay(100);
+	}
+	*/
+
+
 void ComUsartTask(void *argument){
 	uint8_t rxBuffer[8];
 	for(;;)
@@ -647,7 +847,7 @@ void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN 5 */
 	//scenario1();
-	scenario3();
+	scenario4();
   /* USER CODE END 5 */
 }
 
