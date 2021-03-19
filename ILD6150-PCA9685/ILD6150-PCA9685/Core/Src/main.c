@@ -206,28 +206,34 @@ int main(void)
   sFilterConfig.FilterBank = 0;
   sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
   sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
-  sFilterConfig.FilterIdHigh = 0x0000;
+  sFilterConfig.FilterIdHigh = 0x245<<5;
   sFilterConfig.FilterIdLow = 0x0000;
   sFilterConfig.FilterMaskIdHigh = 0x0000;
   sFilterConfig.FilterMaskIdLow = 0x0000;
   sFilterConfig.FilterFIFOAssignment = CAN_RX_FIFO0;
   sFilterConfig.FilterActivation = ENABLE;
   sFilterConfig.SlaveStartFilterBank = 14;
+
   if (HAL_CAN_ConfigFilter(&hcan1, &sFilterConfig) != HAL_OK)
   {
-
-  Error_Handler();
+	  Error_Handler();
   }
 
   if (HAL_CAN_Start(&hcan1) != HAL_OK)
   {
-  /* Start Error */
-  Error_Handler();
+	  /* Start Error */
+	  Error_Handler();
   }
-  if (HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_MSG_PENDING | CAN_IT_TX_MAILBOX_EMPTY) != HAL_OK)
+
+  if (HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_OVERRUN) != HAL_OK)
   {
-  /* Notification Error */
-  Error_Handler();
+
+	  Error_Handler();
+  }
+  if (HAL_CAN_ActivateNotification(&hcan1, CAN_IT_TX_MAILBOX_EMPTY) != HAL_OK)
+  {
+	  /* Notification Error */
+	  Error_Handler();
   }
   TxHeader.StdId = 0x07; //07
   //TxHeader.ExtId = 0x01; //delete
@@ -725,7 +731,7 @@ void scenario4(){
 	sprintf(msg,"Init\r\n");
 	HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
 
-	//for(;;){
+	for(;;){
 
 
 		if(HAL_CAN_AddTxMessage(&hcan1,&TxHeader,TxData,&TxMailbox)!= HAL_OK){
@@ -738,16 +744,27 @@ void scenario4(){
 
 		sprintf(msg,"Transmitted\r\n");
 		HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
-		osDelay(100);
-	//}
+		osDelay(1000);
+	}
 
 }
 
 void scenario5(){
-
+	char msg[50];
+	//HAL_StatusTypeDef status = HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_OVERRUN);
 	for(;;){
-		scenario4();
-		Receive_CAN_Message_Polling(RxHeader, *RxData);
+		//scenario4();
+		uint8_t messages = HAL_CAN_GetRxFifoFillLevel(&hcan1, CAN_RX_FIFO0);
+
+		HAL_UART_Transmit(&huart2, messages,strlen(messages),HAL_MAX_DELAY);
+
+		if(messages > 0){
+			if(HAL_CAN_GetRxMessage(&hcan1, CAN_RX_FIFO0, &RxHeader, RxData) == HAL_OK){
+				//scenario4();
+				sprintf(msg,"Received\r\n");
+				HAL_UART_Transmit(&huart2, (uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
+			}
+		}
 
 	}
 	/*
@@ -776,6 +793,7 @@ void Receive_CAN_Message_Polling(CAN_RxHeaderTypeDef RxMessage_, uint8_t *RxData
 	uint8_t messages = HAL_CAN_GetRxFifoFillLevel(&hcan1, CAN_RX_FIFO0);
 	if(messages > 0){
 		if(HAL_CAN_GetRxMessage(&hcan1, CAN_RX_FIFO0, &RxMessage_, RxData) == HAL_OK){
+			//scenario4();
 			sprintf(msg,"Received\r\n");
 			HAL_UART_Transmit(&huart2, (uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
 		}
@@ -863,7 +881,7 @@ void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN 5 */
 	//scenario1();
-	scenario5();
+	scenario4();
   /* USER CODE END 5 */
 }
 
@@ -880,6 +898,7 @@ void StartReadTempTask(void *argument)
   /* Infinite loop */
   for(;;)
   {
+	scenario5();
     osDelay(1);
   }
   /* USER CODE END StartReadTempTask */
@@ -935,6 +954,8 @@ void Error_Handler(void)
   __disable_irq();
   while (1)
   {
+	  sprintf(msg,"Error\r\n");
+	  HAL_UART_Transmit(&huart2, (uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
   }
   /* USER CODE END Error_Handler_Debug */
 }
