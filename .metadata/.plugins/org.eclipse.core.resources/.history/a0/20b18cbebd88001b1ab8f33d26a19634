@@ -731,7 +731,7 @@ void scenario4(){
 	sprintf(msg,"Init\r\n");
 	HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
 
-	//for(;;){
+	for(;;){
 		if(HAL_CAN_AddTxMessage(&hcan1,&TxHeader,TxData,&TxMailbox)!= HAL_OK){
 			sprintf(msg,"HAL NOK\r\n");
 			HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
@@ -743,7 +743,7 @@ void scenario4(){
 		sprintf(msg,"Transmitted\r\n");
 		HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
 		osDelay(1000);
-	//}
+	}
 
 }
 
@@ -751,17 +751,16 @@ void scenario5(){
 	char msg[50];
 	HAL_StatusTypeDef status = HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_OVERRUN);
 	for(;;){
+		//scenario4();
 		uint8_t messages = HAL_CAN_GetRxFifoFillLevel(&hcan1, CAN_RX_FIFO0);
 
 		if(messages > 0){
 			if(HAL_CAN_GetRxMessage(&hcan1, CAN_RX_FIFO0, &RxHeader, RxData) == HAL_OK){
 
-				sprintf(msg,"Received\r\n");
-				HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
+				scenario4();
 
 
 			}
-			scenario4();
 		}
 
 	}
@@ -867,7 +866,7 @@ void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN 5 */
 	//scenario1();
-	scenario5();
+	//scenario4();
   /* USER CODE END 5 */
 }
 
@@ -884,7 +883,7 @@ void StartReadTempTask(void *argument)
   /* Infinite loop */
   for(;;)
   {
-
+	scenario5();
     osDelay(1);
   }
   /* USER CODE END StartReadTempTask */

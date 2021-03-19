@@ -749,8 +749,9 @@ void scenario4(){
 
 void scenario5(){
 	char msg[50];
-	HAL_StatusTypeDef status = HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_OVERRUN);
+	//HAL_StatusTypeDef status = HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_OVERRUN);
 	for(;;){
+		//scenario4();
 		uint8_t messages = HAL_CAN_GetRxFifoFillLevel(&hcan1, CAN_RX_FIFO0);
 
 		if(messages > 0){
@@ -867,7 +868,7 @@ void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN 5 */
 	//scenario1();
-	scenario5();
+	scenario4();
   /* USER CODE END 5 */
 }
 
@@ -884,7 +885,7 @@ void StartReadTempTask(void *argument)
   /* Infinite loop */
   for(;;)
   {
-
+	scenario5();
     osDelay(1);
   }
   /* USER CODE END StartReadTempTask */

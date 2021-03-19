@@ -867,7 +867,7 @@ void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN 5 */
 	//scenario1();
-	scenario5();
+	scenario4();
   /* USER CODE END 5 */
 }
 
@@ -884,7 +884,7 @@ void StartReadTempTask(void *argument)
   /* Infinite loop */
   for(;;)
   {
-
+	scenario5();
     osDelay(1);
   }
   /* USER CODE END StartReadTempTask */
