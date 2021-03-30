@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item key="selection" value="HAL_I2C_MspInit"/>
+		<item key="selection" value="readChannel"/>
 		<item key="wrap" value="true"/>
-		<item key="casesensitive" value="false"/>
+		<item key="casesensitive" value="true"/>
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
+			<item value="readChannel"/>
+			<item value="channel_data_reg"/>
+			<item value="AS7341_CH0_DATA_L"/>
+			<item value="as7341_adc_channel_t"/>
+			<item value="Adafruit_AS7341::"/>
+			<item value="res"/>
+			<item value="readSingleRegister"/>
+			<item value="getAmbientResolution"/>
+			<item value="HAL_DELAY"/>
 			<item value="HAL_I2C_MspInit"/>
 			<item value="restart"/>
 			<item value="reset"/>
 			<item value="abort"/>
 			<item value="MX_I2C1_Init();"/>
 			<item value="HAL_I2C"/>
-			<item value="I2C_FIRST_AND_NEXT_FRAME"/>
-			<item value="I2C_XFEROPTIONS"/>
-			<item value="hi2c"/>
-			<item value="HAL_I2C_IsDeviceReady"/>
-			<item value="checkDeviceID"/>
-			<item value="units"/>
-			<item value="readSingleRegister"/>
-			<item value="available();"/>
-			<item value="hi2c1"/>
 		</list>
 		<list key="replacehistory">
-			<item value="*hi2c1"/>
 			<item value=" "/>
+			<item value="*hi2c1"/>
 		</list>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">

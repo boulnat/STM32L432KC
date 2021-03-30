@@ -675,11 +675,11 @@ void StartDefaultTask(void *argument)
     sprintf(msg, "readChannel = %d\r\n", a);
     HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
 
-    /*
+
     uint8_t x = getThermocoupleTemp(&hi2c1,0);
     sprintf(msg, "TH = %d\r\n", x);
     HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
-
+/*
     uint8_t y = getAmbientTemp(&hi2c1,0);
     sprintf(msg, "TC = %d\r\n", y);
     HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
