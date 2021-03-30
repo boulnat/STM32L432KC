@@ -1,35 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item key="selection" value="CAN_filter_mode"/>
+		<item key="selection" value="HAL_I2C_MspInit"/>
 		<item key="wrap" value="true"/>
 		<item key="casesensitive" value="false"/>
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
-			<item value="CAN_filter_mode"/>
-			<item value="TxData"/>
-			<item value="RxData"/>
-			<item value="RxMessage_"/>
-			<item value="CAN_RxHeaderTypeDef"/>
-			<item value="RxMessage"/>
-			<item value="CAN"/>
-			<item value="HAL_CAN_GetRxMessage"/>
-			<item value="UART"/>
-			<item value="Tx"/>
-			<item value="HAL_CAN"/>
-			<item value="MX_CAN1_Init"/>
-			<item value="HAL_CAN_Start"/>
-			<item value="HAL_CAN_ConfigFilter"/>
-			<item value="scenario4"/>
+			<item value="HAL_I2C_MspInit"/>
+			<item value="restart"/>
+			<item value="reset"/>
+			<item value="abort"/>
+			<item value="MX_I2C1_Init();"/>
+			<item value="HAL_I2C"/>
+			<item value="I2C_FIRST_AND_NEXT_FRAME"/>
+			<item value="I2C_XFEROPTIONS"/>
+			<item value="hi2c"/>
+			<item value="HAL_I2C_IsDeviceReady"/>
+			<item value="checkDeviceID"/>
+			<item value="units"/>
+			<item value="readSingleRegister"/>
+			<item value="available();"/>
+			<item value="hi2c1"/>
 		</list>
 		<list key="replacehistory">
+			<item value="*hi2c1"/>
+			<item value=" "/>
 		</list>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
-		<item key="DIALOG_X_ORIGIN" value="967"/>
-		<item key="DIALOG_Y_ORIGIN" value="290"/>
+		<item key="DIALOG_X_ORIGIN" value="1345"/>
+		<item key="DIALOG_Y_ORIGIN" value="395"/>
 		<item key="DIALOG_WIDTH" value="284"/>
 		<item key="DIALOG_HEIGHT" value="391"/>
 		<item key="DIALOG_FONT_NAME" value="1|Segoe UI|9.0|0|WINDOWS|1|-12|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI"/>
