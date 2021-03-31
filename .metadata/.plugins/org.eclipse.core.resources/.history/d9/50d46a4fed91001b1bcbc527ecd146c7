@@ -1,0 +1,33 @@
+/*
+ * AS7341.c
+ *
+ *  Created on: Mar 30, 2021
+ *      Author: boulnat
+ */
+#include <stdio.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include <main.h>
+#include <AS7341.h>
+
+uint16_t readChannel(I2C_HandleTypeDef *hi2c1, as7341_adc_channel_t channel) {
+
+	uint8_t read[2];
+	uint16_t read16bits = 0;
+	uint8_t data[] = {0xA9, 0x80};
+	while(HAL_I2C_Master_Transmit(hi2c1, 0x72, data, sizeof(data), HAL_MAX_DELAY) != HAL_OK);
+	while(HAL_I2C_IsDeviceReady(hi2c1,0x72,10,200)!=HAL_OK);
+	while(HAL_I2C_Master_Transmit(hi2c1, 0x72, &channel, 1, HAL_MAX_DELAY) != HAL_OK);
+	while(HAL_I2C_IsDeviceReady(hi2c1,0x72,10,200)!=HAL_OK);
+	while(HAL_I2C_Master_Receive(hi2c1, 0x73, read, sizeof(read), HAL_MAX_DELAY)!= HAL_OK);
+
+	read16bits = (read[0] << 8) | read[1];
+	return read16bits;
+
+}
+
+uint16_t getChannel(as7341_color_channel_t channel) {
+  return _channel_readings[channel];
+}
+
+

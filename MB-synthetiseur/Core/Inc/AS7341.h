@@ -16,9 +16,9 @@
 
 #define AS7341_WHOAMI 0x92 ///< Chip ID register
 
-#define AS7341_ASTATUS 0x60    ///< AS7341_ASTATUS (unused)
-#define AS7341_CH0_DATA_L 0x61 ///< AS7341_CH0_DATA_L (unused)
-#define AS7341_CH0_DATA_H 0x62 ///< AS7341_CH0_DATA_H (unused)
+//#define AS7341_ASTATUS 0x60    ///< AS7341_ASTATUS (unused)
+//#define AS7341_CH0_DATA_L 0x61 ///< AS7341_CH0_DATA_L (unused)
+//#define AS7341_CH0_DATA_H 0x62 ///< AS7341_CH0_DATA_H (unused)
 #define AS7341_ITIME_L 0x63    ///< AS7341_ITIME_L (unused)
 #define AS7341_ITIME_M 0x64    ///< AS7341_ITIME_M (unused)
 #define AS7341_ITIME_H 0x65    ///< AS7341_ITIME_H (unused)
@@ -27,23 +27,18 @@
 #define AS7341_EDGE 0x72   ///< AS7341_EDGE (unused)
 #define AS7341_GPIO 0x73   ///< Connects photo diode to GPIO or INT pins
 #define AS7341_LED 0x74    ///< LED Register; Enables and sets current limit
-#define AS7341_ENABLE                                                          \
-  0x80 ///< Main enable register. Controls SMUX, Flicker Detection, Spectral
+#define AS7341_ENABLE  0x80 ///< Main enable register. Controls SMUX, Flicker Detection, Spectral
        ///< Measurements and Power
 #define AS7341_ATIME 0x81       ///< Sets ADC integration step count
 #define AS7341_WTIME 0x83       ///< AS7341_WTIME (unused)
 #define AS7341_SP_LOW_TH_L 0x84 ///< Spectral measurement Low Threshold low byte
-#define AS7341_SP_LOW_TH_H                                                     \
-  0x85 ///< Spectral measurement Low Threshold high byte
-#define AS7341_SP_HIGH_TH_L                                                    \
-  0x86 ///< Spectral measurement High Threshold low byte
-#define AS7341_SP_HIGH_TH_H                                                    \
-  0x87                    ///< Spectral measurement High Threshold low byte
+#define AS7341_SP_LOW_TH_H   0x85 ///< Spectral measurement Low Threshold high byte
+#define AS7341_SP_HIGH_TH_L  0x86 ///< Spectral measurement High Threshold low byte
+#define AS7341_SP_HIGH_TH_H  0x87                    ///< Spectral measurement High Threshold low byte
 #define AS7341_AUXID 0x90 ///< AS7341_AUXID (unused)
 #define AS7341_REVID 0x91 ///< AS7341_REVID (unused)
 #define AS7341_ID 0x92    ///< AS7341_ID (unused)
-#define AS7341_STATUS                                                          \
-  0x93 ///< Interrupt status registers. Indicates the occourance of an interrupt
+#define AS7341_STATUS  0x93 ///< Interrupt status registers. Indicates the occourance of an interrupt
 #define AS7341_ASTATUS 0x94    ///< AS7341_ASTATUS (unused)
 #define AS7341_CH0_DATA_L 0x95 ///< ADC Channel Data
 #define AS7341_CH0_DATA_H 0x96 ///< ADC Channel Data
@@ -62,8 +57,7 @@
   0xA4 ///< Spectral interrupt source, high or low threshold
 #define AS7341_STATUS5 0xA6 ///< AS7341_STATUS5 (unused)
 #define AS7341_STATUS6 0xA7 ///< AS7341_STATUS6 (unused)
-#define AS7341_CFG0                                                            \
-  0xA9 ///< Sets Low power mode, Register bank, and Trigger lengthening
+#define AS7341_CFG0 0xA9 ///< Sets Low power mode, Register bank, and Trigger lengthening
 #define AS7341_CFG1 0xAA ///< Controls ADC Gain
 #define AS7341_CFG3 0xAC ///< AS7341_CFG3 (unused)
 #define AS7341_CFG6 0xAF ///< Used to configure Smux
@@ -206,21 +200,21 @@ typedef enum {
 
   //bool begin(uint8_t i2c_addr = AS7341_I2CADDR_DEFAULT, int32_t sensor_id = 0);
 
-  bool setASTEP(uint16_t astep_value);
-  bool setATIME(uint8_t atime_value);
-  bool setGain(as7341_gain_t gain_value);
+  bool setASTEP(I2C_HandleTypeDef *hi2c1, uint8_t astep_value);
+  bool setATIME(I2C_HandleTypeDef *hi2c1, uint8_t atime_value);
+  bool setGain(I2C_HandleTypeDef *hi2c1, as7341_gain_t gain_value);
 
-  uint16_t getASTEP();
-  uint8_t getATIME();
-  as7341_gain_t getGain();
+  uint16_t getASTEP(I2C_HandleTypeDef *hi2c1);
+  uint8_t getATIME(I2C_HandleTypeDef *hi2c1);
+  as7341_gain_t getGain(I2C_HandleTypeDef *hi2c1);
 
   long getTINT();
   float toBasicCounts(uint16_t raw);
-/*
-  bool readAllChannels(void);
-  bool readAllChannels(uint16_t *readings_buffer);
-  void delayForData(int waitTime = 0);
-  */
+
+  //bool readAllChannels(void);
+  uint16_t readAllChannels(I2C_HandleTypeDef *hi2c1,uint16_t *readings_buffer);
+  void delayForData(int waitTime);
+
   uint16_t readChannel(I2C_HandleTypeDef *hi2c1, as7341_adc_channel_t channel);
   uint16_t getChannel(as7341_color_channel_t channel);
 
@@ -230,11 +224,11 @@ typedef enum {
 
   uint16_t detectFlickerHz(void);
 
-  void setup_F1F4_Clear_NIR(void);
-  void setup_F5F8_Clear_NIR(void);
+  void setup_F1F4_Clear_NIR(I2C_HandleTypeDef *hi2c1);
+  void setup_F5F8_Clear_NIR(I2C_HandleTypeDef *hi2c1);
 
   void powerEnable(bool enable_power);
-  bool enableSpectralMeasurement(bool enable_measurement);
+  bool enableSpectralMeasurement(I2C_HandleTypeDef *hi2c1, bool enable_measurement);
 
   bool setHighThreshold(uint16_t high_threshold);
   bool setLowThreshold(uint16_t low_threshold);
@@ -279,13 +273,13 @@ protected:
 */
 
 
-  bool enableSMUX(void);
+  bool enableSMUX(I2C_HandleTypeDef *hi2c1);
   bool enableFlickerDetection(bool enable_fd);
   void FDConfig(void);
   int8_t getFlickerDetectStatus(void);
-  bool setSMUXCommand(as7341_smux_cmd_t command);
-  //void writeRegister(byte addr, byte val);
-  void setSMUXLowChannels(bool f1_f4);
+  bool setSMUXCommand(I2C_HandleTypeDef *hi2c1, as7341_smux_cmd_t command);
+  void writeRegister(I2C_HandleTypeDef *hi2c1, uint8_t addr, uint8_t val);
+  void setSMUXLowChannels(I2C_HandleTypeDef *hi2c1, bool f1_f4);
   uint16_t _channel_readings[12];
   as7341_waiting_t _readingState;
 
