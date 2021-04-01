@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item key="selection" value="readChannel"/>
-		<item key="wrap" value="true"/>
-		<item key="casesensitive" value="true"/>
+		<item key="selection" value="enableSMUX"/>
+		<item key="wrap" value="false"/>
+		<item key="casesensitive" value="false"/>
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
+			<item value="enableSMUX"/>
+			<item value="as7341_gain_t"/>
+			<item value="getChannel"/>
+			<item value="AS7341_CHANNEL_415nm_F1"/>
+			<item value="void Ad{"/>
+			<item value="_ENABLE"/>
+			<item value="ENABLE"/>
+			<item value="AS7341_CFG6"/>
+			<item value="AS7341_ENABLE"/>
+			<item value="CFG0"/>
+			<item value="LSBFIRST"/>
 			<item value="readChannel"/>
 			<item value="channel_data_reg"/>
 			<item value="AS7341_CH0_DATA_L"/>
 			<item value="as7341_adc_channel_t"/>
-			<item value="Adafruit_AS7341::"/>
-			<item value="res"/>
-			<item value="readSingleRegister"/>
-			<item value="getAmbientResolution"/>
-			<item value="HAL_DELAY"/>
-			<item value="HAL_I2C_MspInit"/>
-			<item value="restart"/>
-			<item value="reset"/>
-			<item value="abort"/>
-			<item value="MX_I2C1_Init();"/>
-			<item value="HAL_I2C"/>
 		</list>
 		<list key="replacehistory">
 			<item value=" "/>
@@ -30,8 +30,8 @@
 		</list>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
-		<item key="DIALOG_X_ORIGIN" value="1345"/>
-		<item key="DIALOG_Y_ORIGIN" value="395"/>
+		<item key="DIALOG_X_ORIGIN" value="1473"/>
+		<item key="DIALOG_Y_ORIGIN" value="392"/>
 		<item key="DIALOG_WIDTH" value="284"/>
 		<item key="DIALOG_HEIGHT" value="391"/>
 		<item key="DIALOG_FONT_NAME" value="1|Segoe UI|9.0|0|WINDOWS|1|-12|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI"/>

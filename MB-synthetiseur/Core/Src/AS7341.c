@@ -205,6 +205,11 @@ bool setASTEP(I2C_HandleTypeDef *hi2c1, uint8_t astep_value) {
 	while(HAL_I2C_Master_Transmit(hi2c1, 0x72, data, sizeof(data), HAL_MAX_DELAY) != HAL_OK);
 	while(HAL_I2C_IsDeviceReady(hi2c1,0x72,10,200)!=HAL_OK);
 
+	data[0] = AS7341_ASTEP_H;
+	data[1] = 0x03;
+	while(HAL_I2C_Master_Transmit(hi2c1, 0x72, data, sizeof(data), HAL_MAX_DELAY) != HAL_OK);
+	while(HAL_I2C_IsDeviceReady(hi2c1,0x72,10,200)!=HAL_OK);
+
 	return 1;
 }
 

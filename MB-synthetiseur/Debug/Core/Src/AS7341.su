@@ -12,6 +12,6 @@ AS7341.c:179:6:writeRegister	32	static
 AS7341.c:186:6:setATIME	32	static
 AS7341.c:194:9:getATIME	32	static
 AS7341.c:203:6:setASTEP	32	static
-AS7341.c:211:10:getASTEP	32	static
-AS7341.c:221:6:setGain	32	static
-AS7341.c:230:15:getGain	32	static
+AS7341.c:216:10:getASTEP	32	static
+AS7341.c:226:6:setGain	32	static
+AS7341.c:235:15:getGain	32	static
