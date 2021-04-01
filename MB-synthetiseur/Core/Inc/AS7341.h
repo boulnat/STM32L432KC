@@ -198,7 +198,7 @@ typedef enum {
 
 
 
-  //bool begin(uint8_t i2c_addr = AS7341_I2CADDR_DEFAULT, int32_t sensor_id = 0);
+  bool begin(I2C_HandleTypeDef *hi2c1);
 
   bool setASTEP(I2C_HandleTypeDef *hi2c1, uint8_t astep_value);
   bool setATIME(I2C_HandleTypeDef *hi2c1, uint8_t atime_value);
@@ -213,7 +213,7 @@ typedef enum {
 
   //bool readAllChannels(void);
   uint16_t readAllChannels(I2C_HandleTypeDef *hi2c1,uint16_t *readings_buffer);
-  void delayForData(int waitTime);
+  void delayForData(I2C_HandleTypeDef *hi2c1, int waitTime);
 
   uint16_t readChannel(I2C_HandleTypeDef *hi2c1, as7341_adc_channel_t channel);
   uint16_t getChannel(as7341_color_channel_t channel);

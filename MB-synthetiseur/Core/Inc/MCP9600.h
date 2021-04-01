@@ -84,7 +84,6 @@ typedef enum  {
   //Device status
   I2C_HandleTypeDef hi2c;
 
-  bool begin(uint8_t address, I2C_HandleTypeDef *hi2c1); //Sets device I2C address to a user-specified address, over whatever port the user specifies.
   bool available(I2C_HandleTypeDef *hi2c1);                                                 //Returns true if the thermocouple (hot) junction temperature has been updated since we last checked. Also referred to as the data ready bit.
   bool isConnected(I2C_HandleTypeDef *hi2c1);                                               //Returns true if the thermocouple will acknowledge over I2C, and false otherwise
   uint16_t deviceID(I2C_HandleTypeDef *hi2c1);                                              //Returns the contents of the device ID register. The upper 8 bits are constant, but the lower contain revision data.
