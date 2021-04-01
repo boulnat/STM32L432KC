@@ -866,13 +866,13 @@ void StartDefaultTask(void *argument)
 			while(HAL_I2C_IsDeviceReady(&hi2c1,0x72,10,200)!=HAL_OK);
 			while(HAL_I2C_Master_Receive(&hi2c1, 0x72, (uint8_t *)&readings_buffer[6], 12, HAL_MAX_DELAY)!= HAL_OK);
 
-		    for(int i=0; i<12; i++){
+		    for(int i=6; i<12; i++){
 		    	sprintf(msg, "H readAllChannels %d = %d \r\n",i, _channel_readings[i]);
 		    	HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
 		    }
 
 
-
+/*
 		    uint16_t read[8];
 		    //uint16_t read16bits=0;
 		    //uint16_t a = readAllChannels(&hi2c1,read16bits);
@@ -890,7 +890,7 @@ void StartDefaultTask(void *argument)
 		    	sprintf(msg, "getChannel %d = %d\r\n",i+1,  read[i]);
 		    	HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
 		    }
-
+*/
 	  }
 
 

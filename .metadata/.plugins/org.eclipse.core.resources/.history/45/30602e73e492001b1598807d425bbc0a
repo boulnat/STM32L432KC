@@ -665,18 +665,24 @@ void StartDefaultTask(void *argument)
 			while(HAL_I2C_Master_Transmit(&hi2c1, 0x72, regtest, sizeof(regtest), HAL_MAX_DELAY) != HAL_OK);
 			while(HAL_I2C_IsDeviceReady(&hi2c1,0x72,10,200)!=HAL_OK);
 
+			osDelay(1000);
+
 			//configure integration time
 		    setATIME(&hi2c1,100);
 		    sprintf(msg, "getATIME = %d\r\n", getATIME(&hi2c1));
 		    HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
 
+		    osDelay(1000);
 		    setASTEP(&hi2c1,0xE7);
 		    sprintf(msg, "getASTEP = %d\r\n", getASTEP(&hi2c1));
 		    HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
 
+		    osDelay(1000);
 		    setGain(&hi2c1,AS7341_GAIN_256X);
 		    sprintf(msg, "getGain = %d\r\n", getGain(&hi2c1));
 		    HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
+
+		    osDelay(1000);
 
 		    //setSMUXLowChannels(true);
 		    	//enableSpectralMeasurement(false);
@@ -690,8 +696,10 @@ void StartDefaultTask(void *argument)
 			while(HAL_I2C_IsDeviceReady(&hi2c1,0x72,10,200)!=HAL_OK);
 			while(HAL_I2C_Master_Receive(&hi2c1, 0x72, regRead, sizeof(regRead), HAL_MAX_DELAY)!= HAL_OK);
 
-			//sprintf(msg, "disableSpectralMeasurement = %d\r\n", regRead[0]);
-			//HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
+			sprintf(msg, "disableSpectralMeasurement = %d\r\n", regRead[0]);
+			HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
+
+			osDelay(1000);
 
 				//setSMUXCommand(AS7341_SMUX_CMD_WRITE);
 			regtest[0]=AS7341_CFG6;
@@ -704,11 +712,15 @@ void StartDefaultTask(void *argument)
 			while(HAL_I2C_IsDeviceReady(&hi2c1,0x72,10,200)!=HAL_OK);
 			while(HAL_I2C_Master_Receive(&hi2c1, 0x72, regRead, sizeof(regRead), HAL_MAX_DELAY)!= HAL_OK);
 
-			//sprintf(msg, "setSMUXCommand = %d\r\n", regRead[0]);
-			//HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
+			sprintf(msg, "setSMUXCommand = %d\r\n", regRead[0]);
+			HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
+
+			osDelay(1000);
 
 				//setup_F1F4_Clear_NIR
 			setup_F1F4_Clear_NIR(&hi2c1);
+
+			osDelay(1000);
 
 				//enableSMUX
 			regtest[0]=AS7341_ENABLE;
@@ -724,10 +736,11 @@ void StartDefaultTask(void *argument)
 				while(HAL_I2C_IsDeviceReady(&hi2c1,0x72,10,200)!=HAL_OK);
 				while(HAL_I2C_Master_Receive(&hi2c1, 0x72, regRead, sizeof(regRead), HAL_MAX_DELAY)!= HAL_OK);
 
-				//sprintf(msg, "enableSMUX = %d\r\n", regRead[0]);
-				//HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
+				sprintf(msg, "enableSMUX = %d\r\n", regRead[0]);
+				HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
 			}
 
+			osDelay(1000);
 
 			//enableSpectralMeasurement(true);
 			regtest[0]=AS7341_ENABLE;
@@ -748,13 +761,15 @@ void StartDefaultTask(void *argument)
 			regtest[0]=AS7341_STATUS2;
 			regRead[0]=0;
 			while(regRead[0]!=0x40){
-				osDelay(100);
+				osDelay(1000);
 				while(HAL_I2C_Master_Transmit(&hi2c1, 0x72, regtest, 1, HAL_MAX_DELAY) != HAL_OK);
 				while(HAL_I2C_IsDeviceReady(&hi2c1,0x72,10,200)!=HAL_OK);
 				while(HAL_I2C_Master_Receive(&hi2c1, 0x72, regRead, sizeof(regRead), HAL_MAX_DELAY)!= HAL_OK);
-				//sprintf(msg, "delayForData = %d\r\n", regRead[0]);
-				//HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
+				sprintf(msg, "delayForData = %d\r\n", regRead[0]);
+				HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
 			}
+
+			osDelay(1000);
 
 			//readAllChannels
 		    //AS7341_CH0_DATA_L
@@ -777,6 +792,8 @@ void StartDefaultTask(void *argument)
 		    }
 
 
+
+
 		    //read all H channel//
 		    //setSMUXLowChannels(false);
 		    	//enableSpectralMeasurement(false);
@@ -790,8 +807,10 @@ void StartDefaultTask(void *argument)
 			while(HAL_I2C_IsDeviceReady(&hi2c1,0x72,10,200)!=HAL_OK);
 			while(HAL_I2C_Master_Receive(&hi2c1, 0x72, regRead, sizeof(regRead), HAL_MAX_DELAY)!= HAL_OK);
 
-			//sprintf(msg, "H disableSpectralMeasurement = %d\r\n", regRead[0]);
-			//HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
+			sprintf(msg, "H disableSpectralMeasurement = %d\r\n", regRead[0]);
+			HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
+
+			osDelay(1000);
 
 				//setSMUXCommand(AS7341_SMUX_CMD_WRITE);
 			regtest[0]=AS7341_CFG6;
@@ -804,13 +823,17 @@ void StartDefaultTask(void *argument)
 			while(HAL_I2C_IsDeviceReady(&hi2c1,0x72,10,200)!=HAL_OK);
 			while(HAL_I2C_Master_Receive(&hi2c1, 0x72, regRead, sizeof(regRead), HAL_MAX_DELAY)!= HAL_OK);
 
-			//sprintf(msg, "H setSMUXCommand = %d\r\n", regRead[0]);
-			//HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
+			sprintf(msg, "H setSMUXCommand = %d\r\n", regRead[0]);
+			HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
+
+			osDelay(1000);
 
 				//setup_F5F8_Clear_NIR
 			setup_F5F8_Clear_NIR(&hi2c1);
 
-				//enableSMUX
+				osDelay(1000);
+
+			//enableSMUX
 			regtest[0]=AS7341_ENABLE;
 			regtest[1]=0x19;
 			while(HAL_I2C_Master_Transmit(&hi2c1, 0x72, regtest, sizeof(regtest), HAL_MAX_DELAY) != HAL_OK);
@@ -819,40 +842,30 @@ void StartDefaultTask(void *argument)
 
 			regtest[0]=AS7341_ENABLE;//0xA9 to AS7341_ENABLE
 			regRead[0]=0;
-			while(regRead[0]==0){
+			//while(regRead[0]==0){
 				while(HAL_I2C_Master_Transmit(&hi2c1, 0x72, regtest, 1, HAL_MAX_DELAY) != HAL_OK);
 				while(HAL_I2C_IsDeviceReady(&hi2c1,0x72,10,200)!=HAL_OK);
 				while(HAL_I2C_Master_Receive(&hi2c1, 0x72, regRead, sizeof(regRead), HAL_MAX_DELAY)!= HAL_OK);
 
-				//sprintf(msg, "H enableSMUX = %d\r\n", regRead[0]);
-				//HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
-			}
+				sprintf(msg, "H enableSMUX = %d\r\n", regRead[0]);
+				HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
+			//}
 
-			//enableSpectralMeasurement(true);
-			regtest[0]=AS7341_ENABLE;
-			regtest[1]=	0x03;
-			while(HAL_I2C_Master_Transmit(&hi2c1, 0x72, regtest, sizeof(regtest), HAL_MAX_DELAY) != HAL_OK);
-			while(HAL_I2C_IsDeviceReady(&hi2c1,0x72,10,200)!=HAL_OK);
-
-			regtest[0]=AS7341_ENABLE;
-			while(HAL_I2C_Master_Transmit(&hi2c1, 0x72, regtest, 1, HAL_MAX_DELAY) != HAL_OK);
-			while(HAL_I2C_IsDeviceReady(&hi2c1,0x72,10,200)!=HAL_OK);
-			while(HAL_I2C_Master_Receive(&hi2c1, 0x72, regRead, sizeof(regRead), HAL_MAX_DELAY)!= HAL_OK);
-
-			//sprintf(msg, "enableSpectralMeasurement = %d\r\n", regRead[0]);
-			//HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
+			osDelay(1000);
 
 			//delayForData
 			regtest[0]=AS7341_STATUS2;
 			regRead[0]=0;
 			while(regRead[0]!=0x40){
-				osDelay(100);
+				osDelay(1000);
 				while(HAL_I2C_Master_Transmit(&hi2c1, 0x72, regtest, 1, HAL_MAX_DELAY) != HAL_OK);
 				while(HAL_I2C_IsDeviceReady(&hi2c1,0x72,10,200)!=HAL_OK);
 				while(HAL_I2C_Master_Receive(&hi2c1, 0x72, regRead, sizeof(regRead), HAL_MAX_DELAY)!= HAL_OK);
-				//sprintf(msg, "H delayForData = %d\r\n", regRead[0]);
-				//HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
+				sprintf(msg, "H delayForData = %d\r\n", regRead[0]);
+				HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
 			}
+
+			osDelay(1000);
 
 			//readAllChannels
 		    //AS7341_CH0_DATA_L
@@ -866,13 +879,13 @@ void StartDefaultTask(void *argument)
 			while(HAL_I2C_IsDeviceReady(&hi2c1,0x72,10,200)!=HAL_OK);
 			while(HAL_I2C_Master_Receive(&hi2c1, 0x72, (uint8_t *)&readings_buffer[6], 12, HAL_MAX_DELAY)!= HAL_OK);
 
-		    for(int i=0; i<12; i++){
+		    for(int i=6; i<12; i++){
 		    	sprintf(msg, "H readAllChannels %d = %d \r\n",i, _channel_readings[i]);
 		    	HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
 		    }
 
 
-
+/*
 		    uint16_t read[8];
 		    //uint16_t read16bits=0;
 		    //uint16_t a = readAllChannels(&hi2c1,read16bits);
@@ -890,7 +903,7 @@ void StartDefaultTask(void *argument)
 		    	sprintf(msg, "getChannel %d = %d\r\n",i+1,  read[i]);
 		    	HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
 		    }
-
+*/
 	  }
 
 
