@@ -874,13 +874,22 @@ void StartDefaultTask(void *argument)
 			while(HAL_I2C_IsDeviceReady(&hi2c1,0x72,10,200)!=HAL_OK);
 			while(HAL_I2C_Master_Receive(&hi2c1, 0x72, (uint8_t *)&readings_buffer[6], 12, HAL_MAX_DELAY)!= HAL_OK);
 
+			uint16_t test = 0;
+			LSB = _channel_readings[0]>>8;
+			MSB = _channel_readings[0] & 0x00FF;
+			test = ((_channel_readings[0] & 0x00FF) << 8) | (_channel_readings[0]>>8);
 
-			//swap MSB and LSB
-			uint16_t buff = 0;
-			for(int i=0; i<12; i++){
-				  buff = ((_channel_readings[i] & 0x00FF) << 8) | (_channel_readings[i]>>8);
-				  _channel_readings[i] = buff;
+			LSB = _channel_readings[2]>>8;
+			MSB = _channel_readings[2] & 0x00FF;
+			_channel_readings[1] = (MSB << 8) | LSB;
 
+			for(int i=2; i<12; i++){
+				//LSB = _channel_readings[i]>>8;
+				//MSB = _channel_readings[i] & 0x00FF;
+				//_channel_readings[0] = (MSB << 8) | LSB;
+
+					    	//sprintf(msg, "readAllChannels %d = %d \r\n",i, _channel_readings[i]);
+					    	//HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
 			}
 
 
@@ -911,6 +920,50 @@ void StartDefaultTask(void *argument)
 	  }
 
 
+/*
+    LSB = readtest>>8;
+    MSB = readtest & 0x00FF;
+    sprintf(msg,"%d - %d\r\n",LSB,MSB);
+    HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
+    if((MSB & 0x80) == 0x80){
+    	sprintf(msg,"%d\r\n",((MSB*16)+(LSB/16))-4096);
+    }
+    else{
+    	sprintf(msg,"temperature is %d\r\n",((MSB*16)+(LSB/16)));
+    }
+    HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
+
+    for(int a = 0; a<1; a++){
+
+        while(HAL_I2C_Master_Transmit(&hi2c1, 0xCE, &tempReg[a], 1, HAL_MAX_DELAY) != HAL_OK);
+        while(HAL_I2C_IsDeviceReady(&hi2c1,0xCE,10,200)!=HAL_OK);
+        while(HAL_I2C_Master_Receive(&hi2c1, 0XCF, read, sizeof(read), HAL_MAX_DELAY)!= HAL_OK);
+
+        sprintf(msg,"--------START-%d-------\r\n",tempReg[a]);
+        HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
+
+
+        for(int i = 0; i<sizeof(read); i++){
+        	sprintf(msg,"%d\r\n", read[i]);
+        	HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
+        }
+
+
+        MSB = read[0];
+        LSB = read[1];
+        if((MSB & 0x80) == 0x80){
+        	sprintf(msg,"%d\r\n",((MSB*16)+(LSB/16))-4096);
+        }
+        else{
+        	sprintf(msg,"temperature is %d\r\n",((MSB*16)+(LSB/16)));
+        }
+        HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
+
+
+       	sprintf(msg,"--------END-%d-------\r\n",tempReg[a]);
+        HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
+    }
+*/
 
   /* USER CODE END 5 */
 }
