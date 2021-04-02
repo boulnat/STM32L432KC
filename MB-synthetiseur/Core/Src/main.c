@@ -25,6 +25,7 @@
 /* USER CODE BEGIN Includes */
 #include <AS7341.h>
 #include <MCP9600.h>
+#include <PCA9685.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -47,6 +48,7 @@ ADC_HandleTypeDef hadc1;
 CAN_HandleTypeDef hcan1;
 
 I2C_HandleTypeDef hi2c1;
+I2C_HandleTypeDef hi2c3;
 
 TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim15;
@@ -77,6 +79,21 @@ const osThreadAttr_t readLightTask_attributes = {
   .priority = (osPriority_t) osPriorityLow,
 };
 /* USER CODE BEGIN PV */
+CAN_FilterTypeDef sFilterConfig;
+CAN_TxHeaderTypeDef TxHeader;
+CAN_RxHeaderTypeDef RxHeader;
+uint8_t TxData[8]={1,2,3,4,5,6,7,8};
+uint8_t RxData[8];
+uint32_t TxMailbox;
+
+typedef struct {
+  uint8_t ID = 0;
+  uint8_t TH = 0;
+  uint8_t TC = 0;
+  uint8_t TD = 0;
+  uint8_t CH1LSB = 0;
+  uint8_t CH1MSB = 0;
+} canPacketStruct;
 
 /* USER CODE END PV */
 
@@ -90,6 +107,7 @@ static void MX_TIM1_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_TIM15_Init(void);
 static void MX_USART2_UART_Init(void);
+static void MX_I2C3_Init(void);
 void StartDefaultTask(void *argument);
 void StartReadTempTask(void *argument);
 void StartReadLightTask(void *argument);
@@ -119,7 +137,8 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-
+  //uint8_t I2C_address = 0x80;
+  //pca9685_init(&hi2c3, I2C_address);
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -138,8 +157,49 @@ int main(void)
   MX_ADC1_Init();
   MX_TIM15_Init();
   MX_USART2_UART_Init();
+  MX_I2C3_Init();
   /* USER CODE BEGIN 2 */
 
+
+  sFilterConfig.FilterBank = 0;
+  sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
+  sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
+  sFilterConfig.FilterIdHigh = 0x033<<5;
+  sFilterConfig.FilterIdLow = 0x0000;
+  sFilterConfig.FilterMaskIdHigh = 0x0000;
+  sFilterConfig.FilterMaskIdLow = 0x0000;
+  sFilterConfig.FilterFIFOAssignment = CAN_RX_FIFO0;
+  sFilterConfig.FilterActivation = ENABLE;
+  sFilterConfig.SlaveStartFilterBank = 14;
+
+  if (HAL_CAN_ConfigFilter(&hcan1, &sFilterConfig) != HAL_OK)
+  {
+	  Error_Handler();
+  }
+
+  if (HAL_CAN_Start(&hcan1) != HAL_OK)
+  {
+	  /* Start Error */
+	  Error_Handler();
+  }
+
+  if (HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_OVERRUN) != HAL_OK)
+  {
+
+	  Error_Handler();
+  }
+  if (HAL_CAN_ActivateNotification(&hcan1, CAN_IT_TX_MAILBOX_EMPTY) != HAL_OK)
+  {
+
+	  Error_Handler();
+  }
+
+  TxHeader.StdId = 0x07; //07
+  //TxHeader.ExtId = 0x01; //delete
+  TxHeader.RTR = CAN_RTR_DATA;
+  TxHeader.IDE = CAN_ID_STD;
+  TxHeader.DLC = 8;
+  TxHeader.TransmitGlobalTime = DISABLE;
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -241,9 +301,10 @@ void SystemClock_Config(void)
     Error_Handler();
   }
   PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART2|RCC_PERIPHCLK_I2C1
-                              |RCC_PERIPHCLK_ADC;
+                              |RCC_PERIPHCLK_I2C3|RCC_PERIPHCLK_ADC;
   PeriphClkInit.Usart2ClockSelection = RCC_USART2CLKSOURCE_SYSCLK;
   PeriphClkInit.I2c1ClockSelection = RCC_I2C1CLKSOURCE_PCLK1;
+  PeriphClkInit.I2c3ClockSelection = RCC_I2C3CLKSOURCE_PCLK1;
   PeriphClkInit.AdcClockSelection = RCC_ADCCLKSOURCE_PLLSAI1;
   PeriphClkInit.PLLSAI1.PLLSAI1Source = RCC_PLLSOURCE_MSI;
   PeriphClkInit.PLLSAI1.PLLSAI1M = 5;
@@ -342,8 +403,8 @@ static void MX_CAN1_Init(void)
   hcan1.Init.Prescaler = 1;
   hcan1.Init.Mode = CAN_MODE_NORMAL;
   hcan1.Init.SyncJumpWidth = CAN_SJW_1TQ;
-  hcan1.Init.TimeSeg1 = CAN_BS1_6TQ;
-  hcan1.Init.TimeSeg2 = CAN_BS2_1TQ;
+  hcan1.Init.TimeSeg1 = CAN_BS1_2TQ;
+  hcan1.Init.TimeSeg2 = CAN_BS2_2TQ;
   hcan1.Init.TimeTriggeredMode = DISABLE;
   hcan1.Init.AutoBusOff = DISABLE;
   hcan1.Init.AutoWakeUp = DISABLE;
@@ -403,6 +464,52 @@ static void MX_I2C1_Init(void)
   /* USER CODE BEGIN I2C1_Init 2 */
 
   /* USER CODE END I2C1_Init 2 */
+
+}
+
+/**
+  * @brief I2C3 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_I2C3_Init(void)
+{
+
+  /* USER CODE BEGIN I2C3_Init 0 */
+
+  /* USER CODE END I2C3_Init 0 */
+
+  /* USER CODE BEGIN I2C3_Init 1 */
+
+  /* USER CODE END I2C3_Init 1 */
+  hi2c3.Instance = I2C3;
+  hi2c3.Init.Timing = 0x00000000;
+  hi2c3.Init.OwnAddress1 = 0;
+  hi2c3.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+  hi2c3.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+  hi2c3.Init.OwnAddress2 = 0;
+  hi2c3.Init.OwnAddress2Masks = I2C_OA2_NOMASK;
+  hi2c3.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+  hi2c3.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+  if (HAL_I2C_Init(&hi2c3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /** Configure Analogue filter
+  */
+  if (HAL_I2CEx_ConfigAnalogFilter(&hi2c3, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /** Configure Digital filter
+  */
+  if (HAL_I2CEx_ConfigDigitalFilter(&hi2c3, 0) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN I2C3_Init 2 */
+
+  /* USER CODE END I2C3_Init 2 */
 
 }
 
@@ -631,86 +738,86 @@ static void MX_GPIO_Init(void)
 /* USER CODE END Header_StartDefaultTask */
 void StartDefaultTask(void *argument)
 {
-
   /* USER CODE BEGIN 5 */
 
 	  char msg[50];
-	  /*
-	  uint8_t read[2]={0};
-	  uint16_t readtest;
-	  float readfloat=0.0;
-	  uint8_t TH = 0x00;
-	  uint8_t TV = 0x01;
-	  uint8_t TC = 0x02;
-	  uint8_t tempReg[] = {TH,TV,TC};
-
-	  uint8_t data[1]={TH};
-	  uint8_t MSB = 0;
-	  uint8_t LSB = 0;
-	  HAL_StatusTypeDef status;
-	  */
-	  uint8_t MSB = 0;
-	  uint8_t LSB = 0;
+	  uint8_t canPacketMSB[8];
+	  uint8_t canPacketLSB[16]={1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
 
 	  for(;;){
-		    osDelay(100);
-
 		    for(int i=0; i<12; i++){
 		        _channel_readings[i]=0;
 		    }
 
-
+		    //AS7341 initialize
 		    begin(&hi2c1);
 
-		    uint8_t regtest[]={AS7341_ENABLE,0x01}; //PON to 1
-		    uint8_t regRead[1]={0};
 			//configure integration time
 		    setATIME(&hi2c1,100);
-		    //sprintf(msg, "getATIME = %d\r\n", getATIME(&hi2c1));
-		    //HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
-
 		    setASTEP(&hi2c1,0xE7);
-		    //sprintf(msg, "getASTEP = %d\r\n", getASTEP(&hi2c1));
-		    //HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
-
 		    setGain(&hi2c1,AS7341_GAIN_256X);
-		    //sprintf(msg, "getGain = %d\r\n", getGain(&hi2c1));
-		    //HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
 
 		    readAllChannels(&hi2c1,_channel_readings);
 
-			//swap MSB and LSB
-			uint16_t buff = 0;
-			for(int i=0; i<12; i++){
-				  buff = ((_channel_readings[i] & 0x00FF) << 8) | (_channel_readings[i]>>8);
-				  _channel_readings[i] = buff;
+		    //get all channel
+		    int a = 0;
+		    for(int i=0; i<8; i++){
+		    	if(i%2==0){
+		    		canPacketMSB[i]=getChannel(a)>>8;
+		    	}
+		    	else{
+		    		canPacketMSB[i]=getChannel(a)&0x00FF;
+		    		a++;
+		    	}
+		    }
 
-			}
-
-
-
-		    uint16_t read[12];
-		    //uint16_t read16bits=0;
-		    //uint16_t a = readAllChannels(&hi2c1,read16bits);
-
-
-		    read[0] = getChannel(AS7341_CHANNEL_415nm_F1);
-		    read[1] = getChannel(AS7341_CHANNEL_445nm_F2);
-		    read[2] = getChannel(AS7341_CHANNEL_480nm_F3);
-		    read[3] = getChannel(AS7341_CHANNEL_515nm_F4);
-		    read[4] = getChannel(AS7341_CHANNEL_555nm_F5);
-		    read[5] = getChannel(AS7341_CHANNEL_590nm_F6);
-		    read[6] = getChannel(AS7341_CHANNEL_630nm_F7);
-		    read[7] = getChannel(AS7341_CHANNEL_680nm_F8);
-		    read[8] = getChannel(8);
-		    read[9] = getChannel(9);
-		    read[10] = getChannel(10);
-		    read[11] = getChannel(11);
+/*
 		    for(int i=0; i<12; i++){
-		    	if(i!=4|i!=5)
-		    	sprintf(msg, "getChannel %d = %d\r\n",i+1,  read[i]);
+			    sprintf(msg, "getChannel %d = %x\r\n",i+1,  getChannel(i));
+			    HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
+		    }
+
+
+		    sprintf(msg, "getThermocoupleTemp = %d\r\n",getThermocoupleTemp(&hi2c1,1));
+		    HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
+*/
+		    //HAL_StatusTypeDef status = HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_OVERRUN);
+		    //uint8_t messages = HAL_CAN_GetRxFifoFillLevel(&hcan1, CAN_RX_FIFO0);
+/*
+		    if(HAL_CAN_AddTxMessage(&hcan1,&TxHeader,canPacketMSB,&TxMailbox)!= HAL_OK){
+		    	sprintf(msg,"HAL NOK\r\n");
 		    	HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
 		    }
+		    */
+		    canPacketStruct b;
+		    b.ID=5;
+
+		    HAL_CAN_AddTxMessage(&hcan1,&TxHeader,canPacketLSB,&TxMailbox);
+		    while(HAL_CAN_IsTxMessagePending(&hcan1,TxMailbox)!=0);
+		    TxData[0]+=1;
+
+/*
+
+		    uint16_t sharedvar=16;
+		    uint16_t sharedchannel=0xFFFF;
+		    uint16_t shareddelay = 5;
+
+		  	 uint8_t I2C_address = 0x80;
+		  	 pca9685_init(&hi2c1, I2C_address);
+
+		  		 for(int i=0; i<4096/sharedvar; i++){
+		  			pca9685_mult_pwm(&hi2c1, I2C_address, sharedchannel, 0, 4095-(sharedvar*i));
+		  			//pca9685_pwm(&hi2c1, I2C_address, 15, 0, 4095-(sharedvar*i));
+		  			osDelay(shareddelay);
+		  		 }
+
+		  	 	 for(int i=0; i<4096/sharedvar; i++){
+		  	 		pca9685_mult_pwm(&hi2c1, I2C_address, sharedchannel, 0, (sharedvar*i));
+		  	 		//pca9685_pwm(&hi2c1, I2C_address, 15 ,0, 4095-(sharedvar*i));
+		  	 		osDelay(shareddelay);
+		  	 	 }
+		  	 	 */
+
 
 	  }
 
@@ -804,23 +911,46 @@ void StartReadLightTask(void *argument)
 {
   /* USER CODE BEGIN StartReadLightTask */
   char msg[50];
+  uint16_t sharedvar=32;
+  uint16_t sharedchannel=0xFFFF;
+  uint16_t shareddelay = 20;
   /* Infinite loop */
 
-  for(;;)
-  {
-    osDelay(10);
-    /*
-    uint16_t read[8];
-    uint16_t read16bits=0;
-    uint16_t a = readAllChannels(&hi2c1,read16bits);
+/*
+	 uint8_t I2C_address = 0x80;
 
-    __disable_irq();
-    //read[0] = getChannel(AS7341_CHANNEL_415nm_F1);
-    sprintf(msg, "getChannel = %d\r\n", a);
-    HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
-    __enable_irq();
-    */
-  }
+	 _disabel_irq();
+	 pca9685_init(&hi2c1, I2C_address);
+	 _enable_irq();
+	 */
+	 //turn off all LED
+	 //all_led_off(&hi2c1, I2C_address);
+
+	 //uint16_t channel = 0b1001001110010101;
+	 //uint16_t channel = sharedchannel;
+  	  uint8_t I2C_address = 0x80;
+  	  pca9685_init(&hi2c3, I2C_address);
+  	  uint32_t tickTab[3];
+	 for(;;)
+	 {
+		 //osDelay(shareddelay);
+
+		 for(int i=0; i<4096/sharedvar; i++){
+			pca9685_mult_pwm(&hi2c3, 0x80, sharedchannel, 0, 4095-(sharedvar*i));
+			//pca9685_pwm(&hi2c1, I2C_address, 15, 0, 4095-(sharedvar*i));
+			osDelay(shareddelay);
+
+		 }
+
+
+	 	 for(int i=0; i<4096/sharedvar; i++){
+	 		pca9685_mult_pwm(&hi2c3, 0x80, sharedchannel, 0, (sharedvar*i));
+	 		//pca9685_pwm(&hi2c1, I2C_address, 15 ,0, 4095-(sharedvar*i));
+	 		osDelay(shareddelay);
+	 	 }
+
+	 }
+
   /* USER CODE END StartReadLightTask */
 }
 

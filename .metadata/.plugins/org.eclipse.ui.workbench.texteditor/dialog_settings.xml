@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item key="selection" value="enableSMUX"/>
+		<item key="selection" value="CAN_remote_transmission_request"/>
 		<item key="wrap" value="false"/>
 		<item key="casesensitive" value="false"/>
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
+			<item value="CAN_remote_transmission_request"/>
+			<item value="HAL_CAN_ConfigFilter"/>
+			<item value="start"/>
+			<item value="HAL_CAN_ENABLE_IT"/>
+			<item value="__HAL_CAN_ENABLE_IT"/>
+			<item value="hcan1"/>
+			<item value="hi2c3"/>
+			<item value="delay"/>
+			<item value="osDelay"/>
+			<item value="AS7341_ENABLE"/>
+			<item value="AS7341_LED"/>
 			<item value="enableSMUX"/>
 			<item value="as7341_gain_t"/>
 			<item value="getChannel"/>
 			<item value="AS7341_CHANNEL_415nm_F1"/>
-			<item value="void Ad{"/>
-			<item value="_ENABLE"/>
-			<item value="ENABLE"/>
-			<item value="AS7341_CFG6"/>
-			<item value="AS7341_ENABLE"/>
-			<item value="CFG0"/>
-			<item value="LSBFIRST"/>
-			<item value="readChannel"/>
-			<item value="channel_data_reg"/>
-			<item value="AS7341_CH0_DATA_L"/>
-			<item value="as7341_adc_channel_t"/>
 		</list>
 		<list key="replacehistory">
 			<item value=" "/>
@@ -30,8 +30,8 @@
 		</list>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
-		<item key="DIALOG_X_ORIGIN" value="1473"/>
-		<item key="DIALOG_Y_ORIGIN" value="392"/>
+		<item key="DIALOG_X_ORIGIN" value="1535"/>
+		<item key="DIALOG_Y_ORIGIN" value="265"/>
 		<item key="DIALOG_WIDTH" value="284"/>
 		<item key="DIALOG_HEIGHT" value="391"/>
 		<item key="DIALOG_FONT_NAME" value="1|Segoe UI|9.0|0|WINDOWS|1|-12|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI"/>

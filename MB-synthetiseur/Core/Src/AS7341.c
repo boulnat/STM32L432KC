@@ -81,13 +81,13 @@ uint16_t readAllChannels(I2C_HandleTypeDef *hi2c1,uint16_t *readings_buffer) {
   while(HAL_I2C_Master_Receive(hi2c1, 0x72, (uint8_t *)&readings_buffer[6], 12, HAL_MAX_DELAY)!= HAL_OK);
 
 	//swap MSB and LSB
-  /*
+
 	for(int i=0; i<12; i++){
 		  buff = ((_channel_readings[i] & 0x00FF) << 8) | (_channel_readings[i]>>8);
 		  _channel_readings[i] = buff;
 
 	}
-*/
+
   return 1;
 }
 
