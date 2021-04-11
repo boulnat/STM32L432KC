@@ -1,0 +1,408 @@
+CANopen Object Dictionary Documenation for emotas_CANopen_Slave
+
+
+Index:       0x1000 - Device Type
+DataType:    UNSIGNED32
+ObjectCode:  Variable
+Description: This objects contains the CANopen device type of the device.
+  Sub:          0x0 - Device Type
+  DataType:     UNSIGNED32
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   0
+
+Index:       0x1001 - Error Register
+DataType:    UNSIGNED8
+ObjectCode:  Variable
+Description: This object contains a register of 8 error information bits.
+  Sub:          0x0 - Error Register
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   4
+
+Index:       0x1005 - COB ID SYNC
+DataType:    UNSIGNED32
+ObjectCode:  Variable
+Description: This object shall indicate the configured COB-ID of the synchronization object (SYNC). Further, it defines whether the CANopen device generates the SYNC.
+  Sub:          0x0 - COB ID SYNC
+  DataType:     UNSIGNED32
+  DefaultValue: 0x00000080
+  AccessType:   rw
+  PDOMapping:   0
+
+Index:       0x1014 - COB ID EMCY
+DataType:    UNSIGNED32
+ObjectCode:  Variable
+Description: This object shall indicate the configured COB-ID for the EMCY write service.
+
+  Sub:          0x0 - COB ID EMCY
+  DataType:     UNSIGNED32
+  DefaultValue: $NODEID+0x80
+  AccessType:   rw
+  PDOMapping:   0
+
+Index:       0x1016 - Consumer Heartbeat Time
+DataType:    UNSIGNED32
+ObjectCode:  Array
+  Sub:          0x0 - Highest sub-index supported
+  DataType:     UNSIGNED8
+  DefaultValue: 3
+  AccessType:   const
+  PDOMapping:   0
+  Sub:          0x1 - Consumer Heartbeat Time 1
+  DataType:     UNSIGNED32
+  DefaultValue: 0x10000
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x2 - Consumer Heartbeat Time 2
+  DataType:     UNSIGNED32
+  DefaultValue: 0x20000
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x3 - Consumer Heartbeat Time 3
+  DataType:     UNSIGNED32
+  DefaultValue: 0x30000
+  AccessType:   rw
+  PDOMapping:   0
+
+Index:       0x1017 - Producer Heartbeat Time
+DataType:    UNSIGNED16
+ObjectCode:  Variable
+Description: The producer heartbeat time shall indicate the configured cycle time of the heartbeat produced by the device.
+
+The value shall be given in multiples of 1 ms. The value 0 shall disable the producer heartbeat.
+
+  Sub:          0x0 - Producer Heartbeat Time
+  DataType:     UNSIGNED16
+  DefaultValue: 1000
+  AccessType:   rw
+  PDOMapping:   0
+
+Index:       0x1018 - Identity Object
+DataType:    UNSIGNED8
+ObjectCode:  Record
+Description: This objects contains the identity information of the device.
+
+  Sub:          0x0 - Number of entries
+  DataType:     UNSIGNED8
+  DefaultValue: 4
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x1 - Vendor Id
+  DataType:     UNSIGNED32
+  DefaultValue: 0x319
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x2 - Product Code
+  DataType:     UNSIGNED32
+  DefaultValue: 0x0815
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x3 - Revision number
+  DataType:     UNSIGNED32
+  DefaultValue: 0x00010001
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x4 - Serial number
+  DataType:     UNSIGNED32
+  DefaultValue: 1
+  AccessType:   ro
+  PDOMapping:   0
+
+Index:       0x1200 - SDO server parameter
+DataType:    UNSIGNED8
+ObjectCode:  Record
+  Sub:          0x0 - Highest sub-index supported
+  DataType:     UNSIGNED8
+  DefaultValue: 2
+  AccessType:   const
+  PDOMapping:   0
+  Sub:          0x1 - COB-ID client to server
+  DataType:     UNSIGNED32
+  DefaultValue: $NODEID+0x600
+  AccessType:   const
+  PDOMapping:   0
+  Sub:          0x2 - COB-ID server to client
+  DataType:     UNSIGNED32
+  DefaultValue: $NODEID+0x580
+  AccessType:   ro
+  PDOMapping:   0
+
+Index:       0x1400 - Receive PDO Communication Parameter
+DataType:    UNSIGNED8
+ObjectCode:  Record
+Description: This object contains the communication parameters for the PDO the CANopen device is able to receive.
+
+  Sub:          0x0 - Highest sub-index supported
+  DataType:     UNSIGNED8
+  DefaultValue: 5
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x1 - COB ID
+  DataType:     UNSIGNED32
+  DefaultValue: $NODEID+0x200
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x2 - Transmission Type
+  DataType:     UNSIGNED8
+  DefaultValue: 254
+  AccessType:   rw
+  PDOMapping:   0
+  Description: Sub-index 0x2 defines the reception character of the RPDO. 
+  Sub:          0x3 - Inhibit Time
+  DataType:     UNSIGNED16
+  DefaultValue: 0
+  AccessType:   rw
+  PDOMapping:   0
+  Description: Sub-index 0x03 contains the inhibit time. The value is defined as multiple of 100 µs. The value of 0 shall disable the inhibit time. It is not allowed to change the value while the PDO exists (bit 31 of sub-index 01h is set to 0 b). 
+The RPDO may use the time implementation specific.
+
+  Sub:          0x5 - Event Timer
+  DataType:     UNSIGNED16
+  AccessType:   rw
+  PDOMapping:   0
+  Description: Sub-index 0x05 contains the event-timer. The value is defined as multiple of 1 ms. The value of 0 shall disable the event-timer. The RPDO may use the time for deadline monitoring. The deadline monitoring is activated within the next reception of an RPDO after configuring the event-timer. A timeout results in an indication to the local application.
+
+
+Index:       0x1600 - Receive PDO Mapping Parameter
+DataType:    UNSIGNED8
+ObjectCode:  Record
+Description: This object contains the mapping parameters for the PDO the CANopen device is able to receive.
+
+  Sub:          0x0 - Highest sub-index supported
+  DataType:     UNSIGNED8
+  DefaultValue: 2
+  AccessType:   const
+  PDOMapping:   0
+  Sub:          0x1 - Mapping Entry 1
+  DataType:     UNSIGNED32
+  DefaultValue: 0x20020110
+  AccessType:   const
+  PDOMapping:   0
+  Sub:          0x2 - Mapping Entry 2
+  DataType:     UNSIGNED32
+  DefaultValue: 0x20020210
+  AccessType:   const
+  PDOMapping:   0
+
+Index:       0x1800 - Transmit PDO Communication Parameter
+DataType:    UNSIGNED8
+ObjectCode:  Record
+Description: This object contains the communication parameters for the PDO the CANopen device is able to transmit.
+
+  Sub:          0x0 - Highest sub-index supported
+  DataType:     UNSIGNED8
+  DefaultValue: 6
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x1 - COB ID
+  DataType:     UNSIGNED32
+  DefaultValue: $NODEID+0x180
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x2 - Transmission Type
+  DataType:     UNSIGNED8
+  DefaultValue: 254
+  AccessType:   rw
+  PDOMapping:   0
+  Description: Sub-index 0x2 defines the transmission type  of the TPDO. 
+0 .. synchronous (acyclic)
+1 .. synchronous (every SYNC)
+2 .. synchronous (every 2nd SYNC)
+240 .. synchronous (every 240th SYNC)
+
+254 .. event-driven (manufacturer-specific)
+255 .. event-driven (profile-specific)
+  Sub:          0x3 - Inhibit Time
+  DataType:     UNSIGNED16
+  DefaultValue: 0
+  AccessType:   rw
+  PDOMapping:   0
+  Description: Sub-index 0x03 contains the inhibit time. The time is the minimum interval for PDO
+transmission if the transmission type is set to FEh and FF h . The value is defined as multiple of 100 µs. The value of 0 shall disable the inhibit time. The value shall not be changed while the PDO exists (bit 31 of sub-index 01h is set to 0 b ).
+
+  Sub:          0x5 - Event Timer
+  DataType:     UNSIGNED16
+  DefaultValue: 2500
+  AccessType:   rw
+  PDOMapping:   0
+  Description:  Sub-index 0x05 contains the event-timer. The time is the maximum interval for PDO
+transmission if the transmission type is set to 254 and 255 . The value is defined as multiple of 1 ms. The value of 0 shall disable the event-timer.
+
+  Sub:          0x6 - SYNC start value
+  DataType:     UNSIGNED8
+  AccessType:   rw
+  PDOMapping:   0
+  Description:  Sub-index 0x06 contains the SYNC start value. The SYNC start value of 0 shall indicate that  the counter of the SYNC message shall not be processed for this PDO. The SYNC start value 1 to 240 shall indicate that the counter of the SYNC message shall be processed for this PDO. In case the counter of the SYNC message is not enableds ub-index 0x06 shall be ignored.
+
+ The SYNC message of which the counter value equals the SYNC start value
+shall be regarded as the first received SYNC message. The value shall not be changed while the PDO exists (bit 31 of sub-index 01 h is set to 0 b ).
+
+
+Index:       0x1a00 - Transmit PDO Mapping Parameter
+DataType:    UNSIGNED8
+ObjectCode:  Record
+Description: This object contains the mapping for the PDO the device is able to transmit.
+
+  Sub:          0x0 - Highest sub-index supported
+  DataType:     UNSIGNED8
+  DefaultValue: 4
+  AccessType:   const
+  PDOMapping:   0
+  Sub:          0x1 - Mapping Entry 1
+  DataType:     UNSIGNED32
+  DefaultValue: 0x20000108
+  AccessType:   const
+  PDOMapping:   0
+  Sub:          0x2 - Mapping Entry 2
+  DataType:     UNSIGNED32
+  DefaultValue: 0x20000208
+  AccessType:   const
+  PDOMapping:   0
+  Sub:          0x3 - Mapping Entry 3
+  DataType:     UNSIGNED32
+  DefaultValue: 0x20000308
+  AccessType:   const
+  PDOMapping:   0
+  Sub:          0x4 - Mapping Entry 4
+  DataType:     UNSIGNED32
+  DefaultValue: 0x20000408
+  AccessType:   const
+  PDOMapping:   0
+
+Index:       0x2000 - UNSIGNED8 Array
+DataType:    UNSIGNED8
+ObjectCode:  Array
+  Sub:          0x0 - Highest sub-index supported
+  DataType:     UNSIGNED8
+  DefaultValue: 4
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x1 - Subindex 1
+  DataType:     UNSIGNED8
+  DefaultValue: 1
+  AccessType:   rw
+  PDOMapping:   1
+  Sub:          0x2 - Subindex 2
+  DataType:     UNSIGNED8
+  DefaultValue: 2
+  AccessType:   rw
+  PDOMapping:   1
+  Sub:          0x3 - Subindex 3
+  DataType:     UNSIGNED8
+  DefaultValue: 3
+  AccessType:   rw
+  PDOMapping:   1
+  Sub:          0x4 - Subindex 4
+  DataType:     UNSIGNED8
+  DefaultValue: 4
+  AccessType:   rw
+  PDOMapping:   1
+
+Index:       0x2001 - UNSIGNED16 Array
+DataType:    UNSIGNED16
+ObjectCode:  Array
+  Sub:          0x0 - Highest sub-index supported
+  DataType:     UNSIGNED8
+  DefaultValue: 4
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x1 - Subindex 1
+  DataType:     UNSIGNED16
+  DefaultValue: 0x101
+  AccessType:   rw
+  PDOMapping:   1
+  Sub:          0x2 - Subindex 2
+  DataType:     UNSIGNED16
+  DefaultValue: 0x202
+  AccessType:   rw
+  PDOMapping:   1
+  Sub:          0x3 - Subindex 3
+  DataType:     UNSIGNED16
+  DefaultValue: 0x303
+  AccessType:   rw
+  PDOMapping:   1
+  Sub:          0x4 - Subindex 4
+  DataType:     UNSIGNED16
+  DefaultValue: 0x404
+  AccessType:   rw
+  PDOMapping:   1
+
+Index:       0x2002 - INTEGER16 Array
+DataType:    INTEGER16
+ObjectCode:  Array
+  Sub:          0x0 - Highest sub-index supported
+  DataType:     UNSIGNED8
+  DefaultValue: 4
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x1 - Subindex 1
+  DataType:     INTEGER16
+  DefaultValue: -101
+  AccessType:   rw
+  PDOMapping:   3
+  Sub:          0x2 - Subindex 2
+  DataType:     INTEGER16
+  DefaultValue: -202
+  AccessType:   rw
+  PDOMapping:   3
+  Sub:          0x3 - Subindex 3
+  DataType:     INTEGER16
+  DefaultValue: -303
+  AccessType:   rw
+  PDOMapping:   3
+  Sub:          0x4 - Subindex 4 (write only)
+  DataType:     INTEGER16
+  DefaultValue: -404
+  AccessType:   wo
+  PDOMapping:   3
+
+Index:       0x2003 - Manufacturer Record
+DataType:    UNSIGNED8
+ObjectCode:  Record
+  Sub:          0x0 - Highest sub-index supported
+  DataType:     UNSIGNED8
+  DefaultValue: 8
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x1 - U8
+  DataType:     UNSIGNED8
+  DefaultValue: 1
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x2 - U16
+  DataType:     UNSIGNED16
+  DefaultValue: 2
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x3 - U32
+  DataType:     UNSIGNED32
+  DefaultValue: 3
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x4 - I8
+  DataType:     INTEGER8
+  DefaultValue: -1
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x5 - I16
+  DataType:     INTEGER16
+  DefaultValue: -2
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x6 - I32
+  DataType:     INTEGER32
+  DefaultValue: -3
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x7 - R32
+  DataType:     REAL32
+  DefaultValue: 42.0
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x8 - VS
+  DataType:     VISIBLE_STRING
+  DefaultValue: emotas evaluation example
+  AccessType:   const
+  PDOMapping:   0

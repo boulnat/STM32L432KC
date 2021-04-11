@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;MB-synthetiseur/Middlewares/CANOpen/lib/canopen.a&apos; to &apos;libcanopen.a&apos;" description="Rename resource &apos;canopen.a&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="Middlewares/CANOpen/lib/canopen.a" name="libcanopen.a" stamp="1618149928519" updateReferences="true"/>
+</session>
