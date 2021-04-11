@@ -19,6 +19,7 @@
 		<item key="SmartImportRootWizardPage.STORE_NESTED_PROJECTS" value="true"/>
 		<item key="SmartImportRootWizardPage.STORE_CONFIGURE_NATURES" value="true"/>
 		<list key="org.eclipse.ui.internal.wizards.datatransfer.SmartImportRootWizardPage.knownSources">
+			<item value="C:\Users\boulnat\Downloads\eval_slave_stm32l4_cubeIDE\appl_slave_stm32l4_cubeIDE"/>
 			<item value="D:\Documents\GitHub\STM32L432KC\ILD6150-PCA9685"/>
 			<item value="D:\Documents\GitHub\STM32L432KC\ILD6150-PCA9685\ILD6150-PCA9685"/>
 			<item value="D:\Documents\GitHub\Modbus-STM32-HAL-FreeRTOS\ModbusF103"/>

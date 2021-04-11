@@ -11,6 +11,7 @@
 #ifndef INC_PCA9685_H_
 #define INC_PCA9685_H_
 // REGISTER ADDRESSES
+#define PCA9685_ADR	  0x80
 #define PCA9685_MODE1 0x00      /**< Mode Register 1 */
 #define PCA9685_MODE2 0x01      /**< Mode Register 2 */
 #define PCA9685_SUBADR1 0x02    /**< I2C-bus subaddress 1 */
@@ -52,12 +53,29 @@
 #define PCA9685_PRESCALE_MIN 3   /**< minimum prescale value */
 #define PCA9685_PRESCALE_MAX 255 /**< maximum prescale value */
 
-uint8_t PCA9685_read(I2C_HandleTypeDef *hi2c, uint8_t address, unsigned char reg);
-void pca9685_init(I2C_HandleTypeDef *hi2c, uint8_t address);
-void pca9685_pwm(I2C_HandleTypeDef *hi2c, uint8_t address, uint8_t num, uint16_t on, uint16_t off);
-void pca9685_mult_pwm(I2C_HandleTypeDef *hi2c, uint8_t address, uint16_t num, uint16_t on, uint16_t off);
-HAL_StatusTypeDef pca9685_all_pwm(I2C_HandleTypeDef *hi2c, uint8_t address, uint16_t on, uint16_t off);
-void all_led_off(I2C_HandleTypeDef *hi2c, uint8_t address);
+I2C_HandleTypeDef hi2c3;
+
+bool PCA9685begin(I2C_HandleTypeDef hi2c1, uint8_t prescale);
+uint8_t PCA9685_read(uint8_t address, unsigned char reg);
+void pca9685_init(uint8_t address);
+void pca9685_pwm(uint8_t address, uint8_t num, uint16_t on, uint16_t off);
+void pca9685_mult_pwm(uint8_t address, uint16_t num, uint16_t on, uint16_t off);
+HAL_StatusTypeDef pca9685_all_pwm(uint8_t address, uint16_t on, uint16_t off);
+void all_led_off(uint8_t address);
+
+void reset();
+void sleep();
+void wakeup();
+void setExtClk(uint8_t prescale);
+void setPWMFreq(float freq);
+void setOutputMode(bool totempole);
+uint8_t getPWM(uint8_t num);
+void setPWM(uint8_t num, uint16_t on, uint16_t off);
+uint8_t readPrescale(void);
+void writeMicroseconds(uint8_t num, uint16_t Microseconds);
+
+void setOscillatorFrequency(uint32_t freq);
+uint32_t getOscillatorFrequency(void);
 
 
 #endif /* INC_PCA9685_H_ */

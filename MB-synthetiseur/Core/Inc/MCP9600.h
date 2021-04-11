@@ -83,30 +83,30 @@ typedef enum  {
 
   //Device status
   I2C_HandleTypeDef hi2c;
-
-  bool available(I2C_HandleTypeDef *hi2c1);                                                 //Returns true if the thermocouple (hot) junction temperature has been updated since we last checked. Also referred to as the data ready bit.
-  bool isConnected(I2C_HandleTypeDef *hi2c1);                                               //Returns true if the thermocouple will acknowledge over I2C, and false otherwise
-  uint16_t deviceID(I2C_HandleTypeDef *hi2c1);                                              //Returns the contents of the device ID register. The upper 8 bits are constant, but the lower contain revision data.
-  bool checkDeviceID(I2C_HandleTypeDef *hi2c1);                                             //Returns true if the constant upper 8 bits in the device ID register are what they should be according to the datasheet.
-  bool resetToDefaults(I2C_HandleTypeDef *hi2c1);                                           //Resets all device parameters to their default values. Returns 1 if there was an error, zero otherwise.
+  bool PCM9600begin(I2C_HandleTypeDef hi2c1);
+  bool available();                                                 //Returns true if the thermocouple (hot) junction temperature has been updated since we last checked. Also referred to as the data ready bit.
+  bool isConnected();                                               //Returns true if the thermocouple will acknowledge over I2C, and false otherwise
+  uint16_t deviceID();                                              //Returns the contents of the device ID register. The upper 8 bits are constant, but the lower contain revision data.
+  bool checkDeviceID();                                             //Returns true if the constant upper 8 bits in the device ID register are what they should be according to the datasheet.
+  bool resetToDefaults();                                           //Resets all device parameters to their default values. Returns 1 if there was an error, zero otherwise.
 
   //Sensor measurements
-  uint8_t getThermocoupleTemp(I2C_HandleTypeDef *hi2c1, bool units);                     //Returns the thermocouple temperature, and clears the data ready bit. Set units to true for Celcius, or false for freedom units (Fahrenheit)
-  uint8_t getAmbientTemp(I2C_HandleTypeDef *hi2c1, bool units);                          //Returns the ambient (IC die) temperature. Set units to true for Celcius, or false for freedom units (Fahrenheit)
-  uint8_t getTempDelta(I2C_HandleTypeDef *hi2c1, bool units);                            //Returns the difference in temperature between the thermocouple and ambient junctions. Set units to true for Celcius, or false for freedom units (Fahrenheit)
-  signed long getRawADC(I2C_HandleTypeDef *hi2c1);                                          //Returns the raw contents of the raw ADC register
-  bool isInputRangeExceeded(I2C_HandleTypeDef *hi2c1);                                      //Returns true if the MCP9600's EMF range has been exceeded, and false otherwise.
+  uint8_t getThermocoupleTemp(bool units);                     //Returns the thermocouple temperature, and clears the data ready bit. Set units to true for Celcius, or false for freedom units (Fahrenheit)
+  uint8_t getAmbientTemp( bool units);                          //Returns the ambient (IC die) temperature. Set units to true for Celcius, or false for freedom units (Fahrenheit)
+  uint8_t getTempDelta(bool units);                            //Returns the difference in temperature between the thermocouple and ambient junctions. Set units to true for Celcius, or false for freedom units (Fahrenheit)
+  signed long getRawADC();                                          //Returns the raw contents of the raw ADC register
+  bool isInputRangeExceeded();                                      //Returns true if the MCP9600's EMF range has been exceeded, and false otherwise.
 
   //Measurement configuration
-  bool setAmbientResolution(I2C_HandleTypeDef *hi2c1, Ambient_Resolution res);                //Changes the resolution on the cold (ambient) junction, for either 0.0625 or 0.25 degree C resolution. Lower resolution reduces conversion time.
-  Ambient_Resolution getAmbientResolution(I2C_HandleTypeDef *hi2c1);                        //Returns the resolution on the cold (ambient) junction, for either 0.0625 or 0.25 degree C resolution. Lower resolution reduces conversion time.
-  bool setThermocoupleResolution(I2C_HandleTypeDef *hi2c1, Thermocouple_Resolution res);      //Changes the resolution on the hot (thermocouple) junction, for either 18, 16, 14, or 12-bit resolution. Lower resolution reduces conversion time.
-  Thermocouple_Resolution getThermocoupleResolution(I2C_HandleTypeDef *hi2c1);              //Returns the resolution on the hot (thermocouple) junction, for either 18, 16, 14, or 12-bit resolution. Lower resolution reduces conversion time.
+  bool setAmbientResolution(Ambient_Resolution res);                //Changes the resolution on the cold (ambient) junction, for either 0.0625 or 0.25 degree C resolution. Lower resolution reduces conversion time.
+  Ambient_Resolution getAmbientResolution();                        //Returns the resolution on the cold (ambient) junction, for either 0.0625 or 0.25 degree C resolution. Lower resolution reduces conversion time.
+  bool setThermocoupleResolution(Thermocouple_Resolution res);      //Changes the resolution on the hot (thermocouple) junction, for either 18, 16, 14, or 12-bit resolution. Lower resolution reduces conversion time.
+  Thermocouple_Resolution getThermocoupleResolution();              //Returns the resolution on the hot (thermocouple) junction, for either 18, 16, 14, or 12-bit resolution. Lower resolution reduces conversion time.
 
-  uint8_t setThermocoupleType(I2C_HandleTypeDef *hi2c1, Thermocouple_Type type);              //Changes the type of thermocouple connected to the MCP9600. Supported types are KJTNSEBR.
-  Thermocouple_Type getThermocoupleType(I2C_HandleTypeDef *hi2c1);                          //Returns the type of thermocouple connected to the MCP9600 as found in its configuration register. Supported types are KJTNSEBR.
-  uint8_t setFilterCoefficient(I2C_HandleTypeDef *hi2c1, uint8_t coefficient);               //Changes the weight of the on-chip exponential moving average filter. Set this to 0 for no filter, 1 for minimum filter, and 7 for maximum filter.
-  uint8_t getFilterCoefficient(I2C_HandleTypeDef *hi2c1);                                  //Returns the weight of the on-chip exponential moving average filter.
+  uint8_t setThermocoupleType(Thermocouple_Type type);              //Changes the type of thermocouple connected to the MCP9600. Supported types are KJTNSEBR.
+  Thermocouple_Type getThermocoupleType();                          //Returns the type of thermocouple connected to the MCP9600 as found in its configuration register. Supported types are KJTNSEBR.
+  uint8_t setFilterCoefficient(uint8_t coefficient);               //Changes the weight of the on-chip exponential moving average filter. Set this to 0 for no filter, 1 for minimum filter, and 7 for maximum filter.
+  uint8_t getFilterCoefficient();                                  //Returns the weight of the on-chip exponential moving average filter.
 
   bool setBurstSamples(Burst_Sample samples);                       //Changes the amount of samples to take in burst mode. Returns 0 if set sucessfully, 1 otherwise.
   Burst_Sample getBurstSamples();                                   //Returns the amount of samples to take in burst mode, according to the device's configuration register.
@@ -129,10 +129,10 @@ typedef enum  {
 
 
   //debug
-  uint8_t readSingleRegister(I2C_HandleTypeDef *hi2c1, MCP9600_Register reg);                 //Attempts to read a single register, will keep trying for retryAttempts amount of times
-  uint16_t readDoubleRegister(I2C_HandleTypeDef *hi2c1, MCP9600_Register reg);                //Attempts to read two registers, will keep trying for retryAttempts amount of times
-  bool writeSingleRegister(I2C_HandleTypeDef *hi2c1, MCP9600_Register reg, uint8_t data);     //Attempts to write data into a single 8-bit register. Does not check to make sure it was written successfully. Returns 0 if there wasn't an error on I2C transmission, and 1 otherwise.
-  bool writeDoubleRegister(I2C_HandleTypeDef *hi2c1, MCP9600_Register reg, uint16_t data);    //Attempts to write data into a double (two 8-bit) registers. Does not check to make sure it was written successfully. Returns 0 if there wasn't an error on I2C transmission, and 1 otherwise.
+  uint8_t readSingleRegister(MCP9600_Register reg);                 //Attempts to read a single register, will keep trying for retryAttempts amount of times
+  uint16_t readDoubleRegister(MCP9600_Register reg);                //Attempts to read two registers, will keep trying for retryAttempts amount of times
+  bool writeSingleRegister(MCP9600_Register reg, uint8_t data);     //Attempts to write data into a single 8-bit register. Does not check to make sure it was written successfully. Returns 0 if there wasn't an error on I2C transmission, and 1 otherwise.
+  bool writeDoubleRegister(MCP9600_Register reg, uint16_t data);    //Attempts to write data into a double (two 8-bit) registers. Does not check to make sure it was written successfully. Returns 0 if there wasn't an error on I2C transmission, and 1 otherwise.
 
   //Internal I2C Abstraction
   //private:

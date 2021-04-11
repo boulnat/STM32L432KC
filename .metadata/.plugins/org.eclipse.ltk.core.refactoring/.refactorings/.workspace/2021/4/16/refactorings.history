@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Delete resource &apos;appl_slave_stm32l4_cubeIDE&apos;" deleteContents="false" description="Delete resource &apos;appl_slave_stm32l4_cubeIDE&apos;" element1="/appl_slave_stm32l4_cubeIDE" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1618127355465"/>
+</session>

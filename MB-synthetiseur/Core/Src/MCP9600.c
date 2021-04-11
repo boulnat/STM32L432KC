@@ -10,50 +10,53 @@
 #include <main.h>
 #include <MCP9600.h>
 
+bool PCM9600begin(I2C_HandleTypeDef hi2c1){
+	hi2c = hi2c1;
+	return 1;
+}
 
-
-bool available(I2C_HandleTypeDef *hi2c1)
+bool available()
 {
-  uint8_t status = readSingleRegister(hi2c1, SENSOR_STATUS);
+  uint8_t status = readSingleRegister(SENSOR_STATUS);
   return status;
 }
 
-uint16_t deviceID(I2C_HandleTypeDef *hi2c1)
+uint16_t deviceID()
 {
-  return readDoubleRegister(hi2c1, DEVICE_ID);
+  return readDoubleRegister(DEVICE_ID);
 }
 
-bool checkDeviceID(I2C_HandleTypeDef *hi2c1)
+bool checkDeviceID()
 {
-  deviceID(hi2c1); //this is here because the first read doesn't seem to work, but the second does. No idea why :/
-  return ((deviceID(hi2c1))>>8 == DEV_ID_UPPER);
+  deviceID(); //this is here because the first read doesn't seem to work, but the second does. No idea why :/
+  return ((deviceID())>>8 == DEV_ID_UPPER);
 }
 
-bool resetToDefaults(I2C_HandleTypeDef *hi2c1)
+bool resetToDefaults()
 {
-  bool success = writeSingleRegister(hi2c1, SENSOR_STATUS, 0x00);
-  success |= writeSingleRegister(hi2c1, THERMO_SENSOR_CONFIG, 0x00);
-  success |= writeSingleRegister(hi2c1, DEVICE_CONFIG, 0x00);
-  success |= writeSingleRegister(hi2c1, ALERT1_CONFIG, 0x00);
-  success |= writeSingleRegister(hi2c1, ALERT2_CONFIG, 0x00);
-  success |= writeSingleRegister(hi2c1, ALERT3_CONFIG, 0x00);
-  success |= writeSingleRegister(hi2c1, ALERT4_CONFIG, 0x00);
-  success |= writeSingleRegister(hi2c1, ALERT1_HYSTERESIS, 0x00);
-  success |= writeSingleRegister(hi2c1, ALERT2_HYSTERESIS, 0x00);
-  success |= writeSingleRegister(hi2c1, ALERT3_HYSTERESIS, 0x00);
-  success |= writeSingleRegister(hi2c1, ALERT4_HYSTERESIS, 0x00);
-  success |= writeDoubleRegister(hi2c1, ALERT1_LIMIT, 0x0000);
-  success |= writeDoubleRegister(hi2c1, ALERT2_LIMIT, 0x0000);
-  success |= writeDoubleRegister(hi2c1, ALERT3_LIMIT, 0x0000);
-  success |= writeDoubleRegister(hi2c1, ALERT4_LIMIT, 0x0000);
+  bool success = writeSingleRegister(SENSOR_STATUS, 0x00);
+  success |= writeSingleRegister(THERMO_SENSOR_CONFIG, 0x00);
+  success |= writeSingleRegister(DEVICE_CONFIG, 0x00);
+  success |= writeSingleRegister(ALERT1_CONFIG, 0x00);
+  success |= writeSingleRegister(ALERT2_CONFIG, 0x00);
+  success |= writeSingleRegister(ALERT3_CONFIG, 0x00);
+  success |= writeSingleRegister(ALERT4_CONFIG, 0x00);
+  success |= writeSingleRegister(ALERT1_HYSTERESIS, 0x00);
+  success |= writeSingleRegister(ALERT2_HYSTERESIS, 0x00);
+  success |= writeSingleRegister(ALERT3_HYSTERESIS, 0x00);
+  success |= writeSingleRegister(ALERT4_HYSTERESIS, 0x00);
+  success |= writeDoubleRegister(ALERT1_LIMIT, 0x0000);
+  success |= writeDoubleRegister(ALERT2_LIMIT, 0x0000);
+  success |= writeDoubleRegister(ALERT3_LIMIT, 0x0000);
+  success |= writeDoubleRegister(ALERT4_LIMIT, 0x0000);
   return success;
 }
 
 /*----------------------------- Sensor Measurements ---------------------*/
 
-uint8_t getThermocoupleTemp(I2C_HandleTypeDef *hi2c1,bool units)
+uint8_t getThermocoupleTemp(bool units)
 {
-  int16_t raw = readDoubleRegister(hi2c1, HOT_JUNC_TEMP);
+  int16_t raw = readDoubleRegister(HOT_JUNC_TEMP);
   uint8_t LSB = raw & 0x00FF;
   uint8_t MSB = raw>>8;
 
@@ -65,9 +68,9 @@ uint8_t getThermocoupleTemp(I2C_HandleTypeDef *hi2c1,bool units)
   }
 }
 
-uint8_t getAmbientTemp(I2C_HandleTypeDef *hi2c1, bool units)
+uint8_t getAmbientTemp(bool units)
 {
-  int16_t raw = readDoubleRegister(hi2c1, COLD_JUNC_TEMP);
+  int16_t raw = readDoubleRegister(COLD_JUNC_TEMP);
   uint8_t LSB = raw & 0x00FF;
   uint8_t MSB = raw>>8;
 
@@ -79,9 +82,9 @@ uint8_t getAmbientTemp(I2C_HandleTypeDef *hi2c1, bool units)
   }
 }
 
-uint8_t getTempDelta(I2C_HandleTypeDef *hi2c1, bool units)
+uint8_t getTempDelta(bool units)
 {
-  int16_t raw = readDoubleRegister(hi2c1, DELTA_JUNC_TEMP);
+  int16_t raw = readDoubleRegister(DELTA_JUNC_TEMP);
   uint8_t LSB = raw & 0x00FF;
   uint8_t MSB = raw>>8;
 
@@ -93,13 +96,13 @@ uint8_t getTempDelta(I2C_HandleTypeDef *hi2c1, bool units)
   }
 }
 
-signed long getRawADC(I2C_HandleTypeDef *hi2c1)
+signed long getRawADC()
 {
 	uint8_t cmd = 0x03;
 	uint8_t read[3]= {0,0,0};
-	while(HAL_I2C_Master_Transmit(hi2c1, 0xCE, &cmd, 1, HAL_MAX_DELAY)!=HAL_OK);
-	while(HAL_I2C_IsDeviceReady(hi2c1,0xCE,10,200)!=HAL_OK);
-	while(HAL_I2C_Master_Receive(hi2c1,0xCF,read,sizeof(read),HAL_MAX_DELAY) == HAL_OK);
+	while(HAL_I2C_Master_Transmit(&hi2c, 0xCE, &cmd, 1, HAL_MAX_DELAY)!=HAL_OK);
+	while(HAL_I2C_IsDeviceReady(&hi2c,0xCE,10,200)!=HAL_OK);
+	while(HAL_I2C_Master_Receive(&hi2c,0xCF,read,sizeof(read),HAL_MAX_DELAY) == HAL_OK);
 
 	signed long data = read[2];
     data |= read[1];
@@ -109,46 +112,46 @@ signed long getRawADC(I2C_HandleTypeDef *hi2c1)
 
 }
 
-bool isInputRangeExceeded(I2C_HandleTypeDef *hi2c1)
+bool isInputRangeExceeded()
 {
-  uint8_t status = readSingleRegister(hi2c1, SENSOR_STATUS);
+  uint8_t status = readSingleRegister(SENSOR_STATUS);
   return 4 << status;
 }
 
 /*--------------------------- Measurement Configuration --------------- */
 
-bool setAmbientResolution(I2C_HandleTypeDef *hi2c1, Ambient_Resolution res)
+bool setAmbientResolution(Ambient_Resolution res)
 {
-  uint8_t config = readSingleRegister(hi2c1, DEVICE_CONFIG); //get current device configuration so we don't wipe everything else
+  uint8_t config = readSingleRegister(DEVICE_CONFIG); //get current device configuration so we don't wipe everything else
   config^=1<<7;                           //set the bit that controls the ambient (cold) junction resolution
 
-  bool failed = writeSingleRegister(hi2c1, DEVICE_CONFIG, config); //write new config register to MCP9600
-  failed |= (readSingleRegister(hi2c1, DEVICE_CONFIG) != config);  //double check that it was set properly
+  bool failed = writeSingleRegister(DEVICE_CONFIG, config); //write new config register to MCP9600
+  failed |= (readSingleRegister(DEVICE_CONFIG) != config);  //double check that it was set properly
   return failed;                                            //return 1 if the write failed or the register wasn't properly set, 0 otherwise
 }
 
-Ambient_Resolution getAmbientResolution(I2C_HandleTypeDef *hi2c1)
+Ambient_Resolution getAmbientResolution()
 {
-  uint8_t config = readSingleRegister(hi2c1, DEVICE_CONFIG);         //grab current device configuration
+  uint8_t config = readSingleRegister(DEVICE_CONFIG);         //grab current device configuration
   return (7<<config); //return 7th bit from config register
 }
 
-bool setThermocoupleResolution(I2C_HandleTypeDef *hi2c1, Thermocouple_Resolution res)
+bool setThermocoupleResolution(Thermocouple_Resolution res)
 {
-  uint8_t config = readSingleRegister(hi2c1, DEVICE_CONFIG); //grab current device configuration so we don't wipe everything else
+  uint8_t config = readSingleRegister(DEVICE_CONFIG); //grab current device configuration so we don't wipe everything else
   bool highResolutionBit = 1<<res;
   bool lowResolutionBit = 0<<res;
   config |= 1UL << 6;//set 6th bit of config register to 1st bit of the resolution
   config &=~(1UL << 5);//set 5th bit of config register to 0th bit of the resolution
 
-  bool failed = writeSingleRegister(hi2c1, DEVICE_CONFIG, config); //write new config register to MCP9600
-  failed |= (readSingleRegister(hi2c1, DEVICE_CONFIG) != config);  //double check that it was written properly
+  bool failed = writeSingleRegister(DEVICE_CONFIG, config); //write new config register to MCP9600
+  failed |= (readSingleRegister(DEVICE_CONFIG) != config);  //double check that it was written properly
   return failed;                                            //return 1 if the write failed or the register wasn't properly set, 0 otherwise
 }
 
-Thermocouple_Resolution getThermocoupleResolution(I2C_HandleTypeDef *hi2c1)
+Thermocouple_Resolution getThermocoupleResolution()
 {
-  uint8_t config = readSingleRegister(hi2c1, DEVICE_CONFIG); //grab current device configuration
+  uint8_t config = readSingleRegister(DEVICE_CONFIG); //grab current device configuration
   uint8_t res=0;                                        //define new thermocoupleResolution enum to return
   bool highResolutionBit = 6<<config;
   bool lowResolutionBit = 5<<config;
@@ -156,7 +159,7 @@ Thermocouple_Resolution getThermocoupleResolution(I2C_HandleTypeDef *hi2c1)
   config &=~(1UL << 5);  //set 0th bit of the enum to the 5th bit of the config register
   return (res);
 }
-/*
+
 uint8_t setThermocoupleType(Thermocouple_Type type)
 {
   uint8_t config = readSingleRegister(THERMO_SENSOR_CONFIG); //grab current device configuration so we don't wipe everything else
@@ -175,9 +178,9 @@ uint8_t setThermocoupleType(Thermocouple_Type type)
 Thermocouple_Type  getThermocoupleType()
 {
   uint8_t config = readSingleRegister(THERMO_SENSOR_CONFIG);
-  return static_cast<Thermocouple_Type>(config >> 4); //clear the non-thermocouple-type bits in the config registe
+  return (Thermocouple_Type)(config >> 4); //clear the non-thermocouple-type bits in the config registe
 }
-
+/*
 uint8_t  setFilterCoefficient(uint8_t coefficient)
 {
   if (coefficient > 7)
@@ -277,7 +280,7 @@ Shutdown_Mode  getShutdownMode()
 
 /*------------------------- Internal I2C Abstraction ---------------- */
 
-uint8_t readSingleRegister(I2C_HandleTypeDef *hi2c1, MCP9600_Register reg)
+uint8_t readSingleRegister(MCP9600_Register reg)
 {
   //Attempt to read the register until we exit with no error code
   //This attempts to fix the bug where clock stretching sometimes failes, as
@@ -286,15 +289,15 @@ uint8_t readSingleRegister(I2C_HandleTypeDef *hi2c1, MCP9600_Register reg)
   uint8_t read8bits = 0;
 
 
-  while(HAL_I2C_Master_Transmit(hi2c1, 0xCE, &reg, 1, HAL_MAX_DELAY) != HAL_OK);
-  while(HAL_I2C_IsDeviceReady(hi2c1,0xCE,10,200)!=HAL_OK);
-  while(HAL_I2C_Master_Receive(hi2c1, 0XCF, read, sizeof(read), HAL_MAX_DELAY)!= HAL_OK);
+  while(HAL_I2C_Master_Transmit(&hi2c, 0xCE, &reg, 1, HAL_MAX_DELAY) != HAL_OK);
+  while(HAL_I2C_IsDeviceReady(&hi2c,0xCE,10,200)!=HAL_OK);
+  while(HAL_I2C_Master_Receive(&hi2c, 0XCF, read, sizeof(read), HAL_MAX_DELAY)!= HAL_OK);
   read8bits = read[0];
   return read8bits;
 
 }
 
-uint16_t readDoubleRegister(I2C_HandleTypeDef *hi2c1, MCP9600_Register reg)
+uint16_t readDoubleRegister(MCP9600_Register reg)
 {
   //Attempt to read the register until we exit with no error code
   //This attempts to fix the bug where clock stretching sometimes failes, as
@@ -302,27 +305,27 @@ uint16_t readDoubleRegister(I2C_HandleTypeDef *hi2c1, MCP9600_Register reg)
 	uint8_t read[2]={0,0};
 	uint16_t read16bits = 0;
 
-	while(HAL_I2C_Master_Transmit(hi2c1, 0xCE, &reg, 1, HAL_MAX_DELAY) != HAL_OK);
-	while(HAL_I2C_IsDeviceReady(hi2c1,0xCE,10,200)!=HAL_OK);
-	while(HAL_I2C_Master_Receive(hi2c1, 0XCF, read, sizeof(read), HAL_MAX_DELAY)!= HAL_OK);
+	while(HAL_I2C_Master_Transmit(&hi2c, 0xCE, &reg, 1, HAL_MAX_DELAY) != HAL_OK);
+	while(HAL_I2C_IsDeviceReady(&hi2c,0xCE,10,200)!=HAL_OK);
+	while(HAL_I2C_Master_Receive(&hi2c, 0XCF, read, sizeof(read), HAL_MAX_DELAY)!= HAL_OK);
 	read16bits = (read[0] << 8) | read[1];
 	return read16bits;
 
 
 }
 
-bool  writeSingleRegister(I2C_HandleTypeDef *hi2c1, MCP9600_Register reg, uint8_t data)
+bool  writeSingleRegister(MCP9600_Register reg, uint8_t data)
 {
 	uint8_t write[2]={reg, data};
 
-	while(HAL_I2C_Master_Transmit(&hi2c1, 0xCE, write, sizeof(write), HAL_MAX_DELAY) != HAL_OK);
-	while(HAL_I2C_IsDeviceReady(&hi2c1,0xCE,10,200)!=HAL_OK);
+	while(HAL_I2C_Master_Transmit(&hi2c, 0xCE, write, sizeof(write), HAL_MAX_DELAY) != HAL_OK);
+	while(HAL_I2C_IsDeviceReady(&hi2c,0xCE,10,200)!=HAL_OK);
 
 	return 0;
 
 }
 
-bool  writeDoubleRegister(I2C_HandleTypeDef *hi2c1, MCP9600_Register reg, uint16_t data)
+bool  writeDoubleRegister(MCP9600_Register reg, uint16_t data)
 {
   uint8_t highByte = data >> 8;
   uint8_t lowByte = data & 0xFF;

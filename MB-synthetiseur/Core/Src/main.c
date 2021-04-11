@@ -85,7 +85,7 @@ CAN_RxHeaderTypeDef RxHeader;
 uint8_t TxData[8]={1,2,3,4,5,6,7,8};
 uint8_t RxData[8];
 uint32_t TxMailbox;
-
+/*
 typedef struct {
   uint8_t ID = 0;
   uint8_t TH = 0;
@@ -94,7 +94,7 @@ typedef struct {
   uint8_t CH1LSB = 0;
   uint8_t CH1MSB = 0;
 } canPacketStruct;
-
+*/
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -750,14 +750,15 @@ void StartDefaultTask(void *argument)
 		    }
 
 		    //AS7341 initialize
-		    begin(&hi2c1);
+		    AS7341begin(hi2c1);
+		    AS7341init(0x01);
 
 			//configure integration time
-		    setATIME(&hi2c1,100);
-		    setASTEP(&hi2c1,0xE7);
-		    setGain(&hi2c1,AS7341_GAIN_256X);
+		    setATIME(100);
+		    setASTEP(0xE7);
+		    setGain(AS7341_GAIN_256X);
 
-		    readAllChannels(&hi2c1,_channel_readings);
+		    readAllChannels(_channel_readings);
 
 		    //get all channel
 		    int a = 0;
@@ -771,16 +772,21 @@ void StartDefaultTask(void *argument)
 		    	}
 		    }
 
-/*
+
 		    for(int i=0; i<12; i++){
 			    sprintf(msg, "getChannel %d = %x\r\n",i+1,  getChannel(i));
 			    HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
 		    }
 
 
-		    sprintf(msg, "getThermocoupleTemp = %d\r\n",getThermocoupleTemp(&hi2c1,1));
+		    sprintf(msg, "getThermocoupleTemp = %d\r\n",getThermocoupleTemp(1));
 		    HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
-*/
+
+		    enableFlickerDetection(1);
+		    sprintf(msg, "getFlickerDetectStatus = %d\r\n",getFlickerDetectStatus());
+		    HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
+
+
 		    //HAL_StatusTypeDef status = HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_OVERRUN);
 		    //uint8_t messages = HAL_CAN_GetRxFifoFillLevel(&hcan1, CAN_RX_FIFO0);
 /*
@@ -788,14 +794,14 @@ void StartDefaultTask(void *argument)
 		    	sprintf(msg,"HAL NOK\r\n");
 		    	HAL_UART_Transmit(&huart2,(uint8_t*)msg,strlen(msg),HAL_MAX_DELAY);
 		    }
-		    */
+
 		    canPacketStruct b;
 		    b.ID=5;
 
 		    HAL_CAN_AddTxMessage(&hcan1,&TxHeader,canPacketLSB,&TxMailbox);
 		    while(HAL_CAN_IsTxMessagePending(&hcan1,TxMailbox)!=0);
 		    TxData[0]+=1;
-
+*/
 /*
 
 		    uint16_t sharedvar=16;
@@ -928,15 +934,15 @@ void StartReadLightTask(void *argument)
 
 	 //uint16_t channel = 0b1001001110010101;
 	 //uint16_t channel = sharedchannel;
-  	  uint8_t I2C_address = 0x80;
-  	  pca9685_init(&hi2c3, I2C_address);
+  	  PCA9685begin(hi2c3,0);
+  	  pca9685_init(0x80);
   	  uint32_t tickTab[3];
 	 for(;;)
 	 {
 		 //osDelay(shareddelay);
 
 		 for(int i=0; i<4096/sharedvar; i++){
-			pca9685_mult_pwm(&hi2c3, 0x80, sharedchannel, 0, 4095-(sharedvar*i));
+			pca9685_mult_pwm(0x80, sharedchannel, 0, 4095-(sharedvar*i));
 			//pca9685_pwm(&hi2c1, I2C_address, 15, 0, 4095-(sharedvar*i));
 			osDelay(shareddelay);
 
@@ -944,7 +950,7 @@ void StartReadLightTask(void *argument)
 
 
 	 	 for(int i=0; i<4096/sharedvar; i++){
-	 		pca9685_mult_pwm(&hi2c3, 0x80, sharedchannel, 0, (sharedvar*i));
+	 		pca9685_mult_pwm(0x80, sharedchannel, 0, (sharedvar*i));
 	 		//pca9685_pwm(&hi2c1, I2C_address, 15 ,0, 4095-(sharedvar*i));
 	 		osDelay(shareddelay);
 	 	 }
