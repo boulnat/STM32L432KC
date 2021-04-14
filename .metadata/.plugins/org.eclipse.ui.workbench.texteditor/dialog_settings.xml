@@ -1,13 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item key="selection" value=""/>
+		<item key="selection" value="getAll"/>
 		<item key="wrap" value="false"/>
 		<item key="casesensitive" value="false"/>
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
+			<item value="getall"/>
+			<item value="CAN1_RX"/>
+			<item value="CAN1"/>
+			<item value="CAN"/>
+			<item value="coCanOpen"/>
+			<item value="codrvCanInit"/>
+			<item value="USER CODE BEGIN 4 "/>
 			<item value="hi2c1"/>
 			<item value="I2C_HandleTypeDef *hi2c1"/>
 			<item value="*hi2c1"/>
@@ -16,13 +23,6 @@
 			<item value="CAN_remote_transmission_request"/>
 			<item value="HAL_CAN_ConfigFilter"/>
 			<item value="start"/>
-			<item value="HAL_CAN_ENABLE_IT"/>
-			<item value="__HAL_CAN_ENABLE_IT"/>
-			<item value="hcan1"/>
-			<item value="hi2c3"/>
-			<item value="delay"/>
-			<item value="osDelay"/>
-			<item value="AS7341_ENABLE"/>
 		</list>
 		<list key="replacehistory">
 			<item value=""/>
