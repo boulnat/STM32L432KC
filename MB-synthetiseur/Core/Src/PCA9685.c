@@ -63,9 +63,11 @@ void pca9685_init(uint8_t address)
  //initStruct[0] = PCA9685_MODE1;
  initStruct[1] = oldmode;
  HAL_I2C_Master_Transmit(&hi2c3, address, initStruct, 2, 1);
- osDelay(5);
+ //osDelay(5);
  initStruct[1] = (oldmode | 0xA1);
  HAL_I2C_Master_Transmit(&hi2c3, address, initStruct, 2, 1);
+ //turn off all LED
+ //all_led_off(address);
 }
 
 void pca9685_pwm(uint8_t address, uint8_t num, uint16_t on, uint16_t off)
@@ -76,6 +78,8 @@ void pca9685_pwm(uint8_t address, uint8_t num, uint16_t on, uint16_t off)
 
 void pca9685_mult_pwm(uint8_t address, uint16_t num, uint16_t on, uint16_t off)
 {
+
+
 	int i, iter;
 
 	for (i=1, iter=1; i<65535; i<<=1, iter++)
@@ -111,7 +115,7 @@ void pca9685_mult_pwm(uint8_t address, uint16_t num, uint16_t on, uint16_t off)
 void all_led_off(uint8_t address){
 
 	 uint8_t ALL_LED_OFF = 0xFC;
-	 uint8_t outputBuffer[] = {ALL_LED_OFF, 0, (0 >> 8), 4096, (4096 >> 8)};
+	 uint8_t outputBuffer[] = {ALL_LED_OFF, 0, (0 >> 8), 4095, (4096 >> 8)};
 	 HAL_I2C_Master_Transmit(&hi2c3, address, outputBuffer, sizeof(outputBuffer), 1);
 }
 

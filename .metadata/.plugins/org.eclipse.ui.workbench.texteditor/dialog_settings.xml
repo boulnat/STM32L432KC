@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item key="selection" value="getAll"/>
+		<item key="selection" value="RxData"/>
 		<item key="wrap" value="false"/>
 		<item key="casesensitive" value="false"/>
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
+			<item value="RxData"/>
+			<item value="rxData"/>
+			<item value="HAL_CAN_ActivateNotification"/>
+			<item value="HAL_CAN_Start"/>
+			<item value="HAL_CAN_Init"/>
+			<item value="RX0"/>
+			<item value="HAL_CAN_RegisterCallback"/>
+			<item value="Callback"/>
+			<item value="all_led_off"/>
+			<item value="Systick"/>
+			<item value="Syst"/>
+			<item value="SysTick_Config"/>
 			<item value="getall"/>
 			<item value="CAN1_RX"/>
 			<item value="CAN1"/>
-			<item value="CAN"/>
-			<item value="coCanOpen"/>
-			<item value="codrvCanInit"/>
-			<item value="USER CODE BEGIN 4 "/>
-			<item value="hi2c1"/>
-			<item value="I2C_HandleTypeDef *hi2c1"/>
-			<item value="*hi2c1"/>
-			<item value="hi2c"/>
-			<item value="canPacketStruct"/>
-			<item value="CAN_remote_transmission_request"/>
-			<item value="HAL_CAN_ConfigFilter"/>
-			<item value="start"/>
 		</list>
 		<list key="replacehistory">
 			<item value=""/>

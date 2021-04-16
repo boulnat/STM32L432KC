@@ -179,8 +179,8 @@ void delayForData(int waitTime) {
 	uint8_t regwrite[]={AS7341_STATUS2};
 	uint8_t regRead[1]={0};
 
-	while(regRead[0]!=0x40){
-		osDelay(100);
+	while(regRead[0]>>6!=0x01){
+//		HAL_Delay(100);
 		while(HAL_I2C_Master_Transmit(&hi2c, 0x72, regwrite, sizeof(regwrite), HAL_MAX_DELAY) != HAL_OK);
 		while(HAL_I2C_IsDeviceReady(&hi2c,0x72,10,200)!=HAL_OK);
 		while(HAL_I2C_Master_Receive(&hi2c, 0x72, regRead, sizeof(regRead), HAL_MAX_DELAY)!= HAL_OK);
