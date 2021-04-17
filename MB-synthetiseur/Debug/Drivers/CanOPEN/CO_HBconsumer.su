@@ -1,0 +1,5 @@
+CO_HBconsumer.c:61:13:CO_HBcons_receive	24	static
+CO_HBconsumer.c:78:13:CO_HBcons_monitoredNodeConfig	56	static
+CO_HBconsumer.c:122:27:CO_ODF_1016	48	static
+CO_HBconsumer.c:167:18:CO_HBconsumer_init	40	static
+CO_HBconsumer.c:205:6:CO_HBconsumer_process	24	static

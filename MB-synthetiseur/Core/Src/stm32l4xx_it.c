@@ -194,7 +194,6 @@ void DMA1_Channel7_IRQHandler(void)
 /**
   * @brief This function handles CAN1 TX interrupt.
   */
-
 void CAN1_TX_IRQHandler(void)
 {
   /* USER CODE BEGIN CAN1_TX_IRQn 0 */

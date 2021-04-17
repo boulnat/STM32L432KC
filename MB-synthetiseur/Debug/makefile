@@ -14,6 +14,7 @@ RM := rm -rf
 -include Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/subdir.mk
 -include Middlewares/Third_Party/FreeRTOS/Source/subdir.mk
 -include Drivers/STM32L4xx_HAL_Driver/Src/subdir.mk
+-include Drivers/CanOPEN/subdir.mk
 -include Core/Startup/subdir.mk
 -include Core/Src/subdir.mk
 -include subdir.mk
@@ -66,7 +67,7 @@ main-build: MB-synthetiseur.elf secondary-outputs
 
 # Tool invocations
 MB-synthetiseur.elf: $(OBJS) $(USER_OBJS) D:\Documents\GitHub\STM32L432KC\MB-synthetiseur\STM32L432KCUX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "MB-synthetiseur.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"D:\Documents\GitHub\STM32L432KC\MB-synthetiseur\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="MB-synthetiseur.map" -Wl,--gc-sections -static -Wl,--start-group -lcanopen -Wl,--end-group -L"D:\Documents\GitHub\STM32L432KC\MB-synthetiseur\Middlewares\CANOpen\lib" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
+	arm-none-eabi-gcc -o "MB-synthetiseur.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"D:\Documents\GitHub\STM32L432KC\MB-synthetiseur\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="MB-synthetiseur.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

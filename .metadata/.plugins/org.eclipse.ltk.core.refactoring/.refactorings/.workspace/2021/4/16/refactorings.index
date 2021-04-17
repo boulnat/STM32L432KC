@@ -2,3 +2,7 @@
 1618147429528	Delete resource 'MB-synthetiseur/Middlewares/CANOpen/lib/libcanopen.a'
 1618149327577	Delete 45 resources
 1618150041277	Delete resource 'MB-synthetiseur/Middlewares/CANOpen/lib/libcanopen.a'
+1618656839201	Delete resource 'MB-synthetiseur/Middlewares/CANOpen'
+1618661430192	Delete resource 'MB-synthetiseur/Drivers/CanOPEN/CO_driver.h'
+1618664182621	Delete resource 'MB-synthetiseur/Core/Src/canOPEN.h'
+1618665650447	Delete resource 'MB-synthetiseur/Core/Inc/application.h'

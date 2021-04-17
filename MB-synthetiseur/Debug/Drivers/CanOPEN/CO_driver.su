@@ -1,0 +1,15 @@
+CO_driver.c:80:6:prepareTxHeader	16	static
+CO_driver.c:99:6:HAL_CAN_RxFifo0MsgPendingCallback	16	static
+CO_driver.c:129:6:HAL_CAN_RxFifo1MsgPendingCallback	16	static
+CO_driver.c:141:6:CO_CANsetConfigurationMode	16	static
+CO_driver.c:147:18:CO_CANsetNormalMode	24	static
+CO_driver.c:181:18:CO_CANmodule_init	32	static
+CO_driver.c:308:6:CO_CANmodule_disable	16	static
+CO_driver.c:320:10:CO_CANrxMsg_readIdent	16	static
+CO_driver.c:326:18:CO_CANrxBufferInit	72	static
+CO_driver.c:394:13:CO_CANtxBufferInit	32	static
+CO_driver.c:423:18:CO_CANsend	40	static,ignoring_inline_asm
+CO_driver.c:472:6:CO_CANclearPendingSyncPDOs	40	static,ignoring_inline_asm
+CO_driver.c:518:6:CO_CANverifyErrors	32	static
+CO_driver.c:588:6:CO_CANinterrupt_Rx	32	static
+CO_driver.c:654:6:CO_CANpolling_Tx	32	static

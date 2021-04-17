@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item key="selection" value="RxData"/>
+		<item key="selection" value="hcan1"/>
 		<item key="wrap" value="false"/>
 		<item key="casesensitive" value="false"/>
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
+			<item value="filter"/>
+			<item value="callback"/>
 			<item value="RxData"/>
 			<item value="rxData"/>
 			<item value="HAL_CAN_ActivateNotification"/>
@@ -21,8 +23,6 @@
 			<item value="Syst"/>
 			<item value="SysTick_Config"/>
 			<item value="getall"/>
-			<item value="CAN1_RX"/>
-			<item value="CAN1"/>
 		</list>
 		<list key="replacehistory">
 			<item value=""/>
