@@ -156,12 +156,12 @@ CO_ReturnError_t CO_CANsetNormalMode(CO_CANmodule_t *CANmodule){
 
 	/* Enable CAN interrupts */
 
-	//    HAL_NVIC_SetPriority(CAN1_TX_IRQn, 1, 0);
-	//    HAL_NVIC_EnableIRQ(CAN1_TX_IRQn);
-	//    HAL_NVIC_SetPriority(CAN1_RX0_IRQn, 1, 0);
-	//    HAL_NVIC_EnableIRQ(CAN1_RX0_IRQn);
-	//    HAL_NVIC_SetPriority(CAN1_RX1_IRQn, 1, 0);
-	//    HAL_NVIC_EnableIRQ(CAN1_RX1_IRQn);
+	   HAL_NVIC_SetPriority(CAN1_TX_IRQn, 1, 0);
+	   HAL_NVIC_EnableIRQ(CAN1_TX_IRQn);
+	   HAL_NVIC_SetPriority(CAN1_RX0_IRQn, 1, 0);
+	   HAL_NVIC_EnableIRQ(CAN1_RX0_IRQn);
+	   HAL_NVIC_SetPriority(CAN1_RX1_IRQn, 1, 0);
+	   HAL_NVIC_EnableIRQ(CAN1_RX1_IRQn);
 
 	if(HAL_CAN_ActivateNotification( CANmodule->CANbaseAddress,
 			CAN_IT_RX_FIFO0_MSG_PENDING |
@@ -242,7 +242,7 @@ CO_ReturnError_t CO_CANmodule_init(
 	CANmodule->CANbaseAddress->Init.ReceiveFifoLocked = DISABLE;
 	CANmodule->CANbaseAddress->Init.TransmitFifoPriority = DISABLE;
 	CANmodule->CANbaseAddress->Init.TimeSeg2 = CAN_BS2_2TQ;
-	CANmodule->CANbaseAddress->Init.TimeSeg1 = CAN_BS1_13TQ;
+	CANmodule->CANbaseAddress->Init.TimeSeg1 = CAN_BS1_2TQ;
 
 	/* Can speed configuration. */
 	/* Based on the values obtained from http://bittiming.can-wiki.info */
@@ -292,7 +292,7 @@ CO_ReturnError_t CO_CANmodule_init(
 		return  CO_ERROR_ILLEGAL_BAUDRATE;
 	}
 
-	CANmodule->CANbaseAddress->Init.Prescaler = Prescaler;
+	CANmodule->CANbaseAddress->Init.Prescaler = 1;//Prescaler;
 
 	if (HAL_CAN_Init(CANmodule->CANbaseAddress) != HAL_OK)
 	{
@@ -364,7 +364,7 @@ CO_ReturnError_t CO_CANrxBufferInit(
 			FilterConfig.FilterBank = 0;
 			FilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
 			FilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
-			FilterConfig.FilterIdHigh = 0x0;
+			FilterConfig.FilterIdHigh = 0x033<<5;
 			FilterConfig.FilterIdLow = 0x0;
 			FilterConfig.FilterMaskIdHigh = 0x0;
 			FilterConfig.FilterMaskIdLow = 0x0;

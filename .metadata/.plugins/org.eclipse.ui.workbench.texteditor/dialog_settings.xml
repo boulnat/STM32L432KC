@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item key="selection" value="hcan1"/>
+		<item key="selection" value="sync"/>
 		<item key="wrap" value="false"/>
 		<item key="casesensitive" value="false"/>
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
+			<item value="sync"/>
+			<item value="SDO"/>
 			<item value="filter"/>
+			<item value="CO_CANsend"/>
+			<item value="send"/>
+			<item value="SysTick_Handler"/>
+			<item value="CO_CANmodule_init"/>
 			<item value="callback"/>
 			<item value="RxData"/>
 			<item value="rxData"/>
@@ -17,12 +23,6 @@
 			<item value="HAL_CAN_Init"/>
 			<item value="RX0"/>
 			<item value="HAL_CAN_RegisterCallback"/>
-			<item value="Callback"/>
-			<item value="all_led_off"/>
-			<item value="Systick"/>
-			<item value="Syst"/>
-			<item value="SysTick_Config"/>
-			<item value="getall"/>
 		</list>
 		<list key="replacehistory">
 			<item value=""/>

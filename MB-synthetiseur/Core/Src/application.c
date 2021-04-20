@@ -6,12 +6,14 @@
  */
 
 #include "CANopen.h"
+#include "i2c.h"
 #include "AS7341.h"
 #include "MCP9600.h"
 #include "PCA9685.h"
 
 #define TMR_TASK_INTERVAL   (1000)          /* Interval of tmrTask thread in microseconds */
 #define INCREMENT_1MS(var)  (var++)         /* Increment 1ms variable in tmrTask */
+
 
 volatile uint16_t   CO_timer1ms = 0U;   /* variable increments each millisecond */
 
@@ -22,17 +24,22 @@ void programStart(void){
 	  /* Configure microcontroller. */
 	  /* initialize EEPROM */
 	  /* increase variable each startup. Variable is stored in EEPROM. */
-	  //OD_powerOnCounter++;
+	  OD_powerOnCounter++;
+
 	  while(reset != CO_RESET_APP){
 	  /* CANopen communication reset - initialize CANopen objects *******************/
 	          CO_ReturnError_t err;
 	          uint16_t timer1msPrevious;
 
 	          /* disable CAN and CAN interrupts */
+	  	    HAL_NVIC_SetPriority(CAN1_TX_IRQn, 1, 0);
+	  	    HAL_NVIC_DisableIRQ(CAN1_TX_IRQn);
+	  	    HAL_NVIC_SetPriority(CAN1_RX0_IRQn, 1, 0);
+	  	    HAL_NVIC_DisableIRQ(CAN1_RX0_IRQn);
 
 
 	          /* initialize CANopen */
-	          //err = CO_init(0/* CAN module address */, 10/* NodeID */, 125 /* bit rate */);
+	          //err = CO_init(0/* CAN module address */, 10/* NodeID */, 20 /* bit rate */);
 	          //if(err != CO_ERROR_NO){
 	          //    while(1);
 	              /* CO_errorReport(CO->em, CO_EM_MEMORY_ALLOCATION_ERROR, CO_EMC_SOFTWARE_INTERNAL, err); */
@@ -40,10 +47,14 @@ void programStart(void){
 
 
 	          /* Configure Timer interrupt function for execution every 1 millisecond */
-
+	  	      AS7341begin(hi2c1);
+	  	      setATIME(100);
+	  	      setASTEP(999);
+	  	      setGain(AS7341_GAIN_256X);
 
 	          /* Configure CAN transmit and receive interrupt */
-	          err = CO_init((uint32_t)&hcan1, 4, 20);
+	          err = CO_init((uint32_t)&hcan1, 2, 20);
+
 	          if(err != CO_ERROR_NO)
 	             {
 	            	 //TODO behavior in a case of the stack error. Currently not defined.
@@ -64,36 +75,46 @@ void programStart(void){
 	                        timer1msDiff = timer1msCopy - timer1msPrevious;
 	                        timer1msPrevious = timer1msCopy;
 
-
 	                        /* CANopen process */
+
 	                        reset = CO_process(CO, timer1msDiff, NULL);
 
+	                        //INCREMENT_1MS(CO_timer1ms);//added by me
 	                        /* Nonblocking application code may go here. */
 	                        if(CO->CANmodule[0]->CANnormal)
 	                        {
 	                             bool_t syncWas;
 
 	                             /* Process Sync and read inputs */
+	                             //CO->RPDO[0]->synchronous=1; //added by me
 	                             syncWas = CO_process_SYNC_RPDO(CO, 1000);
 
 	                             /* Further I/O or nonblocking application code may go here. */
-	                             CO_TPDO_t              *TPDO;
-	                             CO_EM_t                *em;
-	                             CO_SDO_t               *SDO;
-	                             uint8_t                *operatingState;
-	                             uint8_t                 nodeId;
-	                             uint16_t                defaultCOB_ID;
-	                             uint8_t                 restrictionFlags;
-	                             const CO_TPDOCommPar_t *TPDOCommPar;
-	                             const CO_TPDOMapPar_t  *TPDOMapPar;
-	                             uint16_t                idx_TPDOCommPar;
-	                             uint16_t                idx_TPDOMapPar;
-	                             CO_CANmodule_t         *CANdevTx;
-	                             uint16_t                CANdevTxIdx;
-	                             CO_TPDO_init(TPDO,em,SDO,operatingState,nodeID,defaultCOB_ID,restrictionFlags,TPDOCommPar,TPDOMapPar,idx_TPDOCommPar,idx_TPDOMapPar,CANdevTx,CANdevTxIdx);
-								 CO_TPDOsend();
+
+	                             uint16_t buff[12];
+	                             readAllChannels(buff);
 
 	                             /* Write outputs */
+	                             //CO->TPDO[0]->CANtxBuff[0].data[0]=getChannel(AS7341_CHANNEL_415nm_F1); //added by me
+	                             //CO->TPDO[0]->CANtxBuff[0].data[1]=getChannel(AS7341_CHANNEL_415nm_F1); //added by me
+	                             //CO->TPDO[0]->CANtxBuff[0].data[2]=getChannel(AS7341_CHANNEL_480nm_F3); //added by me
+	                             //CO->TPDO[0]->CANtxBuff[0].data[3]=getChannel(AS7341_CHANNEL_515nm_F4); //added by me
+	                             //CO->TPDO[0]->CANtxBuff[0].data[4]=getChannel(AS7341_CHANNEL_555nm_F5); //added by me
+	                             //CO->TPDO[0]->CANtxBuff[0].data[5]=getChannel(AS7341_CHANNEL_590nm_F6); //added by me
+	                             //CO->TPDO[0]->CANtxBuff[0].data[6]=getChannel(AS7341_CHANNEL_630nm_F7); //added by me
+	                             //CO->TPDO[0]->CANtxBuff[0].data[7]=getChannel(AS7341_CHANNEL_680nm_F8); //added by me
+
+	                             //CO->TPDO[0]->CANtxBuff[0].DLC= 8;//added by me
+	                             //CO->TPDO[0]->mapPointer[0]=CO->TPDO[0]->CANtxBuff[0].data; //added by me
+	                             //CO->TPDO[0]->sendRequest = 1; //added by me
+
+	                             CO_OD_RAM.readAnalogueInput16Bit[0] = getChannel(AS7341_CHANNEL_415nm_F1); //added by me set the value of an object
+	                             CO_OD_RAM.readAnalogueInput16Bit[1] = getChannel(AS7341_CHANNEL_480nm_F3);
+
+	                             //can be read with cansend can0 60(2)#40 20 21 00 00 00 00 00
+	                             //cansend can0 602#3F006201AF000000
+	                             //cansend can0 602#4000620100000000
+
 	                             CO_process_TPDO(CO, syncWas, 1000);
 
 	                             CO_CANpolling_Tx(CO->CANmodule[0]);
@@ -111,7 +132,7 @@ void programStart(void){
 
 
 	                /* delete objects from memory */
-	                CO_delete(0/* CAN module address */);
+	                CO_delete((uint32_t)&hcan1/* CAN module address */);
 
 
 	                /* reset */
@@ -139,7 +160,25 @@ void programAsync(uint16_t timer1msDiff){
 
 /*******************************************************************************/
 void program1ms(void){
+    uint16_t sharedvar=16;
+    uint16_t sharedchannel=0xFFFF;
+    uint16_t shareddelay = 5;
 
+  	 uint8_t I2C_address = 0x80;
+  	 PCA9685begin(hi2c1, 0);
+  	 pca9685_init(I2C_address);
+
+  		 for(int i=0; i<4096/sharedvar; i++){
+  			pca9685_mult_pwm(I2C_address, sharedchannel, 0, 4095-(sharedvar*i));
+  			//pca9685_pwm(&hi2c1, I2C_address, 15, 0, 4095-(sharedvar*i));
+  			//osDelay(shareddelay);
+  		 }
+
+  	 	 for(int i=0; i<4096/sharedvar; i++){
+  	 		pca9685_mult_pwm(I2C_address, sharedchannel, 0, (sharedvar*i));
+  	 		//pca9685_pwm(&hi2c1, I2C_address, 15 ,0, 4095-(sharedvar*i));
+  	 		//osDelay(shareddelay);
+  	 	 }
 }
 
 /* timer thread executes in constant intervals ********************************/

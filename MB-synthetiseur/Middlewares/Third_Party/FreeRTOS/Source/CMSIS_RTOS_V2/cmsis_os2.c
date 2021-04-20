@@ -164,6 +164,7 @@ void SysTick_Handler (void) {
     /* Call tick handler */
     xPortSysTickHandler();
   }
+  HAL_IncTick();
 }
 #endif
 #endif /* SysTick */
