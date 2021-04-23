@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item key="selection" value="sync"/>
+		<item key="selection" value="CO_NMT_process"/>
 		<item key="wrap" value="false"/>
 		<item key="casesensitive" value="false"/>
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
-			<item value="sync"/>
-			<item value="SDO"/>
-			<item value="filter"/>
-			<item value="CO_CANsend"/>
-			<item value="send"/>
-			<item value="SysTick_Handler"/>
-			<item value="CO_CANmodule_init"/>
-			<item value="callback"/>
-			<item value="RxData"/>
-			<item value="rxData"/>
-			<item value="HAL_CAN_ActivateNotification"/>
-			<item value="HAL_CAN_Start"/>
-			<item value="HAL_CAN_Init"/>
-			<item value="RX0"/>
-			<item value="HAL_CAN_RegisterCallback"/>
+			<item value="CO_NMT_process"/>
+			<item value="TPDOMappingParameter"/>
+			<item value="OD_TPDOMappingParameter_t"/>
+			<item value="OD_record1A01"/>
+			<item value="CO_RPDO_init"/>
+			<item value="CO_RPDOCommPar_t"/>
+			<item value="OD_RPDOCommunicationParameter_t"/>
+			<item value="transmissionType"/>
+			<item value="1017"/>
+			<item value="//added by me"/>
+			<item value="&#x09;          //CO-&gt;NMT-&gt;operatingState = CO_NMT_INITIALIZING;//added by me"/>
+			<item value="1710"/>
+			<item value="NMTStartup"/>
+			<item value="NMTstartup "/>
+			<item value="if((NMTstartup &amp; 0x04)"/>
 		</list>
 		<list key="replacehistory">
 			<item value=""/>
@@ -32,8 +32,8 @@
 		</list>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
-		<item key="DIALOG_X_ORIGIN" value="1535"/>
-		<item key="DIALOG_Y_ORIGIN" value="265"/>
+		<item key="DIALOG_X_ORIGIN" value="1572"/>
+		<item key="DIALOG_Y_ORIGIN" value="303"/>
 		<item key="DIALOG_WIDTH" value="284"/>
 		<item key="DIALOG_HEIGHT" value="391"/>
 		<item key="DIALOG_FONT_NAME" value="1|Segoe UI|9.0|0|WINDOWS|1|-12|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI"/>

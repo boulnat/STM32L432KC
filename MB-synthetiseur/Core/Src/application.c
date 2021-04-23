@@ -32,10 +32,10 @@ void programStart(void){
 	          uint16_t timer1msPrevious;
 
 	          /* disable CAN and CAN interrupts */
-	  	    HAL_NVIC_SetPriority(CAN1_TX_IRQn, 1, 0);
-	  	    HAL_NVIC_DisableIRQ(CAN1_TX_IRQn);
-	  	    HAL_NVIC_SetPriority(CAN1_RX0_IRQn, 1, 0);
-	  	    HAL_NVIC_DisableIRQ(CAN1_RX0_IRQn);
+	  	    HAL_NVIC_SetPriority(CAN1_TX_IRQn, 1, 0);    //added by me
+	  	    HAL_NVIC_DisableIRQ(CAN1_TX_IRQn);			 //added by me
+	  	    HAL_NVIC_SetPriority(CAN1_RX0_IRQn, 1, 0);	 //added by me
+	  	    HAL_NVIC_DisableIRQ(CAN1_RX0_IRQn);			 //added by me
 
 
 	          /* initialize CANopen */
@@ -47,10 +47,15 @@ void programStart(void){
 
 
 	          /* Configure Timer interrupt function for execution every 1 millisecond */
-	  	      AS7341begin(hi2c1);
-	  	      setATIME(100);
-	  	      setASTEP(999);
-	  	      setGain(AS7341_GAIN_256X);
+
+	  	      //AS7341begin(hi2c1);
+	  	      //setATIME(100);
+	  	      //setASTEP(999);
+	  	      //setGain(AS7341_GAIN_256X);
+
+	  	      //PCM9600begin(hi2c1);
+	  	      PCA9685begin(hi2c1, 0);
+	  	      pca9685_init(0x80);
 
 	          /* Configure CAN transmit and receive interrupt */
 	          err = CO_init((uint32_t)&hcan1, 2, 20);
@@ -64,11 +69,17 @@ void programStart(void){
 	          /* start CAN */
 	          CO_CANsetNormalMode(CO->CANmodule[0]);
 
+
 	          reset = CO_RESET_NOT;
-	          timer1msPrevious = CO_timer1ms;
+	          timer1msPrevious = CO_timer1ms;  //added by me
+	          //put the device in preoperational waiting for master to put in operational
+	          //cansend can0 000#010(0)
+	          //CO->NMT->operatingState = CO_NMT_OPERATIONAL;//added by me
+	          //CO_OD_ROM.producerHeartbeatTime = 0x50;//added by me
 
 	          while(reset == CO_RESET_NOT){
 	                  	  /* loop for normal program execution ******************************************/
+	        	  	  	  	  INCREMENT_1MS(CO_timer1ms);
 	                        uint16_t timer1msCopy, timer1msDiff;
 
 	                        timer1msCopy = CO_timer1ms;
@@ -92,7 +103,7 @@ void programStart(void){
 	                             /* Further I/O or nonblocking application code may go here. */
 
 	                             uint16_t buff[12];
-	                             readAllChannels(buff);
+	                             //readAllChannels(buff);
 
 	                             /* Write outputs */
 	                             //CO->TPDO[0]->CANtxBuff[0].data[0]=getChannel(AS7341_CHANNEL_415nm_F1); //added by me
@@ -104,12 +115,19 @@ void programStart(void){
 	                             //CO->TPDO[0]->CANtxBuff[0].data[6]=getChannel(AS7341_CHANNEL_630nm_F7); //added by me
 	                             //CO->TPDO[0]->CANtxBuff[0].data[7]=getChannel(AS7341_CHANNEL_680nm_F8); //added by me
 
-	                             //CO->TPDO[0]->CANtxBuff[0].DLC= 8;//added by me
-	                             //CO->TPDO[0]->mapPointer[0]=CO->TPDO[0]->CANtxBuff[0].data; //added by me
-	                             //CO->TPDO[0]->sendRequest = 1; //added by me
+	                             //cansend can0 602#3B00180510000000 ask for PDO every 10s
+	                             //cansend can0 602#4001640100000000
+	                             //CO_OD_RAM.readAnalogueInput16Bit[0] = getChannel(AS7341_CHANNEL_415nm_F1); //added by me set the value of an object
+	                             //CO_OD_RAM.readAnalogueInput16Bit[1] = getChannel(AS7341_CHANNEL_445nm_F2);
+	                             //CO_OD_RAM.readAnalogueInput16Bit[2] = getChannel(AS7341_CHANNEL_480nm_F3);
 
-	                             CO_OD_RAM.readAnalogueInput16Bit[0] = getChannel(AS7341_CHANNEL_415nm_F1); //added by me set the value of an object
-	                             CO_OD_RAM.readAnalogueInput16Bit[1] = getChannel(AS7341_CHANNEL_480nm_F3);
+	                             for(int i=0; i<4096/16; i++){
+	                            	 pca9685_pwm(0x80, 0, 1, 4095-(16*i));
+	                            	 pca9685_pwm(0x80, 0, 2, 4095-(16*i));
+	                             			//pca9685_pwm(&hi2c1, I2C_address, 15, 0, 4095-(sharedvar*i));
+	                             			//osDelay(shareddelay);
+	                             }
+	                             pca9685_mult_pwm(0x80, 0, 0, 4095);
 
 	                             //can be read with cansend can0 60(2)#40 20 21 00 00 00 00 00
 	                             //cansend can0 602#3F006201AF000000

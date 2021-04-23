@@ -438,6 +438,7 @@ CO_ReturnError_t CO_init(
             CO_TXCAN_HB,
             CO_CAN_ID_HEARTBEAT + nodeId);
 
+
     if(err){CO_delete(CANbaseAddress); return err;}
 
 
