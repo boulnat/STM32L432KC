@@ -124,7 +124,6 @@ int main(void)
   MX_ADC1_Init();
   MX_TIM15_Init();
   MX_USART2_UART_Init();
-  MX_I2C3_Init();
   /* USER CODE BEGIN 2 */
   /*
 	  PCA9685begin(hi2c1,0);
@@ -246,10 +245,9 @@ void SystemClock_Config(void)
     Error_Handler();
   }
   PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART2|RCC_PERIPHCLK_I2C1
-                              |RCC_PERIPHCLK_I2C3|RCC_PERIPHCLK_ADC;
+                              |RCC_PERIPHCLK_ADC;
   PeriphClkInit.Usart2ClockSelection = RCC_USART2CLKSOURCE_SYSCLK;
   PeriphClkInit.I2c1ClockSelection = RCC_I2C1CLKSOURCE_PCLK1;
-  PeriphClkInit.I2c3ClockSelection = RCC_I2C3CLKSOURCE_PCLK1;
   PeriphClkInit.AdcClockSelection = RCC_ADCCLKSOURCE_PLLSAI1;
   PeriphClkInit.PLLSAI1.PLLSAI1Source = RCC_PLLSOURCE_MSI;
   PeriphClkInit.PLLSAI1.PLLSAI1M = 5;

@@ -53,7 +53,7 @@
 #define PCA9685_PRESCALE_MIN 3   /**< minimum prescale value */
 #define PCA9685_PRESCALE_MAX 255 /**< maximum prescale value */
 
-I2C_HandleTypeDef hi2c3;
+I2C_HandleTypeDef hi2c;
 
 bool PCA9685begin(I2C_HandleTypeDef hi2c1, uint8_t prescale);
 uint8_t PCA9685_read(uint8_t address, unsigned char reg);

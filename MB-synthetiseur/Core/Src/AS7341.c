@@ -357,7 +357,7 @@ void powerEnable(bool enable_power){
 bool enableSpectralMeasurement(bool enable_measurement) {
 	uint8_t regwrite[]={AS7341_ENABLE,0x01};
 	//uint8_t regRead[1]={0};
-
+	HAL_StatusTypeDef status;
 	if(enable_measurement==0){
 		regwrite[1]=0x01;
 		while(HAL_I2C_Master_Transmit(&hi2c, 0x72, regwrite, sizeof(regwrite), HAL_MAX_DELAY) != HAL_OK);
@@ -366,7 +366,7 @@ bool enableSpectralMeasurement(bool enable_measurement) {
 	else{
 		regwrite[1]=0x03;
 		while(HAL_I2C_Master_Transmit(&hi2c, 0x72, regwrite, sizeof(regwrite), HAL_MAX_DELAY) != HAL_OK);
-		while(HAL_I2C_IsDeviceReady(&hi2c,0x72,10,200)!=HAL_OK);
+		while(HAL_I2C_IsDeviceReady(&hi2c,0x72,10,200) !=HAL_OK);
 	}
   return 1;
 }

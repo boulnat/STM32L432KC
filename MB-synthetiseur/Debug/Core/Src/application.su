@@ -1,7 +1,9 @@
-application.c:21:6:programStart	128	static
-application.c:162:6:communicationReset	4	static
-application.c:168:6:programEnd	4	static
-application.c:174:6:programAsync	16	static
-application.c:180:6:program1ms	104	static
-application.c:203:13:tmrTask_thread	16	static
-application.c:230:22:CO_CAN1InterruptHandler	8	static
+application.c:21:6:programStart	24	static
+application.c:140:6:communicationReset	4	static
+application.c:146:6:programEnd	4	static
+application.c:152:6:programAsync	16	static
+application.c:158:6:program1ms	8	static
+application.c:161:6:spectro	112	static
+application.c:178:6:scenario	112	static
+application.c:207:13:tmrTask_thread	16	static
+application.c:234:22:CO_CAN1InterruptHandler	8	static

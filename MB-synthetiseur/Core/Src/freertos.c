@@ -23,6 +23,8 @@
 #include "task.h"
 #include "main.h"
 #include "cmsis_os.h"
+#include "application.h"
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 /* USER CODE END Includes */
@@ -50,14 +52,14 @@ osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
   .name = "defaultTask",
   .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityNormal,
+  .priority = (osPriority_t) osPriorityLow,
 };
 /* Definitions for readTempTask */
 osThreadId_t readTempTaskHandle;
 const osThreadAttr_t readTempTask_attributes = {
   .name = "readTempTask",
   .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityLow,
+  .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for readLightTask */
 osThreadId_t readLightTaskHandle;
@@ -133,14 +135,13 @@ void MX_FREERTOS_Init(void) {
 /* USER CODE END Header_StartDefaultTask */
 void StartDefaultTask(void *argument)
 {
-	  /* USER CODE BEGIN StartDefaultTask */
-	  /* Infinite loop */
-	  for(;;)
-	  {
-		programStart();
-	    //osDelay(1);
-	  }
-	  /* USER CODE END StartReadLightTask */
+  /* USER CODE BEGIN StartDefaultTask */
+  /* Infinite loop */
+  for(;;)
+  {
+	  programStart();
+  }
+  /* USER CODE END StartDefaultTask */
 }
 
 /* USER CODE BEGIN Header_StartReadTempTask */
@@ -156,7 +157,7 @@ void StartReadTempTask(void *argument)
   /* Infinite loop */
   for(;;)
   {
-	  osDelay(1);
+	  program1ms();
   }
   /* USER CODE END StartReadTempTask */
 }

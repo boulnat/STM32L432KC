@@ -47,16 +47,6 @@ void programStart(void){
 
 
 	          /* Configure Timer interrupt function for execution every 1 millisecond */
-
-	  	      //AS7341begin(hi2c1);
-	  	      //setATIME(100);
-	  	      //setASTEP(999);
-	  	      //setGain(AS7341_GAIN_256X);
-
-	  	      //PCM9600begin(hi2c1);
-	  	      PCA9685begin(hi2c1, 0);
-	  	      pca9685_init(0x80);
-
 	          /* Configure CAN transmit and receive interrupt */
 	          err = CO_init((uint32_t)&hcan1, 2, 20);
 
@@ -102,8 +92,7 @@ void programStart(void){
 
 	                             /* Further I/O or nonblocking application code may go here. */
 
-	                             uint16_t buff[12];
-	                             //readAllChannels(buff);
+
 
 	                             /* Write outputs */
 	                             //CO->TPDO[0]->CANtxBuff[0].data[0]=getChannel(AS7341_CHANNEL_415nm_F1); //added by me
@@ -115,19 +104,8 @@ void programStart(void){
 	                             //CO->TPDO[0]->CANtxBuff[0].data[6]=getChannel(AS7341_CHANNEL_630nm_F7); //added by me
 	                             //CO->TPDO[0]->CANtxBuff[0].data[7]=getChannel(AS7341_CHANNEL_680nm_F8); //added by me
 
-	                             //cansend can0 602#3B00180510000000 ask for PDO every 10s
-	                             //cansend can0 602#4001640100000000
-	                             //CO_OD_RAM.readAnalogueInput16Bit[0] = getChannel(AS7341_CHANNEL_415nm_F1); //added by me set the value of an object
-	                             //CO_OD_RAM.readAnalogueInput16Bit[1] = getChannel(AS7341_CHANNEL_445nm_F2);
-	                             //CO_OD_RAM.readAnalogueInput16Bit[2] = getChannel(AS7341_CHANNEL_480nm_F3);
+	                             spectro();
 
-	                             for(int i=0; i<4096/16; i++){
-	                            	 pca9685_pwm(0x80, 0, 1, 4095-(16*i));
-	                            	 pca9685_pwm(0x80, 0, 2, 4095-(16*i));
-	                             			//pca9685_pwm(&hi2c1, I2C_address, 15, 0, 4095-(sharedvar*i));
-	                             			//osDelay(shareddelay);
-	                             }
-	                             pca9685_mult_pwm(0x80, 0, 0, 4095);
 
 	                             //can be read with cansend can0 60(2)#40 20 21 00 00 00 00 00
 	                             //cansend can0 602#3F006201AF000000
@@ -178,25 +156,51 @@ void programAsync(uint16_t timer1msDiff){
 
 /*******************************************************************************/
 void program1ms(void){
-    uint16_t sharedvar=16;
+	scenario();
+}
+void spectro(void){
+      //PCM9600begin(hi2c1);
+      AS7341begin(hi2c1);
+      setATIME(100);
+      setASTEP(999);
+      setGain(AS7341_GAIN_256X);
+
+      uint16_t buff[12];
+      readAllChannels(buff);
+
+      //cansend can0 602#3B00180510000000 ask for PDO every 10s
+      //cansend can0 602#4001640100000000
+      CO_OD_RAM.readAnalogueInput16Bit[0] = getChannel(AS7341_CHANNEL_415nm_F1); //added by me set the value of an object
+      CO_OD_RAM.readAnalogueInput16Bit[1] = getChannel(AS7341_CHANNEL_445nm_F2);
+      CO_OD_RAM.readAnalogueInput16Bit[2] = getChannel(AS7341_CHANNEL_480nm_F3);
+
+}
+void scenario(void){
+    uint16_t sharedvar=8;
     uint16_t sharedchannel=0xFFFF;
     uint16_t shareddelay = 5;
 
   	 uint8_t I2C_address = 0x80;
   	 PCA9685begin(hi2c1, 0);
   	 pca9685_init(I2C_address);
-
-  		 for(int i=0; i<4096/sharedvar; i++){
-  			pca9685_mult_pwm(I2C_address, sharedchannel, 0, 4095-(sharedvar*i));
-  			//pca9685_pwm(&hi2c1, I2C_address, 15, 0, 4095-(sharedvar*i));
-  			//osDelay(shareddelay);
-  		 }
-
-  	 	 for(int i=0; i<4096/sharedvar; i++){
-  	 		pca9685_mult_pwm(I2C_address, sharedchannel, 0, (sharedvar*i));
-  	 		//pca9685_pwm(&hi2c1, I2C_address, 15 ,0, 4095-(sharedvar*i));
-  	 		//osDelay(shareddelay);
-  	 	 }
+	 pca9685_pwm(0x80, 0, 0, 4095);//turn off pwm1
+	 pca9685_pwm(0x80, 1, 0, 4095);//turn off pwm2
+  	 for(;;){
+  		 int b=0;
+	         for(int i=0; i<8; i++){
+	        	 pca9685_pwm(0x80, 0, 0,  4095-(sharedvar*i));//turn off pwm1
+	        	 osDelay(50);
+	        	 //pca9685_mult_pwm(0x80, 1, 0, 4095-(16*i));
+	        	 //pca9685_pwm(0x80, 1, 0, 4095-(16*i));
+	        	 b=i;
+	         }
+  	         for(int a=b; a<4096/sharedvar; a++){
+  	        	 pca9685_pwm(0x80, 0, 0,  4095-(sharedvar*a));//turn off pwm1
+  	        	 osDelay(10);
+  	        	 //pca9685_mult_pwm(0x80, 1, 0, 4095-(16*i));
+  	        	 //pca9685_pwm(0x80, 1, 0, 4095-(16*i));
+  	         }
+  	 }
 }
 
 /* timer thread executes in constant intervals ********************************/
