@@ -219,32 +219,39 @@ typedef struct {
 
 
   /*!
-   *    @brief  Sets up ASTEP
+   *    @brief  Sets up ASTEP Addr: 0xCA, 0xCB
    *    @param  astep_value
    *            Sets the integration time per step in increments of
    *			2.78µs. The default value is 999.
-   *			0 -> 2.78µs
-   *			n -> 2.78µs x (n+1)
+   *			Value	Step Size
+   *			0 		2.78µs
+   *			n 		2.78µs x (n+1)
    *			ex: 599 -> 1.67ms
    *    @return True.
    */
   bool setASTEP(uint8_t astep_value);
 
   /*!
-   *    @brief  Sets up ATIME
+   *    @brief  Sets up ATIME Addr: 0x81
    *    @param  atime_value
    *            Sets the number of integration steps from 1 to 256
-   *            0 -> ASTEP
-   *            n -> ASTEP x (n+1)
+   *            Value	Integration Time
+   *            0 		ASTEP
+   *            n 		ASTEP x (n+1)
    *            ex: 255 -> 256 x ASTEP
    *    @return True if initialization was successful, otherwise false.
    */
   bool setATIME(uint8_t atime_value);
 
   /*!
-   *    @brief  Sets up the hardware and initializes I2C
-   *    @param  hi2c1
-   *            I2C handle Structure definition
+   *    @brief  Spectral engines gain setting. Addr: 0xAA
+   *    @param  gain_value
+   *            Sets the spectral sensitivity.
+   *            Value	Gain
+   *            0 		0.5x
+   *            1		1x
+   *            .		.
+   *            10 		512x
    *    @return True if initialization was successful, otherwise false.
    */
   bool setGain(as7341_gain_t gain_value);
