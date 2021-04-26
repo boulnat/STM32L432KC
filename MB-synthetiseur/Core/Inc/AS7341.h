@@ -439,16 +439,68 @@ typedef struct {
    */
   bool enableSystemInterrupt(bool enable_int);
 
+  /**
+   * @brief Sets the number of times an interrupt threshold must be exceeded
+   * before an interrupt is triggered
+   *
+   * @param cycle_count The number of cycles to trigger an interrupt
+   * @return true: success false: failure
+   */
   bool setAPERS(as7341_int_cycle_count_t cycle_count);
+
+  /**
+   * @brief Set the ADC channel to use for spectral thresholds including
+   * interrupts, automatic gain control, and persistance settings
+   *
+   * @param channel The channel to use for spectral thresholds. Must be a
+   * as7341_adc_channel_t **except for** `AS7341_ADC_CHANNEL_5`
+   * @return true: success false: failure
+   */
   bool setSpectralThresholdChannel(as7341_adc_channel_t channel);
 
+  /**
+   * @brief Returns the current value of the Interupt status register
+   *
+   * @return uint8_t
+   */
   uint8_t getInterruptStatus(void);
+
+  /**
+   * @brief Clear the interrupt status register
+   *
+   * @return true: success false: failure
+   */
   bool clearInterruptStatus(void);
 
+  /**
+   * @brief Returns the status of the spectral measurement threshold interrupts
+   *
+   * @return true: interrupt triggered false: interrupt not triggered
+   */
   bool spectralInterruptTriggered(void);
+
+  /**
+   * @brief The current state of the spectral measurement interrupt status
+   * register
+   *
+   * @return uint8_t The current status register
+   */
   uint8_t spectralInterruptSource(void);
+
+  /**
+   * @brief The status of the low threshold interrupt
+   *
+   * @return true: low interrupt triggered false: interrupt not triggered
+   */
   bool spectralLowTriggered(void);
+
+  /**
+   * @brief The status of the high threshold interrupt
+   *
+   * @return true: high interrupt triggered false: interrupt not triggered
+   */
   bool spectralHighTriggered(void);
+
 
   bool enableLED(bool enable_led);
   bool setLEDCurrent(uint16_t led_current_ma);
