@@ -391,11 +391,38 @@ typedef struct {
    */
   bool enableSpectralMeasurement(bool enable_measurement);
 
+  /**
+   * @brief Sets the threshold above which spectral measurements will trigger
+   * interrupts when the APERS count is reached
+   *
+   * @param high_threshold
+   * @return true: success false: failure
+   */
   bool setHighThreshold(uint16_t high_threshold);
+
+  /**
+   * @brief Sets the threshold below which spectral measurements will trigger
+   * interrupts when the APERS count is reached
+   *
+   * @param low_threshold the new threshold
+   * @return true: success false: failure
+   */
   bool setLowThreshold(uint16_t low_threshold);
 
+  /**
+   * @brief Returns the current high thighreshold for spectral measurements
+   *
+   * @return int16_t The current high threshold
+   */
   uint16_t getHighThreshold(void);
+
+  /**
+   * @brief Returns the current low thighreshold for spectral measurements
+   *
+   * @return int16_t The current low threshold
+   */
   uint16_t getLowThreshold(void);
+
 
   bool enableSpectralInterrupt(bool enable_int);
   bool enableSystemInterrupt(bool enable_int);
