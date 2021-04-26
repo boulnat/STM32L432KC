@@ -382,6 +382,13 @@ typedef struct {
    * @param enable_power true: on false: off
    */
   void powerEnable(bool enable_power);
+
+  /**
+   * @brief Enables measurement of spectral data
+   *
+   * @param enable_measurement true: enabled false: disabled
+   * @return true: success false: failure
+   */
   bool enableSpectralMeasurement(bool enable_measurement);
 
   bool setHighThreshold(uint16_t high_threshold);
