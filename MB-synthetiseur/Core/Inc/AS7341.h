@@ -187,12 +187,63 @@ typedef enum {
   AS7341_WAITING_DONE,  //
 } as7341_waiting_t;
 
-  I2C_HandleTypeDef hi2c;
+/**
+ * Object for one entry with specific index in @ref CO_SDO_objectDictionary.
+ */
+typedef struct {
+	//I2C definition
+	I2C_HandleTypeDef 	hi2c;
 
+	//sensor ID by default 0x80;
+	uint8_t				sensor_ID;
+
+	//for integration
+	//number of step
+	uint8_t 			astep;
+	//time
+	uint8_t 			atime;
+	//gain of integration
+	as7341_gain_t 		gain;
+
+	//pointer to buffer
+	void				*preadings_buffer;
+}as7341_ob;
+
+  /*!
+   *    @brief  Sets up the hardware and initializes I2C
+   *    @param  hi2c1
+   *            I2C handle Structure definition
+   *    @return True.
+   */
   bool AS7341begin(I2C_HandleTypeDef hi2c1);
 
+
+  /*!
+   *    @brief  Sets up ASTEP
+   *    @param  astep_value
+   *            Sets the integration time per step in increments of
+   *			2.78µs. The default value is 999.
+   *			0 -> 2.78µs
+   *			n -> 2.78µs x (n+1)
+   *			ex: 599 -> 1.67ms
+   *    @return True.
+   */
   bool setASTEP(uint8_t astep_value);
+
+  /*!
+   *    @brief  Sets up ATIME
+   *    @param  atime_value
+   *            Sets the number of integration steps from 1 to 256
+   *    @return True if initialization was successful, otherwise false.
+   */
   bool setATIME(uint8_t atime_value);
+
+  /*!
+   *    @brief  Sets up the hardware and initializes I2C
+   *    @param  hi2c1
+   *            I2C handle Structure definition
+   *    @return True if initialization was successful, otherwise false.
+   */
   bool setGain(as7341_gain_t gain_value);
 
   uint16_t getASTEP();

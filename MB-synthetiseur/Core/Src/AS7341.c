@@ -17,7 +17,9 @@
  *    @return True if initialization was successful, otherwise false.
  */
 bool AS7341begin(I2C_HandleTypeDef hi2c1){
-	hi2c = hi2c1;
+	as7341_ob 	as7341;
+	as7341.hi2c = hi2c1;
+
 	return 1;
 }
 
