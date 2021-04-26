@@ -423,8 +423,20 @@ typedef struct {
    */
   uint16_t getLowThreshold(void);
 
-
+  /**
+   * @brief Enable Interrupts based on spectral measurements
+   *
+   * @param enable_int true: enable false: disable
+   * @return true: success false: falure
+   */
   bool enableSpectralInterrupt(bool enable_int);
+
+  /**
+   * @brief Enabled system interrupts
+   *
+   * @param enable_int Set to true to enable system interrupts
+   * @return true: success false: failure
+   */
   bool enableSystemInterrupt(bool enable_int);
 
   bool setAPERS(as7341_int_cycle_count_t cycle_count);
