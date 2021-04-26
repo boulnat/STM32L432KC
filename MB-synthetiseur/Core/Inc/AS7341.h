@@ -207,7 +207,7 @@ typedef struct {
 
 	//pointer to buffer
 	void				*preadings_buffer;
-}as7341_ob;
+}as7341_t;
 
   /*!
    *    @brief  Sets up the hardware and initializes I2C
@@ -272,11 +272,37 @@ typedef struct {
    */
   as7341_gain_t getGain();
 
+  /**
+   * @brief Returns the integration time
+   *
+   * The integration time is `(ATIME + 1) * (ASTEP + 1) * 2.78µS`
+   *
+   * @return long The current integration time in ms
+   */
   long getTINT();
+
+  /**
+   * @brief Converts raw ADC values to basic counts
+   *
+   * The basic counts are `RAW/(GAIN * TINT)`
+   *
+   * @param raw The raw ADC values to convert
+   *
+   * @return float The basic counts
+   */
   float toBasicCounts(uint16_t raw);
 
-  //bool readAllChannels(void);
+  /**
+   * @brief fills the provided buffer with the current measurements for Spectral
+   * channels F1-8, Clear and NIR
+   *
+   * @param readings_buffer Pointer to a buffer of length 10 or more to fill with
+   * sensor data
+   * @return true: success false: failure
+   */
   uint16_t readAllChannels(uint16_t *readings_buffer);
+
+
   void delayForData(int waitTime);
 
   uint16_t readChannel(as7341_adc_channel_t channel);
