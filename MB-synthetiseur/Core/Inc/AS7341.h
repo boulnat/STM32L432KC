@@ -217,6 +217,16 @@ typedef struct {
    */
   bool AS7341begin(I2C_HandleTypeDef hi2c1);
 
+  /*!
+   *    @brief  Initialise as7341_t
+   *    @param  sensor_id
+   *            id of sensor
+   *    @return True.
+   */
+  bool AS7341init(int32_t sensor_id);
+  //uint8_t last_spectral_int_source = 0; ///< The value of the last reading of the spectral interrupt source
+         ///< register
+
 
   /*!
    *    @brief  Sets up ASTEP Addr: 0xCA, 0xCB
@@ -501,26 +511,101 @@ typedef struct {
    */
   bool spectralHighTriggered(void);
 
-
+  /**
+   * @brief Enable control of an attached LED on the LDR pin
+   *
+   * @param enable_led true: LED enabled false: LED disabled
+   * @return true: success false: failure
+   */
   bool enableLED(bool enable_led);
+
+  /**
+   * @brief Set the current limit for the LED
+   *
+   * @param led_current_ma the value to set in milliamps. With a minimum of 4. Any
+   * amount under 4 will be rounded up to 4
+   *
+   * Range is 4mA to 258mA
+   * @return true: success false: failure
+   */
   bool setLEDCurrent(uint16_t led_current_ma);
 
+  /**
+   * @brief Disable Spectral reading, flicker detection, and power
+   *
+   * */
   void disableAll(void);
 
+  /**
+   * @brief check if data is ready
+   *
+   * @return true: success false: failure
+   */
   bool getIsDataReady();
+
+  /**
+   * @brief Sets the active register bank
+   *
+   * The AS7341 uses banks to organize the register making it nescessary to set
+   * the correct bank to access a register.
+   *
+   * @param low **true**:
+   * **false**: Set the current bank to allow access to registers with addresses
+   of `0x80` and above
+   * @return true: success false: failure
+   */
   bool setBank(bool low); // low true gives access to 0x60 to 0x74
 
+  /**
+   * @brief Get the GPIO pin direction setting
+   *
+   * @return `AS7341_OUTPUT` or `AS7341_INPUT`
+   */
   as7341_gpio_dir_t getGPIODirection(void);
+
+  /**
+   * @brief Set the GPIO pin to be used as an input or output
+   *
+   * @param gpio_direction The IO direction to set
+   * @return true: success false: failure
+   */
   bool setGPIODirection(as7341_gpio_dir_t gpio_direction);
+
+  /**
+   * @brief Get the output inversion setting for the GPIO pin
+   *
+   * @return true: GPIO output inverted false: GPIO output normal
+   */
   bool getGPIOInverted(void);
+
+  /**
+   * @brief Invert the logic of then GPIO pin when used as an output
+   *
+   * @param gpio_inverted **When true** setting the gpio value to **true will
+   * connect** the GPIO pin to ground. When set to **false**, setting the GPIO pin
+   * value to **true will disconnect** the GPIO pin from ground
+   * @return true: success false: failure
+   */
   bool setGPIOInverted(bool gpio_inverted);
+
+  /**
+   * @brief Read the digital level of the GPIO pin, high or low
+   *
+   * @return true: GPIO pin level is high false: GPIO pin level is low
+   */
   bool getGPIOValue(void);
+
+  /**
+   * @brief Set the digital level of the GPIO pin, high or low
+   *
+   * @param gpio_high The GPIO level to set. Set to true to disconnect the pin
+   * from ground. Set to false to connect the gpio pin to ground. This can be used
+   * to connect the cathode of an LED to ground to turn it on.
+   * @return true: success false: failure
+   */
   bool setGPIOValue(bool);
 
 
-  bool AS7341init(int32_t sensor_id);
-  //uint8_t last_spectral_int_source = 0; ///< The value of the last reading of the spectral interrupt source
-         ///< register
 
 
 
