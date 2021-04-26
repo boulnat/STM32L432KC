@@ -256,8 +256,20 @@ typedef struct {
    */
   bool setGain(as7341_gain_t gain_value);
 
+  /*!
+   *    @brief  get integration time per step.
+   *    @return Astep value.
+   */
   uint16_t getASTEP();
+  /*!
+   *    @brief  Sets the number of integration steps
+   *    @return Astep value.
+   */
   uint8_t getATIME();
+  /*!
+   *    @brief  get Spectral engines gain setting.
+   *    @return gain.
+   */
   as7341_gain_t getGain();
 
   long getTINT();
