@@ -158,11 +158,11 @@ void programAsync(uint16_t timer1msDiff){
 void program1ms(void){
 	scenario();
 }
-void spectro(void){
+void spectro(){
       //PCM9600begin(hi2c1);
-      AS7341begin(hi2c1);
-      setASTEP(999);
-      setATIME(100);
+	  AS7341init(hi2c1, 0x80);
+      //setASTEP(999);
+      //setATIME(100);
       setGain(AS7341_GAIN_256X);
 
       uint16_t buff[12];

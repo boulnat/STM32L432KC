@@ -130,6 +130,6 @@ void programAsync(uint16_t timer1msDiff);
 void program1ms(void);
 
 void scenario(void);
-void spectro(void);
+void spectro();
 
 #endif /* INC_APPLICATION_H_ */

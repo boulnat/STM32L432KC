@@ -202,20 +202,43 @@ typedef enum{
 /**
  * Object for one entry as7341.
  */
+
+typedef struct {
+	uint8_t		address_L;
+	uint8_t		address_H;
+	uint16_t 	value;
+}as7341_astep_t;
+
+typedef struct {
+	uint8_t		address;
+	uint16_t 	value;
+}as7341_atime_t;
+
+typedef struct {
+	uint8_t		address;
+	uint8_t 	value;
+}as7341_again_t;
+
 typedef struct {
 	//I2C definition
 	I2C_HandleTypeDef 	hi2c;
 
 	//sensor ID by default 0x80;
 	uint8_t				sensor_ID;
+	uint8_t				writing_ID;
 
 	//for integration
 	//number of step
-	uint16_t 			astep;
+	as7341_astep_t		astep;
 	//time
-	uint8_t 			atime;
+	as7341_atime_t 		atime;
+
 	//gain of integration
-	as7341_gain_t 		gain;
+	as7341_again_t 		gain;
+
+	uint16_t			integrationTime;
+
+	uint16_t			rawToBasicCounts;
 
 	//status
 	as7341_waiting_t 	_readingState;
@@ -223,8 +246,11 @@ typedef struct {
 	//pointer to buffer
 	void				*preadings_buffer;
 	uint16_t 			_channel_readings[12];
+	as7341_ReturnError_t status;
 
 }as7341_t;
+
+
 
   /*!
    *    @brief  Sets up the hardware and initializes I2C
@@ -240,7 +266,7 @@ void AS7341begin(I2C_HandleTypeDef hi2c1);
    *            id of sensor
    *    @return True.
    */
-  bool AS7341init(int32_t sensor_id);
+  bool AS7341init(I2C_HandleTypeDef hi2c1, int32_t sensor_id);
   //uint8_t last_spectral_int_source = 0; ///< The value of the last reading of the spectral interrupt source
          ///< register
 
@@ -268,7 +294,7 @@ void AS7341begin(I2C_HandleTypeDef hi2c1);
    *            ex: 255 -> 256 x ASTEP
    *    @return True if initialization was successful, otherwise false.
    */
-  bool setATIME(uint8_t atime_value);
+  as7341_ReturnError_t setATIME(uint8_t atime_value);
 
   /*!
    *    @brief  Spectral engines gain setting. Addr: 0xAA
@@ -281,23 +307,23 @@ void AS7341begin(I2C_HandleTypeDef hi2c1);
    *            10 		512x
    *    @return True if initialization was successful, otherwise false.
    */
-  bool setGain(as7341_gain_t gain_value);
+  as7341_ReturnError_t setGain(uint8_t gain_value);
 
   /*!
    *    @brief  get integration time per step.
    *    @return Astep value.
    */
-  uint16_t getASTEP();
+  as7341_ReturnError_t getASTEP();
   /*!
    *    @brief  Sets the number of integration steps
    *    @return Astep value.
    */
-  uint8_t getATIME();
+  as7341_ReturnError_t getATIME();
   /*!
    *    @brief  get Spectral engines gain setting.
    *    @return gain.
    */
-  as7341_gain_t getGain();
+  as7341_ReturnError_t getGain();
 
   /**
    * @brief Returns the integration time
@@ -343,7 +369,7 @@ void AS7341begin(I2C_HandleTypeDef hi2c1);
    * @param channel The ADC channel to read
    * @return uint16_t The measured data for the currently configured sensor
    */
-  uint16_t readChannel(as7341_adc_channel_t channel);
+  as7341_ReturnError_t readChannel(as7341_adc_channel_t channel);
 
   /**
    * @brief Returns the reading data for the specified color channel
@@ -674,7 +700,5 @@ void AS7341begin(I2C_HandleTypeDef hi2c1);
      */
   void setSMUXLowChannels(bool f1_f4);
 
-
-  as7341_t 	as7341;
 
 #endif /* INC_AS7341_H_ */

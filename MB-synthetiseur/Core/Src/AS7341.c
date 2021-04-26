@@ -10,11 +10,33 @@
 #include <main.h>
 #include <AS7341.h>
 
+as7341_ReturnError_t errAS7341 = AS7341_ERROR_NO;
+HAL_StatusTypeDef status;
+as7341_t as7341;
+
 //TESTED
+/*
 void AS7341begin(I2C_HandleTypeDef hi2c1){
 	as7341.hi2c = hi2c1;
 }
+*/
+bool AS7341init(I2C_HandleTypeDef hi2c1, int32_t sensor_id){
+	as7341.hi2c = hi2c1;
 
+	as7341.sensor_ID 		= sensor_id;
+	as7341.writing_ID		= 0x72;
+
+	as7341.astep.address_L 	= AS7341_ASTEP_L;
+	as7341.astep.address_H 	= AS7341_ASTEP_H;
+	as7341.astep.value		= 1;
+
+	as7341.atime.address 	= AS7341_ATIME;
+	as7341.atime.value		= 999;
+
+	as7341.gain.address		= AS7341_CFG1;
+
+	as7341.integrationTime	= (as7341.atime.value + 1) * (as7341.astep.value + 1) * 2.78 / 1000;
+}
 //TESTED
 as7341_ReturnError_t setASTEP(uint16_t  astep_value) {
 	//make sure ASTEP is between 0 and 65534
@@ -22,102 +44,116 @@ as7341_ReturnError_t setASTEP(uint16_t  astep_value) {
 		return AS7341_ERROR_ASTEP_OUT_OF_RANGE;
 	}
 
-	uint8_t data[] = {AS7341_ASTEP_L, astep_value};
-	HAL_StatusTypeDef status;
-	status = HAL_I2C_Master_Transmit(&as7341.hi2c, 0x72, data, sizeof(data), HAL_MAX_DELAY);
-	status = HAL_I2C_IsDeviceReady(&as7341.hi2c,0x72,10,200);
+	uint8_t data[] = {as7341.astep.address_L, astep_value};
 
-	data[0] = AS7341_ASTEP_H;
+	status = HAL_I2C_Master_Transmit(&as7341.hi2c, as7341.writing_ID, data, sizeof(data), HAL_MAX_DELAY);
+	status = HAL_I2C_IsDeviceReady(&as7341.hi2c,as7341.writing_ID,10,200);
+
+	data[0] = as7341.astep.address_H;
 	data[1] = astep_value>>8;
-	status = HAL_I2C_Master_Transmit(&as7341.hi2c, 0x72, data, sizeof(data), HAL_MAX_DELAY);
-	status = HAL_I2C_IsDeviceReady(&as7341.hi2c,0x72,10,200);
+	status = HAL_I2C_Master_Transmit(&as7341.hi2c, as7341.writing_ID, data, sizeof(data), HAL_MAX_DELAY);
+	status = HAL_I2C_IsDeviceReady(&as7341.hi2c,as7341.writing_ID,10,200);
 
 	if(status != HAL_OK){
 		return status;
 	}
-	as7341.astep = astep_value;
+	as7341.astep.value = astep_value;
 
 	return AS7341_ERROR_NO;
 }
 
 //TESTED
-bool setATIME(uint8_t atime_value) {
+as7341_ReturnError_t setATIME(uint8_t atime_value) {
 	//make sure ATIME is between 0 and 255
 	if(atime_value<0 || atime_value>=255){
 		return AS7341_ERROR_ATIME_OUT_OF_RANGE;
 	}
 
-	uint8_t data[] = {AS7341_ATIME, atime_value};
-	status = HAL_I2C_Master_Transmit(&as7341.hi2c, 0x72, data, sizeof(data), HAL_MAX_DELAY);
-	status = HAL_I2C_IsDeviceReady(&as7341.hi2c,0x72,10,200);
+	uint8_t data[] = {as7341.atime.address, atime_value};
+	status = HAL_I2C_Master_Transmit(&as7341.hi2c, as7341.writing_ID, data, sizeof(data), HAL_MAX_DELAY);
+	status = HAL_I2C_IsDeviceReady(&as7341.hi2c,as7341.writing_ID,10,200);
 
 	if(status != HAL_OK){
 		return status;
 	}
 
-	as7341.atime = atime_value;
+	as7341.atime.value = atime_value;
 
 	return AS7341_ERROR_NO;
 }
 
 //TESTED
-bool setGain(as7341_gain_t gain_value) {
+as7341_ReturnError_t setGain(uint8_t gain_value) {
 	//make sure GAIN is between 0 and 10
-	if(gain_value<0 || gain_value>=10){
+	if(gain_value<AS7341_GAIN_0_5X || gain_value>=AS7341_GAIN_512X){
 		return AS7341_ERROR_ATIME_OUT_OF_RANGE;
 	}
 
-	uint8_t data[] = {AS7341_CFG1, gain_value};
-	status = HAL_I2C_Master_Transmit(&as7341.hi2c, 0x72, data, sizeof(data), HAL_MAX_DELAY);
-	status = HAL_I2C_IsDeviceReady(&as7341.hi2c,0x72,10,200);
+	uint8_t data[] = {as7341.gain.address, gain_value};
+	status = HAL_I2C_Master_Transmit(&as7341.hi2c, as7341.writing_ID, data, sizeof(data), HAL_MAX_DELAY);
+	status = HAL_I2C_IsDeviceReady(&as7341.hi2c, as7341.writing_ID, 10, 200);
 
 	if(status != HAL_OK){
 		return status;
 	}
 
-	as7341.gain = gain_value;
+	as7341.gain.value = gain_value;
 
 	return AS7341_ERROR_NO;
 }
 
-uint16_t getASTEP() {
-	uint8_t regtest[]={AS7341_ASTEP_L};
-	uint16_t regRead[1]={0};
-	while(HAL_I2C_Master_Transmit(&as7341.hi2c, 0x72, regtest, 1, HAL_MAX_DELAY) != HAL_OK);
-	while(HAL_I2C_IsDeviceReady(&as7341.hi2c,0x72,10,200)!=HAL_OK);
-	while(HAL_I2C_Master_Receive(&as7341.hi2c, 0x72, regRead, sizeof(regRead), HAL_MAX_DELAY)!= HAL_OK);
-  return regRead[0];
+//TESTED
+as7341_ReturnError_t getASTEP() {
+	status = HAL_I2C_Master_Transmit(&as7341.hi2c, as7341.writing_ID, &as7341.astep.address_L, 1, HAL_MAX_DELAY);
+	status = HAL_I2C_IsDeviceReady(&as7341.hi2c,as7341.writing_ID,10,200);
+	status = HAL_I2C_Master_Receive(&as7341.hi2c, as7341.writing_ID, &as7341.astep.value, 1, HAL_MAX_DELAY);
+
+	if(status != HAL_OK){
+		return status;
+	}
+
+	return AS7341_ERROR_NO;
 }
 
-uint8_t getATIME() {
-	uint8_t regtest[]={AS7341_ATIME};
-	uint8_t regRead[1]={0};
-	while(HAL_I2C_Master_Transmit(&as7341.hi2c, 0x72, regtest, 1, HAL_MAX_DELAY) != HAL_OK);
-	while(HAL_I2C_IsDeviceReady(&as7341.hi2c,0x72,10,200)!=HAL_OK);
-	while(HAL_I2C_Master_Receive(&as7341.hi2c, 0x73, regRead, sizeof(regRead), HAL_MAX_DELAY)!= HAL_OK);
-  return regRead[0];
+//TESTED
+as7341_ReturnError_t getATIME() {
+	status = HAL_I2C_Master_Transmit(&as7341.hi2c, as7341.writing_ID, &as7341.atime.address, 1, HAL_MAX_DELAY);
+	status = HAL_I2C_IsDeviceReady(&as7341.hi2c,as7341.writing_ID,10,200);
+	status = HAL_I2C_Master_Receive(&as7341.hi2c, 0x73, &as7341.atime.value, 1, HAL_MAX_DELAY);
+
+	if(status != HAL_OK){
+		return status;
+	}
+
+	return AS7341_ERROR_NO;
 }
 
-as7341_gain_t getGain() {
-	uint8_t regtest[]={AS7341_CFG1};
-	uint8_t regRead[1]={0};
-	while(HAL_I2C_Master_Transmit(&as7341.hi2c, 0x72, regtest, 1, HAL_MAX_DELAY) != HAL_OK);
-	while(HAL_I2C_IsDeviceReady(&as7341.hi2c,0x72,10,200)!=HAL_OK);
-	while(HAL_I2C_Master_Receive(&as7341.hi2c, 0x72, regRead, sizeof(regRead), HAL_MAX_DELAY)!= HAL_OK);
+//TESTED
+as7341_ReturnError_t getGain() {
+	HAL_I2C_Master_Transmit(&as7341.hi2c, as7341.writing_ID, &as7341.gain.address, 1, HAL_MAX_DELAY);
+	HAL_I2C_IsDeviceReady(&as7341.hi2c,as7341.writing_ID,10,200);
+	HAL_I2C_Master_Receive(&as7341.hi2c, as7341.writing_ID, &as7341.gain.value, 1, HAL_MAX_DELAY);
 
-  return (as7341_gain_t)regRead[0];
+	if(status != HAL_OK){
+		return status;
+	}
+
+	return AS7341_ERROR_NO;
 }
 
+//TESTED
 long getTINT(){
-	  uint16_t astep = getASTEP();
-	  uint8_t atime = getATIME();
+	  getASTEP();
+	  getATIME();
+	  as7341.integrationTime	= (as7341.atime.value + 1) * (as7341.astep.value + 1) * 2.78 / 1000;
 
-	  return (atime + 1) * (astep + 1) * 2.78 / 1000;
+	  return as7341.integrationTime;
 }
 
+//TESTED
 float toBasicCounts(uint16_t raw){
 	  float gain_val = 0;
-	  as7341_gain_t gain = getGain();
+	  uint8_t gain = as7341.gain.value;
 	  switch (gain) {
 	  case AS7341_GAIN_0_5X:
 	    gain_val = 0.5;
@@ -153,54 +189,64 @@ float toBasicCounts(uint16_t raw){
 	    gain_val = 512;
 	    break;
 	  }
-	  return raw / (gain_val * (getATIME() + 1) * (getASTEP() + 1) * 2.78 / 1000);
+	  as7341.rawToBasicCounts = raw / (gain_val * (as7341.atime.value + 1) * (as7341.astep.value + 1) * 2.78 / 1000);
+	  return as7341.rawToBasicCounts;
 }
 
-uint16_t readAllChannels(uint16_t *readings_buffer) {
+
+as7341_ReturnError_t readAllChannels(uint16_t *readings_buffer) {
 	uint8_t regwrite[]={AS7341_CH0_DATA_L,0x02};
-	uint16_t buff = 0;
 
     for(int i=0; i<12; i++){
         as7341._channel_readings[i]=0;
     }
 
-	setSMUXLowChannels(true);        // Configure SMUX to read low channels
+    errAS7341 = setSMUXLowChannels(true);        // Configure SMUX to read low channels
+    if(errAS7341){return errAS7341;}
+
+    errAS7341 = enableSpectralMeasurement(true); // Start integration
+    if(errAS7341){return errAS7341;}
+
+    errAS7341 = delayForData(0);                 // I'll wait for you for all time
+    if(errAS7341){return errAS7341;}
+
+  	//readings_buffer=as7341._channel_readings;
+
+  	status = HAL_I2C_Master_Transmit(&as7341.hi2c, as7341.writing_ID, regwrite, 1, HAL_MAX_DELAY);
+  	status = HAL_I2C_IsDeviceReady(&as7341.hi2c,as7341.writing_ID,10,200);
+
+  	regwrite[0]=AS7341_CH0_DATA_L;
+  	status = HAL_I2C_Master_Transmit(&as7341.hi2c, as7341.writing_ID, regwrite, sizeof(regwrite), HAL_MAX_DELAY);
+  	status = HAL_I2C_IsDeviceReady(&as7341.hi2c,as7341.writing_ID,10,200);
+  	status = HAL_I2C_Master_Receive(&as7341.hi2c, as7341.writing_ID, (uint8_t *)as7341._channel_readings, 12, HAL_MAX_DELAY);
+
+
+  	setSMUXLowChannels(false);       // Configure SMUX to read high channels
   	enableSpectralMeasurement(true); // Start integration
   	delayForData(0);                 // I'll wait for you for all time
 
-  	readings_buffer=as7341._channel_readings;
-
-  	while(HAL_I2C_Master_Transmit(&as7341.hi2c, 0x72, regwrite, 1, HAL_MAX_DELAY) != HAL_OK);
-  	while(HAL_I2C_IsDeviceReady(&as7341.hi2c,0x72,10,200)!=HAL_OK);
+  	regwrite[0]=AS7341_CH0_DATA_L;
+  	regwrite[1]=0x02;
+  	status = (HAL_I2C_Master_Transmit(&as7341.hi2c, as7341.writing_ID, regwrite, 1, HAL_MAX_DELAY) != HAL_OK);
+  	status = (HAL_I2C_IsDeviceReady(&as7341.hi2c,as7341.writing_ID,10,200)!=HAL_OK);
 
   	regwrite[0]=AS7341_CH0_DATA_L;
-  	while(HAL_I2C_Master_Transmit(&as7341.hi2c, 0x72, regwrite, sizeof(regwrite), HAL_MAX_DELAY) != HAL_OK);
-  	while(HAL_I2C_IsDeviceReady(&as7341.hi2c,0x72,10,200)!=HAL_OK);
-  	while(HAL_I2C_Master_Receive(&as7341.hi2c, 0x72, (uint8_t *)readings_buffer, 12, HAL_MAX_DELAY)!= HAL_OK);
-
-
-  setSMUXLowChannels(false);       // Configure SMUX to read high channels
-  enableSpectralMeasurement(true); // Start integration
-  delayForData(0);                 // I'll wait for you for all time
-
-  regwrite[0]=AS7341_CH0_DATA_L;
-  regwrite[1]=0x02;
-  while(HAL_I2C_Master_Transmit(&as7341.hi2c, 0x72, regwrite, 1, HAL_MAX_DELAY) != HAL_OK);
-  while(HAL_I2C_IsDeviceReady(&as7341.hi2c,0x72,10,200)!=HAL_OK);
-
-  regwrite[0]=AS7341_CH0_DATA_L;
-  while(HAL_I2C_Master_Transmit(&as7341.hi2c, 0x72, regwrite, sizeof(regwrite), HAL_MAX_DELAY) != HAL_OK);
-  while(HAL_I2C_IsDeviceReady(&as7341.hi2c,0x72,10,200)!=HAL_OK);
-  while(HAL_I2C_Master_Receive(&as7341.hi2c, 0x72, (uint8_t *)&readings_buffer[6], 12, HAL_MAX_DELAY)!= HAL_OK);
+  	status = (HAL_I2C_Master_Transmit(&as7341.hi2c, as7341.writing_ID, regwrite, sizeof(regwrite), HAL_MAX_DELAY) != HAL_OK);
+  	status = (HAL_I2C_IsDeviceReady(&as7341.hi2c,as7341.writing_ID,10,200)!=HAL_OK);
+  	status = (HAL_I2C_Master_Receive(&as7341.hi2c, as7341.writing_ID, (uint8_t *)&as7341._channel_readings[6], 12, HAL_MAX_DELAY)!= HAL_OK);
 
 	//swap MSB and LSB
-
+/*
   for(int i=0; i<12; i++){
 	  buff = ((as7341._channel_readings[i] & 0x00FF) << 8) | (as7341._channel_readings[i]>>8);
 	  as7341._channel_readings[i] = buff;
   }
+*/
+	if(status != HAL_OK){
+		return status;
+	}
 
-  return 1;
+	return AS7341_ERROR_NO;
 }
 
 void delayForData(int waitTime) {
@@ -469,13 +515,14 @@ bool setGPIOValue(bool);
  *   @param sensor_id Optional unique ID for the sensor set
  *   @returns True if chip identified and initialized
  */
+/*
 bool AS7341init(int32_t sensor_id){
     //POWER enable true
     uint8_t regWrite[]={AS7341_ENABLE,0x01}; //PON to 1
 	while(HAL_I2C_Master_Transmit(&as7341.hi2c, 0x72, regWrite, sizeof(regWrite), HAL_MAX_DELAY) != HAL_OK);
 	while(HAL_I2C_IsDeviceReady(&as7341.hi2c,0x72,10,200)!=HAL_OK);
 	return 1;
-}
+}*/
 
 bool enableSMUX() {
 	uint8_t regwrite[]={AS7341_ENABLE,0x19};
@@ -563,7 +610,7 @@ void writeRegister(uint8_t addr, uint8_t val) {
 }
 
 
-void setSMUXLowChannels(bool f1_f4) {
+as7341_ReturnError_t setSMUXLowChannels(bool f1_f4) {
   enableSpectralMeasurement(false);
   setSMUXCommand(AS7341_SMUX_CMD_WRITE);
   if (f1_f4) {
