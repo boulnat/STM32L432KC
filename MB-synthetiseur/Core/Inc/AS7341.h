@@ -234,6 +234,9 @@ typedef struct {
    *    @brief  Sets up ATIME
    *    @param  atime_value
    *            Sets the number of integration steps from 1 to 256
+   *            0 -> ASTEP
+   *            n -> ASTEP x (n+1)
+   *            ex: 255 -> 256 x ASTEP
    *    @return True if initialization was successful, otherwise false.
    */
   bool setATIME(uint8_t atime_value);
