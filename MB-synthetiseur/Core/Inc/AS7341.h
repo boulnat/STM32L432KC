@@ -188,7 +188,17 @@ typedef enum {
 } as7341_waiting_t;
 
 /**
- * Object for one entry with specific index in @ref CO_SDO_objectDictionary.
+ * Return values of some as7341 functions. If function was executed
+ * successfully it returns 0 otherwise it returns <0.
+ */
+typedef enum{
+	AS7341_ERROR_NO                 =  0,   /**< Operation completed successfully */
+	AS7341_ERROR_ASTEP_OUT_OF_RANGE = -1,   /**< Memory allocation failed */
+
+}as7341_ReturnError_t;
+
+/**
+ * Object for one entry as7341.
  */
 typedef struct {
 	//I2C definition
@@ -244,7 +254,7 @@ typedef struct {
    *			ex: 599 -> 1.67ms
    *    @return True.
    */
-  bool setASTEP(uint8_t astep_value);
+  as7341_ReturnError_t setASTEP(uint16_t  astep_value);
 
   /*!
    *    @brief  Sets up ATIME Addr: 0x81
@@ -662,5 +672,7 @@ typedef struct {
      */
   void setSMUXLowChannels(bool f1_f4);
 
+
+  as7341_t 	as7341;
 
 #endif /* INC_AS7341_H_ */

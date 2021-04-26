@@ -17,14 +17,31 @@
  *    @return True if initialization was successful, otherwise false.
  */
 bool AS7341begin(I2C_HandleTypeDef hi2c1){
-	as7341_t 	as7341;
 	as7341.hi2c = hi2c1;
 
 	return 1;
 }
 
-bool setASTEP(uint8_t astep_value) {
+as7341_ReturnError_t setASTEP(uint16_t  astep_value) {
+	//make sure ASTEP is between 0 and 65534
+	if(astep_value<0 || astep_value>=65535){
+		return AS7341_ERROR_ASTEP_OUT_OF_RANGE;
+	}
+
 	uint8_t data[] = {AS7341_ASTEP_L, astep_value};
+	HAL_StatusTypeDef status;
+	status = HAL_I2C_Master_Transmit(&hi2c, 0x72, data, sizeof(data), HAL_MAX_DELAY);
+	status = HAL_I2C_IsDeviceReady(&hi2c,0x72,10,200);
+
+	data[0] = AS7341_ASTEP_H;
+	data[1] = astep_value>>8;
+	status = HAL_I2C_Master_Transmit(&hi2c, 0x72, data, sizeof(data), HAL_MAX_DELAY);
+	status = HAL_I2C_IsDeviceReady(&hi2c,0x72,10,200);
+
+	if(status != HAL_OK){
+		return status;
+	}
+	/*
 	while(HAL_I2C_Master_Transmit(&hi2c, 0x72, data, sizeof(data), HAL_MAX_DELAY) != HAL_OK);
 	while(HAL_I2C_IsDeviceReady(&hi2c,0x72,10,200)!=HAL_OK);
 
@@ -32,8 +49,11 @@ bool setASTEP(uint8_t astep_value) {
 	data[1] = 0x03;
 	while(HAL_I2C_Master_Transmit(&hi2c, 0x72, data, sizeof(data), HAL_MAX_DELAY) != HAL_OK);
 	while(HAL_I2C_IsDeviceReady(&hi2c,0x72,10,200)!=HAL_OK);
+	 */
 
-	return 1;
+	as7341.astep = astep_value;
+
+	return AS7341_ERROR_NO;
 }
 
 bool setATIME(uint8_t atime_value) {
