@@ -302,21 +302,85 @@ typedef struct {
    */
   uint16_t readAllChannels(uint16_t *readings_buffer);
 
-
+  /**
+   * @brief Delay while waiting for data, with option to time out and recover
+   *
+   * @param waitTime the maximum amount of time to wait
+   * @return none
+   */
   void delayForData(int waitTime);
 
+  /**
+   * @brief Returns the ADC data for a given channel
+   *
+   * @param channel The ADC channel to read
+   * @return uint16_t The measured data for the currently configured sensor
+   */
   uint16_t readChannel(as7341_adc_channel_t channel);
+
+  /**
+   * @brief Returns the reading data for the specified color channel
+   *
+   *  call `readAllChannels` before reading to update the stored readings
+   *
+   * @param channel The color sensor channel to read
+   * @return uint16_t The measured data for the selected sensor channel
+   */
   uint16_t getChannel(as7341_color_channel_t channel);
 
+  /**
+   * @brief starts the process of getting readings from all channels without using
+   * delays
+   *
+   * @return true: success false: failure (a bit arbitrary)
+   */
   bool startReading(void);
+
+  /**
+   * @brief runs the process of getting readings from all channels without using
+   * delays.  Should be called regularly (ie. in loop()) Need to call
+   * startReading() to initialise the process Need to call getAllChannels() to
+   * transfer the data into an external buffer
+   *
+   * @return true: reading is complete false: reading is incomplete (or failed)
+   */
   bool checkReadingProgress();
+
+  /**
+   * @brief transfer all the values from the private result buffer into one
+   * nominated
+   *
+   * @param readings_buffer Pointer to a buffer of length 12 (THERE IS NO ERROR
+   * CHECKING, YE BE WARNED!)
+   *
+   * @return true: success false: failure
+   */
   bool getAllChannels(uint16_t *readings_buffer);
 
+  /**
+   * @brief Detect a flickering light
+   * @return The frequency of a detected flicker or 1 if a flicker of
+   * unknown frequency is detected
+   */
   uint16_t detectFlickerHz(void);
 
+  /**
+   * @brief Configure SMUX for sensors F1-4, Clear and NIR
+   *
+   */
   void setup_F1F4_Clear_NIR();
+
+  /**
+   * @brief Configure SMUX for sensors F5-8, Clear and NIR
+   *
+   */
   void setup_F5F8_Clear_NIR();
 
+  /**
+   * @brief Sets the power state of the sensor
+   *
+   * @param enable_power true: on false: off
+   */
   void powerEnable(bool enable_power);
   bool enableSpectralMeasurement(bool enable_measurement);
 
