@@ -1,4 +1,4 @@
 freertos.c:88:6:MX_FREERTOS_Init	8	static
 freertos.c:136:6:StartDefaultTask	16	static
 freertos.c:154:6:StartReadTempTask	16	static
-freertos.c:172:6:StartReadLightTask	16	static
+freertos.c:173:6:StartReadLightTask	16	static

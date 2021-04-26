@@ -194,6 +194,8 @@ typedef enum {
 typedef enum{
 	AS7341_ERROR_NO                 =  0,   /**< Operation completed successfully */
 	AS7341_ERROR_ASTEP_OUT_OF_RANGE = -1,   /**< Memory allocation failed */
+	AS7341_ERROR_ATIME_OUT_OF_RANGE = -2,
+	AS7341_ERROR_GAIN_OUT_OF_RANGE = -3,
 
 }as7341_ReturnError_t;
 
@@ -209,7 +211,7 @@ typedef struct {
 
 	//for integration
 	//number of step
-	uint8_t 			astep;
+	uint16_t 			astep;
 	//time
 	uint8_t 			atime;
 	//gain of integration
@@ -230,7 +232,7 @@ typedef struct {
    *            I2C handle Structure definition
    *    @return True.
    */
-  bool AS7341begin(I2C_HandleTypeDef hi2c1);
+void AS7341begin(I2C_HandleTypeDef hi2c1);
 
   /*!
    *    @brief  Initialise as7341_t

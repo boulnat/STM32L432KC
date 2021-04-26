@@ -157,7 +157,8 @@ void StartReadTempTask(void *argument)
   /* Infinite loop */
   for(;;)
   {
-	  program1ms();
+	  osDelay(1);
+	  //program1ms();
   }
   /* USER CODE END StartReadTempTask */
 }

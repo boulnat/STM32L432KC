@@ -161,8 +161,8 @@ void program1ms(void){
 void spectro(void){
       //PCM9600begin(hi2c1);
       AS7341begin(hi2c1);
-      setATIME(100);
       setASTEP(999);
+      setATIME(100);
       setGain(AS7341_GAIN_256X);
 
       uint16_t buff[12];
