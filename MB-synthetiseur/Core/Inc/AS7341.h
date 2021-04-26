@@ -205,8 +205,13 @@ typedef struct {
 	//gain of integration
 	as7341_gain_t 		gain;
 
+	//status
+	as7341_waiting_t 	_readingState;
+
 	//pointer to buffer
 	void				*preadings_buffer;
+	uint16_t 			_channel_readings[12];
+
 }as7341_t;
 
   /*!
@@ -605,20 +610,57 @@ typedef struct {
    */
   bool setGPIOValue(bool);
 
-
-
-
-
+  /**
+   * @brief Enables SMUX
+   *
+   * @return true: success false: failure
+   */
   bool enableSMUX();
-  bool enableFlickerDetection(bool enable_fd);
-  void FDConfig(void);
-  int8_t getFlickerDetectStatus(void);
-  bool setSMUXCommand(as7341_smux_cmd_t command);
-  void writeRegister(uint8_t addr, uint8_t val);
-  void setSMUXLowChannels(bool f1_f4);
-  uint16_t _channel_readings[12];
-  as7341_waiting_t _readingState;
 
+  /**
+   * @brief enable flicker detection
+   *
+   * @param enable_fd true to enable false to disable
+   * @return true: success false: failure
+   */
+  bool enableFlickerDetection(bool enable_fd);
+
+  /**
+   * @brief Configure SMUX for flicker detection
+   *
+   */
+  void FDConfig(void);
+
+  /**
+   * @brief Returns the flicker detection status
+   *
+   * @return int8_t
+   */
+  int8_t getFlickerDetectStatus(void);
+
+  /**
+   * @brief set smux using commands
+   *
+   * @param command set of command as7341_smux_cmd_t
+   * @return true: success false: failure
+   */
+  bool setSMUXCommand(as7341_smux_cmd_t command);
+
+  /**
+   * @brief Write a byte to the given register
+   *
+   * @param addr Register address
+   * @param val The value to set the register to
+   */
+  void writeRegister(uint8_t addr, uint8_t val);
+
+  /**
+     * @brief set smux low channel f1 - f4
+     *
+     * @param f1_f4 true or false
+     * @return
+     */
+  void setSMUXLowChannels(bool f1_f4);
 
 
 #endif /* INC_AS7341_H_ */
