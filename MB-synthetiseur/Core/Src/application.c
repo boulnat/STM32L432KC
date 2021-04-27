@@ -181,36 +181,31 @@ void spectro(){
       CO_OD_RAM.readAnalogueInput16Bit[2] = getChannel(AS7341_CHANNEL_480nm_F3);
       readChannel(AS7341_CHANNEL_415nm_F1);
       CO_OD_RAM.readAnalogueInput16Bit[3] = getChannel(AS7341_CHANNEL_415nm_F1);
+      scenario();
       }
 
 }
 void scenario(void){
-    uint16_t sharedvar=8;
+    uint16_t sharedvar=16;
     uint16_t sharedchannel=0xFFFF;
     uint16_t shareddelay = 5;
 
   	 uint8_t I2C_address = 0x80;
   	 PCA9685_t module;
-  	 PCA9685begin(module,hi2c1,3);
-  	 pca9685_init(module);
-	 pca9685_pwm(module, 0, 0, 4095);//turn off pwm1
-	 pca9685_pwm(module, 1, 0, 4095);//turn off pwm2
-  	 for(;;){
+  	 PCA9685begin(&module,hi2c1,3);
+  	 pca9685_init(&module);
+	 pca9685_pwm(&module, 0, 0, 4095);//turn off pwm1
+	 pca9685_pwm(&module, 1, 0, 4095);//turn off pwm2
+	 for(;;){
   		 int b=0;
-	         for(int i=0; i<8; i++){
-	        	 pca9685_pwm(module, 0, 0,  4095-(sharedvar*i));//turn off pwm1
-	        	 osDelay(50);
+	         for(int i=0; i<4096/sharedvar; i++){
+	        	 pca9685_pwm(&module, 0, 0,  4095-(sharedvar*i));//turn off pwm1
+	        	 pca9685_pwm(&module, 1, 0,  4095-(sharedvar*i));//turn off pwm1
+	        	 //HAL_Delay(10);
 	        	 //pca9685_mult_pwm(0x80, 1, 0, 4095-(16*i));
 	        	 //pca9685_pwm(0x80, 1, 0, 4095-(16*i));
-	        	 b=i;
 	         }
-  	         for(int a=b; a<4096/sharedvar; a++){
-  	        	 pca9685_pwm(module, 0, 0,  4095-(sharedvar*a));//turn off pwm1
-  	        	 osDelay(10);
-  	        	 //pca9685_mult_pwm(0x80, 1, 0, 4095-(16*i));
-  	        	 //pca9685_pwm(0x80, 1, 0, 4095-(16*i));
-  	         }
-  	 }
+  	  }
 }
 
 /* timer thread executes in constant intervals ********************************/

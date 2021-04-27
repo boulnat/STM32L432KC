@@ -92,7 +92,7 @@ typedef struct {
  *            prescale value
  *    @return True.
  */
-bool PCA9685begin(PCA9685_t module, I2C_HandleTypeDef hi2c1, uint8_t prescale);
+bool PCA9685begin(PCA9685_t *module, I2C_HandleTypeDef hi2c1, uint8_t prescale);
 
 /*!
  *    @brief  read a register of PCA9685
@@ -107,7 +107,7 @@ uint8_t PCA9685_read(PCA9685_t module, unsigned char reg);
  *    @param  address
  *            address of the PCA9685
  */
-void pca9685_init(PCA9685_t module);
+void pca9685_init(PCA9685_t *module);
 
 /*!
  *    @brief  write output of pwm channel value
@@ -120,7 +120,7 @@ void pca9685_init(PCA9685_t module);
  *    		  ex: on:0 -> off:4095 = LED OFF
  */
 
-void pca9685_pwm(PCA9685_t module, uint8_t num, uint16_t on, uint16_t off);
+void pca9685_pwm(PCA9685_t *module, uint8_t num, uint16_t on, uint16_t off);
 
 /*!
  *    @brief  write output of multiple pwm channels value at the same time
@@ -132,7 +132,7 @@ void pca9685_pwm(PCA9685_t module, uint8_t num, uint16_t on, uint16_t off);
  *            the end position
  *    		  ex: on:0 -> off:4095 = LED OFF
  */
-void pca9685_mult_pwm(PCA9685_t module, uint16_t num, uint16_t on, uint16_t off);
+void pca9685_mult_pwm(PCA9685_t *module, uint16_t num, uint16_t on, uint16_t off);
 
 /*!
  *    @brief  write output of all pwm channels value at the same time
@@ -142,14 +142,14 @@ void pca9685_mult_pwm(PCA9685_t module, uint16_t num, uint16_t on, uint16_t off)
  *            the end position
  *    		  ex: on:0 -> off:4095 = LED OFF
  */
-HAL_StatusTypeDef pca9685_all_pwm(PCA9685_t module, uint16_t on, uint16_t off);
+HAL_StatusTypeDef pca9685_all_pwm(PCA9685_t *module, uint16_t on, uint16_t off);
 
 /*!
  *    @brief  write output of multiple pwm channels to off
  *    @param  num
  *            the number of the channel 0-15
  */
-void all_led_off(PCA9685_t module);
+void all_led_off(PCA9685_t *module);
 
 /*!
  *    @brief  to be implemented
