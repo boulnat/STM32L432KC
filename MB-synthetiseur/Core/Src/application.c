@@ -161,6 +161,8 @@ void program1ms(void){
 void spectro(){
       //PCM9600begin(hi2c1);
 	  //AS7341begin(hi2c1);
+	  PCM9600_t module;
+	  PCM9600begin(&module, hi2c1);
 	  AS7341init(hi2c1, 0x80);
       setASTEP(999);
       //getASTEP();
@@ -180,7 +182,7 @@ void spectro(){
       CO_OD_RAM.readAnalogueInput16Bit[1] = getChannel(AS7341_CHANNEL_445nm_F2);
       CO_OD_RAM.readAnalogueInput16Bit[2] = getChannel(AS7341_CHANNEL_480nm_F3);
       readChannel(AS7341_CHANNEL_415nm_F1);
-      CO_OD_RAM.readAnalogueInput16Bit[3] = getChannel(AS7341_CHANNEL_415nm_F1);
+      CO_OD_RAM.readAnalogueInput16Bit[3] = getThermocoupleTemp(&module,0);
       scenario();
       }
 
@@ -197,8 +199,7 @@ void scenario(void){
 	 pca9685_pwm(&module, 0, 0, 4095);//turn off pwm1
 	 pca9685_pwm(&module, 1, 0, 4095);//turn off pwm2
 	 for(;;){
-  		 int b=0;
-	         for(int i=0; i<4096/sharedvar; i++){
+	         for(int i=0; i<1024/sharedvar; i++){
 	        	 pca9685_pwm(&module, 0, 0,  4095-(sharedvar*i));//turn off pwm1
 	        	 pca9685_pwm(&module, 1, 0,  4095-(sharedvar*i));//turn off pwm1
 	        	 //HAL_Delay(10);

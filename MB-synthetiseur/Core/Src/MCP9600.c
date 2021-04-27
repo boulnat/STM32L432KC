@@ -10,20 +10,21 @@
 #include <main.h>
 #include <MCP9600.h>
 
-bool PCM9600begin(I2C_HandleTypeDef hi2c1){
-	hi2c = hi2c1;
+bool PCM9600begin(PCM9600_t *module, I2C_HandleTypeDef hi2c1){
+	module->hi2c = hi2c1;
+	module->sensor_ID = 0x80;
 	return 1;
 }
 
 bool available()
 {
-  uint8_t status = readSingleRegister(SENSOR_STATUS);
-  return status;
+  //uint8_t status = readSingleRegister(SENSOR_STATUS);
+  //return status;
 }
 
 uint16_t deviceID()
 {
-  return readDoubleRegister(DEVICE_ID);
+  //return readDoubleRegister(DEVICE_ID);
 }
 
 bool checkDeviceID()
@@ -54,9 +55,9 @@ bool resetToDefaults()
 
 /*----------------------------- Sensor Measurements ---------------------*/
 
-uint8_t getThermocoupleTemp(bool units)
+uint8_t getThermocoupleTemp(PCM9600_t *module, bool units)
 {
-  int16_t raw = readDoubleRegister(HOT_JUNC_TEMP);
+  int16_t raw = readDoubleRegister(module, HOT_JUNC_TEMP);
   uint8_t LSB = raw & 0x00FF;
   uint8_t MSB = raw>>8;
 
@@ -70,6 +71,7 @@ uint8_t getThermocoupleTemp(bool units)
 
 uint8_t getAmbientTemp(bool units)
 {
+	/*
   int16_t raw = readDoubleRegister(COLD_JUNC_TEMP);
   uint8_t LSB = raw & 0x00FF;
   uint8_t MSB = raw>>8;
@@ -80,10 +82,12 @@ uint8_t getAmbientTemp(bool units)
   else{
 	  return(((MSB*16)+(LSB/16)));
   }
+  */
 }
 
 uint8_t getTempDelta(bool units)
 {
+	/*
   int16_t raw = readDoubleRegister(DELTA_JUNC_TEMP);
   uint8_t LSB = raw & 0x00FF;
   uint8_t MSB = raw>>8;
@@ -94,6 +98,7 @@ uint8_t getTempDelta(bool units)
   else{
 	  return(((MSB*16)+(LSB/16)));
   }
+  */
 }
 
 signed long getRawADC()
@@ -297,7 +302,7 @@ uint8_t readSingleRegister(MCP9600_Register reg)
 
 }
 
-uint16_t readDoubleRegister(MCP9600_Register reg)
+uint16_t readDoubleRegister(PCM9600_t *module, MCP9600_Register reg)
 {
   //Attempt to read the register until we exit with no error code
   //This attempts to fix the bug where clock stretching sometimes failes, as
@@ -305,9 +310,9 @@ uint16_t readDoubleRegister(MCP9600_Register reg)
 	uint8_t read[2]={0,0};
 	uint16_t read16bits = 0;
 
-	while(HAL_I2C_Master_Transmit(&hi2c, 0xCE, &reg, 1, HAL_MAX_DELAY) != HAL_OK);
-	while(HAL_I2C_IsDeviceReady(&hi2c,0xCE,10,200)!=HAL_OK);
-	while(HAL_I2C_Master_Receive(&hi2c, 0XCF, read, sizeof(read), HAL_MAX_DELAY)!= HAL_OK);
+	while(HAL_I2C_Master_Transmit(&module->hi2c, 0xCE, &reg, 1, HAL_MAX_DELAY) != HAL_OK);
+	while(HAL_I2C_IsDeviceReady(&module->hi2c,0xCE,10,200)!=HAL_OK);
+	while(HAL_I2C_Master_Receive(&module->hi2c, 0XCF, read, sizeof(read), HAL_MAX_DELAY)!= HAL_OK);
 	read16bits = (read[0] << 8) | read[1];
 	return read16bits;
 

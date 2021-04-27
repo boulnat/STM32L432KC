@@ -81,58 +81,278 @@ typedef enum  {
   BURST = 0x02,
 }Shutdown_Mode;
 
+/**
+ * Return values of some as7341 functions. If function was executed
+ * successfully it returns 0 otherwise it returns <0.
+ */
+typedef enum{
+	MCP9600_ERROR_NO	=  0,   /**< Operation completed successfully */
+}PCM9600_ReturnError_t;
+
+/**
+ * @brief struct of module PCA9685_t
+ */
+typedef struct {
+	//sensor ID by default 0x80;
+	uint8_t				channel_ID;
+	uint16_t			val_on;
+	uint16_t 			val_off;
+}TEMP_t;
+
+/**
+ * @brief struct of module PCA9685_t
+ */
+typedef struct {
+	//I2C definition
+	I2C_HandleTypeDef 	hi2c;
+
+	//sensor ID by default 0x80;
+	uint8_t				sensor_ID;
+	TEMP_t			channel;
+}PCM9600_t;
+
   //Device status
   I2C_HandleTypeDef hi2c;
-  bool PCM9600begin(I2C_HandleTypeDef hi2c1);
-  bool available();                                                 //Returns true if the thermocouple (hot) junction temperature has been updated since we last checked. Also referred to as the data ready bit.
-  bool isConnected();                                               //Returns true if the thermocouple will acknowledge over I2C, and false otherwise
-  uint16_t deviceID();                                              //Returns the contents of the device ID register. The upper 8 bits are constant, but the lower contain revision data.
-  bool checkDeviceID();                                             //Returns true if the constant upper 8 bits in the device ID register are what they should be according to the datasheet.
-  bool resetToDefaults();                                           //Resets all device parameters to their default values. Returns 1 if there was an error, zero otherwise.
+  /*!
+   *    @brief  Sets up the hardware and initializes I2C
+   *    @param  hi2c1
+   *            I2C handle Structure definition
+   *    @param  prescale
+   *            prescale value
+   *    @return True.
+   */
+  bool PCM9600begin(PCM9600_t *module, I2C_HandleTypeDef hi2c1);
+
+  /*!
+     *    @brief  //Returns true if the thermocouple (hot) junction temperature has been updated since we last checked. Also referred to as the data ready bit.
+     *    @return True.
+     */
+  bool available();
+
+  /*!
+     *    @brief  //Returns true if the thermocouple will acknowledge over I2C, and false otherwise
+     *    @return True.
+     */
+  bool isConnected();
+
+  /*!
+     *    @brief  //Returns the contents of the device ID register. The upper 8 bits are constant, but the lower contain revision data.
+     *    @return True.
+     */
+  uint16_t deviceID();
+
+  /*!
+     *    @brief  //Returns true if the constant upper 8 bits in the device ID register are what they should be according to the datasheet.
+     *    @return True.
+     */
+  bool checkDeviceID();
+
+  /*!
+     *    @brief  //Resets all device parameters to their default values. Returns 1 if there was an error, zero otherwise.
+     *    @return True.
+     */
+  bool resetToDefaults();
 
   //Sensor measurements
-  uint8_t getThermocoupleTemp(bool units);                     //Returns the thermocouple temperature, and clears the data ready bit. Set units to true for Celcius, or false for freedom units (Fahrenheit)
-  uint8_t getAmbientTemp( bool units);                          //Returns the ambient (IC die) temperature. Set units to true for Celcius, or false for freedom units (Fahrenheit)
-  uint8_t getTempDelta(bool units);                            //Returns the difference in temperature between the thermocouple and ambient junctions. Set units to true for Celcius, or false for freedom units (Fahrenheit)
-  signed long getRawADC();                                          //Returns the raw contents of the raw ADC register
-  bool isInputRangeExceeded();                                      //Returns true if the MCP9600's EMF range has been exceeded, and false otherwise.
+  /*!
+     *    @brief  //Returns the thermocouple temperature, and clears the data ready bit. Set units to true for Celcius, or false for freedom units (Fahrenheit)
+     *    @return True.
+     */
+  uint8_t getThermocoupleTemp(PCM9600_t *module, bool units);
+
+  /*!
+     *    @brief   //Returns the ambient (IC die) temperature. Set units to true for Celcius, or false for freedom units (Fahrenheit)
+     *    @return True.
+     */
+  uint8_t getAmbientTemp( bool units);
+
+  /*!
+     *    @brief  //Returns the difference in temperature between the thermocouple and ambient junctions. Set units to true for Celcius, or false for freedom units (Fahrenheit)
+
+     *    @return True.
+     */
+  uint8_t getTempDelta(bool units);
+
+  /*!
+     *    @brief  //Returns the raw contents of the raw ADC register
+     *    @return True.
+     */
+  signed long getRawADC();
+
+  /*!
+     *    @brief  Returns true if the MCP9600's EMF range has been exceeded, and false otherwise.
+     *    @return True.
+     */
+  bool isInputRangeExceeded();
 
   //Measurement configuration
-  bool setAmbientResolution(Ambient_Resolution res);                //Changes the resolution on the cold (ambient) junction, for either 0.0625 or 0.25 degree C resolution. Lower resolution reduces conversion time.
-  Ambient_Resolution getAmbientResolution();                        //Returns the resolution on the cold (ambient) junction, for either 0.0625 or 0.25 degree C resolution. Lower resolution reduces conversion time.
-  bool setThermocoupleResolution(Thermocouple_Resolution res);      //Changes the resolution on the hot (thermocouple) junction, for either 18, 16, 14, or 12-bit resolution. Lower resolution reduces conversion time.
-  Thermocouple_Resolution getThermocoupleResolution();              //Returns the resolution on the hot (thermocouple) junction, for either 18, 16, 14, or 12-bit resolution. Lower resolution reduces conversion time.
+  /*!
+     *    @brief  Changes the resolution on the cold (ambient) junction, for either 0.0625 or 0.25 degree C resolution. Lower resolution reduces conversion time.
+     *    @return True.
+     */
 
-  uint8_t setThermocoupleType(Thermocouple_Type type);              //Changes the type of thermocouple connected to the MCP9600. Supported types are KJTNSEBR.
-  Thermocouple_Type getThermocoupleType();                          //Returns the type of thermocouple connected to the MCP9600 as found in its configuration register. Supported types are KJTNSEBR.
-  uint8_t setFilterCoefficient(uint8_t coefficient);               //Changes the weight of the on-chip exponential moving average filter. Set this to 0 for no filter, 1 for minimum filter, and 7 for maximum filter.
-  uint8_t getFilterCoefficient();                                  //Returns the weight of the on-chip exponential moving average filter.
+  bool setAmbientResolution(Ambient_Resolution res);
 
-  bool setBurstSamples(Burst_Sample samples);                       //Changes the amount of samples to take in burst mode. Returns 0 if set sucessfully, 1 otherwise.
-  Burst_Sample getBurstSamples();                                   //Returns the amount of samples to take in burst mode, according to the device's configuration register.
-  bool burstAvailable();                                            //Returns true if all the burst samples have been taken and the results are ready. Returns false otherwise.
-  bool startBurst();                                                //Initiates a burst on the MCP9600.
-  bool setShutdownMode(Shutdown_Mode mode);                         //Changes the shutdown "operating" mode of the MCP9600. Configurable to Normal, Shutdown, and Burst. Returns 0 if properly set, 1 otherwise.
-  Shutdown_Mode getShutdownMode();                                  //Returns the shutdown "operating" mode of the MCP9600. Configurable to Normal, Shutdown, and Burst.
+  /*!
+     *    @brief  Returns the resolution on the cold (ambient) junction, for either 0.0625 or 0.25 degree C resolution. Lower resolution reduces conversion time.
+     *    @return True.
+     */
+  Ambient_Resolution getAmbientResolution();
+
+  /*!
+     *    @brief  Changes the resolution on the hot (thermocouple) junction, for either 18, 16, 14, or 12-bit resolution. Lower resolution reduces conversion time.
+     *    @return True.
+     */
+  bool setThermocoupleResolution(Thermocouple_Resolution res);
+
+  /*!
+     *    @brief  Returns the resolution on the hot (thermocouple) junction, for either 18, 16, 14, or 12-bit resolution. Lower resolution reduces conversion time.
+     *    @return True.
+     */
+  Thermocouple_Resolution getThermocoupleResolution();
+
+  /*!
+     *    @brief  Changes the type of thermocouple connected to the MCP9600. Supported types are KJTNSEBR.
+     *    @return True.
+     */
+  uint8_t setThermocoupleType(Thermocouple_Type type);
+
+
+  /*!
+     *    @brief  Returns the type of thermocouple connected to the MCP9600 as found in its configuration register. Supported types are KJTNSEBR.
+     *    @return True.
+     */
+  Thermocouple_Type getThermocoupleType();
+
+  /*!
+     *    @brief  Changes the weight of the on-chip exponential moving average filter. Set this to 0 for no filter, 1 for minimum filter, and 7 for maximum filter.
+     *    @return True.
+     */
+  uint8_t setFilterCoefficient(uint8_t coefficient);
+
+  /*!
+     *    @brief  Returns the weight of the on-chip exponential moving average filter.
+     *    @return True.
+     */
+  uint8_t getFilterCoefficient();
+
+  /*!
+     *    @brief  Changes the amount of samples to take in burst mode. Returns 0 if set sucessfully, 1 otherwise.
+     *    @return True.
+     */
+  bool setBurstSamples(Burst_Sample samples);
+
+  /*!
+     *    @brief  Returns the amount of samples to take in burst mode, according to the device's configuration register.
+     *    @return True.
+     */
+  Burst_Sample getBurstSamples();
+
+  /*!
+     *    @brief  Returns true if all the burst samples have been taken and the results are ready. Returns false otherwise.
+     *    @return True.
+     */
+  bool burstAvailable();
+
+  /*!
+     *    @brief  Initiates a burst on the MCP9600.
+     *    @return True.
+     */
+  bool startBurst();
+
+  /*!
+     *    @brief  Changes the shutdown "operating" mode of the MCP9600. Configurable to Normal, Shutdown, and Burst. Returns 0 if properly set, 1 otherwise.
+     *    @return True.
+     */
+  bool setShutdownMode(Shutdown_Mode mode);
+
+  /*!
+     *    @brief  Returns the shutdown "operating" mode of the MCP9600. Configurable to Normal, Shutdown, and Burst.
+     *    @return True.
+     */
+  Shutdown_Mode getShutdownMode();
 
 
   //Temperature Alerts
-  bool configAlertTemp(uint8_t number, float temp);                 //Configures the temperature at which to trigger the alert for a given alert number.
-  bool configAlertJunction(uint8_t number, bool junction);          //Configures the junction to monitor the temperature of to trigger the alert. Set to zero for the thermocouple (hot) junction, or one for the ambient (cold) junction.
-  bool configAlertHysteresis(uint8_t number, uint8_t hysteresis);   //Configures the hysteresis to use around the temperature set point, in degrees Celcius.
-  bool configAlertEdge(uint8_t number, bool edge);                  //Configures whether to trigger the alert on the rising (cold -> hot) or falling (hot -> cold) edge of the temperature change. Set to 1 for rising, 0 for falling.
-  bool configAlertLogicLevel(uint8_t number, bool level);           //Configures whether the hardware alert pin is active-high or active-low. Set to 1 for active-high, 0 for active-low.
-  bool configAlertMode(uint8_t number, bool mode);                  //Configures whether the MCP9600 treats the alert like a comparator or an interrrupt. Set to 1 for interrupt, 0 for comparator. More information is on pg. 34 of the datasheet.
-  bool configAlertEnable(uint8_t number, bool enable);              //Configures whether or not the interrupt is enabled or not. Set to 1 to enable, or 0 to disable.
-  bool clearAlertPin(uint8_t number);                               //Clears the interrupt on the specified alert channel, resetting the value of the pin.
-  bool isTempGreaterThanLimit(uint8_t number);                      //Returns true if the interrupt has been triggered, false otherwise
+  /*!
+     *    @brief  Configures the temperature at which to trigger the alert for a given alert number.
+     *    @return True.
+     */
+  bool configAlertTemp(uint8_t number, float temp);
+
+  /*!
+     *    @brief  Configures the junction to monitor the temperature of to trigger the alert. Set to zero for the thermocouple (hot) junction, or one for the ambient (cold) junction.
+     *    @return True.
+     */
+  bool configAlertJunction(uint8_t number, bool junction);
+
+  /*!
+     *    @brief  Configures the hysteresis to use around the temperature set point, in degrees Celcius.
+     *    @return True.
+     */
+  bool configAlertHysteresis(uint8_t number, uint8_t hysteresis);
+
+  /*!
+     *    @brief  Configures whether to trigger the alert on the rising (cold -> hot) or falling (hot -> cold) edge of the temperature change. Set to 1 for rising, 0 for falling.
+     *    @return True.
+     */
+  bool configAlertEdge(uint8_t number, bool edge);
+
+  /*!
+     *    @brief  Configures whether the hardware alert pin is active-high or active-low. Set to 1 for active-high, 0 for active-low.
+     *    @return True.
+     */
+  bool configAlertLogicLevel(uint8_t number, bool level);
+
+  /*!
+     *    @brief  Configures whether the MCP9600 treats the alert like a comparator or an interrrupt. Set to 1 for interrupt, 0 for comparator. More information is on pg. 34 of the datasheet.
+     *    @return True.
+     */
+  bool configAlertMode(uint8_t number, bool mode);
+
+  /*!
+     *    @brief  Configures whether or not the interrupt is enabled or not. Set to 1 to enable, or 0 to disable.
+     *    @return True.
+     */
+  bool configAlertEnable(uint8_t number, bool enable);
+
+  /*!
+     *    @brief  Clears the interrupt on the specified alert channel, resetting the value of the pin.
+     *    @return True.
+     */
+  bool clearAlertPin(uint8_t number);
+
+  /*!
+     *    @brief  Returns true if the interrupt has been triggered, false otherwise
+     *    @return True.
+     */
+  bool isTempGreaterThanLimit(uint8_t number);
 
 
   //debug
-  uint8_t readSingleRegister(MCP9600_Register reg);                 //Attempts to read a single register, will keep trying for retryAttempts amount of times
-  uint16_t readDoubleRegister(MCP9600_Register reg);                //Attempts to read two registers, will keep trying for retryAttempts amount of times
-  bool writeSingleRegister(MCP9600_Register reg, uint8_t data);     //Attempts to write data into a single 8-bit register. Does not check to make sure it was written successfully. Returns 0 if there wasn't an error on I2C transmission, and 1 otherwise.
-  bool writeDoubleRegister(MCP9600_Register reg, uint16_t data);    //Attempts to write data into a double (two 8-bit) registers. Does not check to make sure it was written successfully. Returns 0 if there wasn't an error on I2C transmission, and 1 otherwise.
+  /*!
+     *    @brief  Attempts to read a single register, will keep trying for retryAttempts amount of times
+     *    @return True.
+     */
+  uint8_t readSingleRegister(MCP9600_Register reg);
+
+  /*!
+     *    @brief  Attempts to read two registers, will keep trying for retryAttempts amount of times
+     *    @return True.
+     */
+  uint16_t readDoubleRegister(PCM9600_t *module, MCP9600_Register reg);
+
+  /*!
+     *    @brief  Attempts to write data into a single 8-bit register. Does not check to make sure it was written successfully. Returns 0 if there wasn't an error on I2C transmission, and 1 otherwise.
+     *    @return True.
+     */
+  bool writeSingleRegister(MCP9600_Register reg, uint8_t data);
+
+  /*!
+     *    @brief  Attempts to write data into a double (two 8-bit) registers. Does not check to make sure it was written successfully. Returns 0 if there wasn't an error on I2C transmission, and 1 otherwise.
+     *    @return True.
+     */
+  bool writeDoubleRegister(MCP9600_Register reg, uint16_t data);
 
   //Internal I2C Abstraction
   //private:
