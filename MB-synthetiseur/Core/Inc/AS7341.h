@@ -220,6 +220,9 @@ typedef struct {
 	uint8_t 	value;
 }as7341_again_t;
 
+/**
+ * @brief Wait states for async reading
+ */
 typedef struct {
 	//I2C definition
 	I2C_HandleTypeDef 	hi2c;

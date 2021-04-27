@@ -21,7 +21,7 @@ void AS7341begin(I2C_HandleTypeDef hi2c1){
 }
 */
 bool AS7341init(I2C_HandleTypeDef hi2c1, int32_t sensor_id){
-	as7341.hi2c = hi2c1;
+	as7341.hi2c 			= hi2c1;
 
 	as7341.sensor_ID 		= sensor_id;
 	as7341.writing_ID		= 0x72;

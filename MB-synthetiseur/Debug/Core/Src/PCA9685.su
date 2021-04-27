@@ -1,8 +1,8 @@
 PCA9685.c:14:6:PCA9685begin	8	static
-PCA9685.c:19:6:reset	24	static
-PCA9685.c:40:9:PCA9685_read	32	static
-PCA9685.c:48:6:pca9685_init	32	static
-PCA9685.c:73:6:pca9685_pwm	40	static
-PCA9685.c:79:6:pca9685_mult_pwm	56	static
-PCA9685.c:115:6:all_led_off	32	static
-PCA9685.c:122:19:pca9685_all_pwm	32	static
+PCA9685.c:19:6:reset	16	static
+PCA9685.c:40:9:PCA9685_read	24	static
+PCA9685.c:48:6:pca9685_init	24	static
+PCA9685.c:73:6:pca9685_pwm	24	static
+PCA9685.c:79:6:pca9685_mult_pwm	40	static
+PCA9685.c:115:6:all_led_off	24	static
+PCA9685.c:122:19:pca9685_all_pwm	24	static

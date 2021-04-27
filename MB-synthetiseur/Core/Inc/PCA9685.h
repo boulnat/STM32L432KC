@@ -53,60 +53,152 @@
 #define PCA9685_PRESCALE_MIN 3   /**< minimum prescale value */
 #define PCA9685_PRESCALE_MAX 255 /**< maximum prescale value */
 
+/**
+ * Return values of some as7341 functions. If function was executed
+ * successfully it returns 0 otherwise it returns <0.
+ */
+typedef enum{
+	PCA9685_ERROR_NO	=  0,   /**< Operation completed successfully */
+}PCA9685_ReturnError_t;
+
+/**
+ * @brief struct of module PCA9685_t
+ */
+typedef struct {
+	//sensor ID by default 0x80;
+	uint8_t				channel_ID;
+	uint16_t			val_on;
+	uint16_t 			val_off;
+}CHANNEL_t;
+
+/**
+ * @brief struct of module PCA9685_t
+ */
 typedef struct {
 	//I2C definition
 	I2C_HandleTypeDef 	hi2c;
 
 	//sensor ID by default 0x80;
 	uint8_t				sensor_ID;
-	uint8_t				writing_ID;
-
-	//for integration
-	//number of step
-	as7341_astep_t		astep;
-	//time
-	as7341_atime_t 		atime;
-
-	//gain of integration
-	as7341_again_t 		gain;
-
-	uint16_t			integrationTime;
-
-	uint16_t			rawToBasicCounts;
-
-	uint8_t				regdelayForData;
-
-	//status
-	as7341_waiting_t 	_readingState;
-
-	//pointer to buffer
-	void				*preadings_buffer;
-	uint16_t 			_channel_readings[12];
-	as7341_ReturnError_t status;
-
+	CHANNEL_t			channel;
 }PCA9685_t;
-I2C_HandleTypeDef hi2c;
 
-bool PCA9685begin(I2C_HandleTypeDef hi2c1, uint8_t prescale);
-uint8_t PCA9685_read(uint8_t address, unsigned char reg);
-void pca9685_init(uint8_t address);
-void pca9685_pwm(uint8_t address, uint8_t num, uint16_t on, uint16_t off);
-void pca9685_mult_pwm(uint8_t address, uint16_t num, uint16_t on, uint16_t off);
-HAL_StatusTypeDef pca9685_all_pwm(uint8_t address, uint16_t on, uint16_t off);
-void all_led_off(uint8_t address);
 
+/*!
+ *    @brief  Sets up the hardware and initializes I2C
+ *    @param  hi2c1
+ *            I2C handle Structure definition
+ *    @param  prescale
+ *            prescale value
+ *    @return True.
+ */
+bool PCA9685begin(PCA9685_t module, I2C_HandleTypeDef hi2c1, uint8_t prescale);
+
+/*!
+ *    @brief  read a register of PCA9685
+ *    @param  reg
+ *            address of the register to read
+ *    @return value of the register.
+ */
+uint8_t PCA9685_read(PCA9685_t module, unsigned char reg);
+
+/*!
+ *    @brief  initialise the PCA9685
+ *    @param  address
+ *            address of the PCA9685
+ */
+void pca9685_init(PCA9685_t module);
+
+/*!
+ *    @brief  write output of pwm channel value
+ *    @param  num
+ *            the number of the channel 0-15
+ *    @param  on
+ *            the start position of the on
+ *    @param  off
+ *            the end position
+ *    		  ex: on:0 -> off:4095 = LED OFF
+ */
+
+void pca9685_pwm(PCA9685_t module, uint8_t num, uint16_t on, uint16_t off);
+
+/*!
+ *    @brief  write output of multiple pwm channels value at the same time
+ *    @param  num
+ *            the number of the channel 0-15
+ *    @param  on
+ *            the start position of the on
+ *    @param  off
+ *            the end position
+ *    		  ex: on:0 -> off:4095 = LED OFF
+ */
+void pca9685_mult_pwm(PCA9685_t module, uint16_t num, uint16_t on, uint16_t off);
+
+/*!
+ *    @brief  write output of all pwm channels value at the same time
+ *    @param  on
+ *            the start position of the on
+ *    @param  off
+ *            the end position
+ *    		  ex: on:0 -> off:4095 = LED OFF
+ */
+HAL_StatusTypeDef pca9685_all_pwm(PCA9685_t module, uint16_t on, uint16_t off);
+
+/*!
+ *    @brief  write output of multiple pwm channels to off
+ *    @param  num
+ *            the number of the channel 0-15
+ */
+void all_led_off(PCA9685_t module);
+
+/*!
+ *    @brief  to be implemented
+ */
 void reset();
+/*!
+ *    @brief  to be implemented
+ */
 void sleep();
+/*!
+ *    @brief  to be implemented
+ */
 void wakeup();
+/*!
+ *    @brief  to be implemented
+ */
 void setExtClk(uint8_t prescale);
+/*!
+ *    @brief  to be implemented
+ */
 void setPWMFreq(float freq);
+/*!
+ *    @brief  to be implemented
+ */
 void setOutputMode(bool totempole);
+/*!
+ *    @brief  to be implemented
+ */
 uint8_t getPWM(uint8_t num);
+/*!
+ *    @brief  to be implemented
+ */
 void setPWM(uint8_t num, uint16_t on, uint16_t off);
+/*!
+ *    @brief  to be implemented
+ */
 uint8_t readPrescale(void);
+/*!
+ *    @brief  to be implemented
+ */
 void writeMicroseconds(uint8_t num, uint16_t Microseconds);
 
+/*!
+ *    @brief  to be implemented
+ */
 void setOscillatorFrequency(uint32_t freq);
+/*!
+ *    @brief  to be implemented
+ */
 uint32_t getOscillatorFrequency(void);
 
 
