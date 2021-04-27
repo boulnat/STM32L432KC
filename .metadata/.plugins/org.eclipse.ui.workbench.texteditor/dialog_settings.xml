@@ -1,30 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item key="selection" value="hi2c"/>
+		<item key="selection" value="checkReadingProgress"/>
 		<item key="wrap" value="false"/>
-		<item key="casesensitive" value="false"/>
-		<item key="wholeword" value="false"/>
+		<item key="casesensitive" value="true"/>
+		<item key="wholeword" value="true"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
+			<item value="checkReadingProgress"/>
+			<item value="scenario"/>
+			<item value="err"/>
+			<item value="as7341_gain_t"/>
+			<item value="HAL"/>
+			<item value="HALµ"/>
+			<item value="init"/>
+			<item value="_readingState"/>
+			<item value="_channel_readings"/>
+			<item value="&amp;hi2c"/>
 			<item value="hi2c1"/>
 			<item value="hi2c3"/>
 			<item value="CO_NMT_process"/>
 			<item value="TPDOMappingParameter"/>
 			<item value="OD_TPDOMappingParameter_t"/>
-			<item value="OD_record1A01"/>
-			<item value="CO_RPDO_init"/>
-			<item value="CO_RPDOCommPar_t"/>
-			<item value="OD_RPDOCommunicationParameter_t"/>
-			<item value="transmissionType"/>
-			<item value="1017"/>
-			<item value="//added by me"/>
-			<item value="&#x09;          //CO-&gt;NMT-&gt;operatingState = CO_NMT_INITIALIZING;//added by me"/>
-			<item value="1710"/>
-			<item value="NMTStartup"/>
 		</list>
 		<list key="replacehistory">
+			<item value="as7341._readingState"/>
+			<item value="as7341._channel_readings"/>
+			<item value="&amp;as7341.hi2c"/>
 			<item value="hi2c"/>
 			<item value="hi2c1"/>
 			<item value=""/>

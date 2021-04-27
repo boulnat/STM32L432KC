@@ -192,10 +192,11 @@ typedef enum {
  * successfully it returns 0 otherwise it returns <0.
  */
 typedef enum{
-	AS7341_ERROR_NO                 =  0,   /**< Operation completed successfully */
-	AS7341_ERROR_ASTEP_OUT_OF_RANGE = -1,   /**< Memory allocation failed */
-	AS7341_ERROR_ATIME_OUT_OF_RANGE = -2,
-	AS7341_ERROR_GAIN_OUT_OF_RANGE = -3,
+	AS7341_ERROR_NO                 	=  0,   /**< Operation completed successfully */
+	AS7341_ERROR_ASTEP_OUT_OF_RANGE 	= -1,   /**< Memory allocation failed */
+	AS7341_ERROR_ATIME_OUT_OF_RANGE 	= -2,
+	AS7341_ERROR_GAIN_OUT_OF_RANGE 		= -3,
+	AS7341_ERROR_READ_CH_OUT_OF_RANGE 	= -4,
 
 }as7341_ReturnError_t;
 
@@ -239,6 +240,8 @@ typedef struct {
 	uint16_t			integrationTime;
 
 	uint16_t			rawToBasicCounts;
+
+	uint8_t				regdelayForData;
 
 	//status
 	as7341_waiting_t 	_readingState;
@@ -353,7 +356,7 @@ void AS7341begin(I2C_HandleTypeDef hi2c1);
    * sensor data
    * @return true: success false: failure
    */
-  uint16_t readAllChannels(uint16_t *readings_buffer);
+  as7341_ReturnError_t readAllChannels(uint16_t *readings_buffer);
 
   /**
    * @brief Delay while waiting for data, with option to time out and recover
@@ -361,7 +364,7 @@ void AS7341begin(I2C_HandleTypeDef hi2c1);
    * @param waitTime the maximum amount of time to wait
    * @return none
    */
-  void delayForData(int waitTime);
+  as7341_ReturnError_t delayForData(int waitTime);
 
   /**
    * @brief Returns the ADC data for a given channel
@@ -442,7 +445,7 @@ void AS7341begin(I2C_HandleTypeDef hi2c1);
    * @param enable_measurement true: enabled false: disabled
    * @return true: success false: failure
    */
-  bool enableSpectralMeasurement(bool enable_measurement);
+  as7341_ReturnError_t enableSpectralMeasurement(bool enable_measurement);
 
   /**
    * @brief Sets the threshold above which spectral measurements will trigger
@@ -689,16 +692,27 @@ void AS7341begin(I2C_HandleTypeDef hi2c1);
    *
    * @param addr Register address
    * @param val The value to set the register to
+   * @return HAL error
    */
-  void writeRegister(uint8_t addr, uint8_t val);
+  as7341_ReturnError_t writeRegister(uint8_t addr, uint8_t val);
 
+  /**
+     * @brief Write a byte to the given register
+     *
+     * @param addr Register address
+     * @param val The value to set the register to
+     * @return HAL error
+     */
+  uint8_t readRegister8(uint8_t addr, uint8_t *val, uint8_t size);
+
+  uint16_t readRegister16(uint8_t addr, uint16_t *val, uint8_t size);
   /**
      * @brief set smux low channel f1 - f4
      *
      * @param f1_f4 true or false
      * @return
      */
-  void setSMUXLowChannels(bool f1_f4);
+  as7341_ReturnError_t setSMUXLowChannels(bool f1_f4);
 
 
 #endif /* INC_AS7341_H_ */

@@ -160,19 +160,28 @@ void program1ms(void){
 }
 void spectro(){
       //PCM9600begin(hi2c1);
+	  //AS7341begin(hi2c1);
 	  AS7341init(hi2c1, 0x80);
-      //setASTEP(999);
-      //setATIME(100);
+      setASTEP(999);
+      //getASTEP();
+      setATIME(100);
       setGain(AS7341_GAIN_256X);
 
       uint16_t buff[12];
+      for(;;){
+
+
       readAllChannels(buff);
 
       //cansend can0 602#3B00180510000000 ask for PDO every 10s
       //cansend can0 602#4001640100000000
+      //!!!!weird number if scan is too fast
       CO_OD_RAM.readAnalogueInput16Bit[0] = getChannel(AS7341_CHANNEL_415nm_F1); //added by me set the value of an object
       CO_OD_RAM.readAnalogueInput16Bit[1] = getChannel(AS7341_CHANNEL_445nm_F2);
       CO_OD_RAM.readAnalogueInput16Bit[2] = getChannel(AS7341_CHANNEL_480nm_F3);
+      readChannel(AS7341_CHANNEL_415nm_F1);
+      CO_OD_RAM.readAnalogueInput16Bit[3] = getChannel(AS7341_CHANNEL_415nm_F1);
+      }
 
 }
 void scenario(void){

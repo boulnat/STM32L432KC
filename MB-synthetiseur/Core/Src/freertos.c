@@ -23,7 +23,6 @@
 #include "task.h"
 #include "main.h"
 #include "cmsis_os.h"
-#include "application.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -52,14 +51,14 @@ osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
   .name = "defaultTask",
   .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityLow,
+  .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for readTempTask */
 osThreadId_t readTempTaskHandle;
 const osThreadAttr_t readTempTask_attributes = {
   .name = "readTempTask",
   .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityNormal,
+  .priority = (osPriority_t) osPriorityLow,
 };
 /* Definitions for readLightTask */
 osThreadId_t readLightTaskHandle;

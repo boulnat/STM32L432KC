@@ -53,6 +53,38 @@
 #define PCA9685_PRESCALE_MIN 3   /**< minimum prescale value */
 #define PCA9685_PRESCALE_MAX 255 /**< maximum prescale value */
 
+typedef struct {
+	//I2C definition
+	I2C_HandleTypeDef 	hi2c;
+
+	//sensor ID by default 0x80;
+	uint8_t				sensor_ID;
+	uint8_t				writing_ID;
+
+	//for integration
+	//number of step
+	as7341_astep_t		astep;
+	//time
+	as7341_atime_t 		atime;
+
+	//gain of integration
+	as7341_again_t 		gain;
+
+	uint16_t			integrationTime;
+
+	uint16_t			rawToBasicCounts;
+
+	uint8_t				regdelayForData;
+
+	//status
+	as7341_waiting_t 	_readingState;
+
+	//pointer to buffer
+	void				*preadings_buffer;
+	uint16_t 			_channel_readings[12];
+	as7341_ReturnError_t status;
+
+}PCA9685_t;
 I2C_HandleTypeDef hi2c;
 
 bool PCA9685begin(I2C_HandleTypeDef hi2c1, uint8_t prescale);
