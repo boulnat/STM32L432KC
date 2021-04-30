@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item key="selection" value="checkReadingProgress"/>
+		<item key="selection" value="err"/>
 		<item key="wrap" value="false"/>
 		<item key="casesensitive" value="true"/>
 		<item key="wholeword" value="true"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
+			<item value="err"/>
+			<item value="getChannel"/>
+			<item value="writeRegister"/>
 			<item value="checkReadingProgress"/>
 			<item value="scenario"/>
-			<item value="err"/>
 			<item value="as7341_gain_t"/>
 			<item value="HAL"/>
 			<item value="HALµ"/>
@@ -21,8 +23,6 @@
 			<item value="hi2c1"/>
 			<item value="hi2c3"/>
 			<item value="CO_NMT_process"/>
-			<item value="TPDOMappingParameter"/>
-			<item value="OD_TPDOMappingParameter_t"/>
 		</list>
 		<list key="replacehistory">
 			<item value="as7341._readingState"/>

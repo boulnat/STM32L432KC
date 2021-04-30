@@ -67,6 +67,16 @@ void programStart(void){
 	          //CO->NMT->operatingState = CO_NMT_OPERATIONAL;//added by me
 	          //CO_OD_ROM.producerHeartbeatTime = 0x50;//added by me
 
+           	  PCM9600_t module;
+           	  PCM9600begin(&module, hi2c1);
+           	  AS7341init(hi2c1, 0x80);
+                 setASTEP(999);
+                 //getASTEP();
+                 setATIME(100);
+                 setGain(AS7341_GAIN_256X);
+
+                 uint16_t buff[12];
+
 	          while(reset == CO_RESET_NOT){
 	                  	  /* loop for normal program execution ******************************************/
 	        	  	  	  	  INCREMENT_1MS(CO_timer1ms);
@@ -104,8 +114,17 @@ void programStart(void){
 	                             //CO->TPDO[0]->CANtxBuff[0].data[6]=getChannel(AS7341_CHANNEL_630nm_F7); //added by me
 	                             //CO->TPDO[0]->CANtxBuff[0].data[7]=getChannel(AS7341_CHANNEL_680nm_F8); //added by me
 
-	                             spectro();
+	                             //spectro();
+	                             readAllChannels(buff);
 
+	                             //cansend can0 602#3B00180510000000 ask for PDO every 10s
+	                             //cansend can0 602#4001640100000000
+	                             //!!!!weird number if scan is too fast
+	                             CO_OD_RAM.readAnalogueInput16Bit[0] = getChannel(AS7341_CHANNEL_415nm_F1);//getChannel(AS7341_CHANNEL_415nm_F1); //added by me set the value of an object
+	                             CO_OD_RAM.readAnalogueInput16Bit[1] = getChannel(AS7341_CHANNEL_445nm_F2);
+	                             CO_OD_RAM.readAnalogueInput16Bit[1] = getChannel(AS7341_CHANNEL_480nm_F3);
+
+	                             CO_OD_RAM.readAnalogueInput16Bit[3] = getThermocoupleTemp(&module,0);
 
 	                             //can be read with cansend can0 60(2)#40 20 21 00 00 00 00 00
 	                             //cansend can0 602#3F006201AF000000
@@ -170,22 +189,20 @@ void spectro(){
       setGain(AS7341_GAIN_256X);
 
       uint16_t buff[12];
-      for(;;){
-
-
+      do{
       readAllChannels(buff);
 
       //cansend can0 602#3B00180510000000 ask for PDO every 10s
       //cansend can0 602#4001640100000000
       //!!!!weird number if scan is too fast
-      CO_OD_RAM.readAnalogueInput16Bit[0] = getChannel(AS7341_CHANNEL_415nm_F1); //added by me set the value of an object
+      CO_OD_RAM.readAnalogueInput16Bit[0] = getChannel(AS7341_CHANNEL_415nm_F1);//getChannel(AS7341_CHANNEL_415nm_F1); //added by me set the value of an object
       CO_OD_RAM.readAnalogueInput16Bit[1] = getChannel(AS7341_CHANNEL_445nm_F2);
-      CO_OD_RAM.readAnalogueInput16Bit[2] = getChannel(AS7341_CHANNEL_480nm_F3);
-      readChannel(AS7341_CHANNEL_415nm_F1);
-      CO_OD_RAM.readAnalogueInput16Bit[3] = getThermocoupleTemp(&module,0);
-      scenario();
-      }
+      CO_OD_RAM.readAnalogueInput16Bit[1] = getChannel(AS7341_CHANNEL_480nm_F3);
 
+      CO_OD_RAM.readAnalogueInput16Bit[3] = getThermocoupleTemp(&module,0);
+      //scenario();
+
+      }while(1);
 }
 void scenario(void){
     uint16_t sharedvar=16;
