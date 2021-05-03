@@ -15,7 +15,7 @@ bool PCM9600begin(PCM9600_t *module, I2C_HandleTypeDef hi2c1){
 	module->sensor_ID = 0x80;
 	return 1;
 }
-
+/*
 bool available()
 {
   //uint8_t status = readSingleRegister(SENSOR_STATUS);
@@ -32,7 +32,7 @@ bool checkDeviceID()
   deviceID(); //this is here because the first read doesn't seem to work, but the second does. No idea why :/
   return ((deviceID())>>8 == DEV_ID_UPPER);
 }
-
+*/
 bool resetToDefaults()
 {
   bool success = writeSingleRegister(SENSOR_STATUS, 0x00);
@@ -68,10 +68,10 @@ uint8_t getThermocoupleTemp(PCM9600_t *module, bool units)
 	  return(((MSB*16)+(LSB/16)));
   }
 }
-
+/*
 uint8_t getAmbientTemp(bool units)
 {
-	/*
+
   int16_t raw = readDoubleRegister(COLD_JUNC_TEMP);
   uint8_t LSB = raw & 0x00FF;
   uint8_t MSB = raw>>8;
@@ -82,12 +82,12 @@ uint8_t getAmbientTemp(bool units)
   else{
 	  return(((MSB*16)+(LSB/16)));
   }
-  */
+
 }
 
 uint8_t getTempDelta(bool units)
 {
-	/*
+
   int16_t raw = readDoubleRegister(DELTA_JUNC_TEMP);
   uint8_t LSB = raw & 0x00FF;
   uint8_t MSB = raw>>8;
@@ -98,9 +98,9 @@ uint8_t getTempDelta(bool units)
   else{
 	  return(((MSB*16)+(LSB/16)));
   }
-  */
-}
 
+}
+*/
 signed long getRawADC()
 {
 	uint8_t cmd = 0x03;
@@ -119,8 +119,8 @@ signed long getRawADC()
 
 bool isInputRangeExceeded()
 {
-  uint8_t status = readSingleRegister(SENSOR_STATUS);
-  return 4 << status;
+  uint8_t status = (4 << readSingleRegister(SENSOR_STATUS));
+  return status;
 }
 
 /*--------------------------- Measurement Configuration --------------- */
@@ -144,8 +144,8 @@ Ambient_Resolution getAmbientResolution()
 bool setThermocoupleResolution(Thermocouple_Resolution res)
 {
   uint8_t config = readSingleRegister(DEVICE_CONFIG); //grab current device configuration so we don't wipe everything else
-  bool highResolutionBit = 1<<res;
-  bool lowResolutionBit = 0<<res;
+  //bool highResolutionBit = (1 << res);
+  //bool lowResolutionBit = (0 << res);
   config |= 1UL << 6;//set 6th bit of config register to 1st bit of the resolution
   config &=~(1UL << 5);//set 5th bit of config register to 0th bit of the resolution
 
@@ -158,8 +158,8 @@ Thermocouple_Resolution getThermocoupleResolution()
 {
   uint8_t config = readSingleRegister(DEVICE_CONFIG); //grab current device configuration
   uint8_t res=0;                                        //define new thermocoupleResolution enum to return
-  bool highResolutionBit = 6<<config;
-  bool lowResolutionBit = 5<<config;
+  //bool highResolutionBit = (6 << config);
+  //bool lowResolutionBit = (5 << config);
   config |= 1UL << 6; //set 1st bit of the enum to the 6th bit of the config register
   config &=~(1UL << 5);  //set 0th bit of the enum to the 5th bit of the config register
   return (res);
@@ -168,9 +168,9 @@ Thermocouple_Resolution getThermocoupleResolution()
 uint8_t setThermocoupleType(Thermocouple_Type type)
 {
   uint8_t config = readSingleRegister(THERMO_SENSOR_CONFIG); //grab current device configuration so we don't wipe everything else
-  bitClear(config, 4);                                       //clear the necessary bits so that they can be set
-  bitClear(config, 5);
-  bitClear(config, 6);
+  //bitClear(config, 4);                                       //clear the necessary bits so that they can be set
+  //bitClear(config, 5);
+  //bitClear(config, 6);
   config |= (type << 4); //set the necessary bits in the config register
   if (writeSingleRegister(THERMO_SENSOR_CONFIG, config))
     return 1; //if write fails, return 1

@@ -14,7 +14,10 @@ RM := rm -rf
 -include Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/subdir.mk
 -include Middlewares/Third_Party/FreeRTOS/Source/subdir.mk
 -include Drivers/STM32L4xx_HAL_Driver/Src/subdir.mk
+-include Drivers/PCA9685/subdir.mk
+-include Drivers/MCP9600/subdir.mk
 -include Drivers/CanOPEN/subdir.mk
+-include Drivers/AS7341/subdir.mk
 -include Core/Startup/subdir.mk
 -include Core/Src/subdir.mk
 -include subdir.mk

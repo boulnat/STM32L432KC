@@ -16,7 +16,62 @@
 
 
 volatile uint16_t   CO_timer1ms = 0U;   /* variable increments each millisecond */
+void spectro(){
+      //PCM9600begin(hi2c1);
+	  //AS7341begin(hi2c1);
+	  PCM9600_t module;
+	  PCM9600begin(&module, hi2c1);
 
+	  AS7341init(hi2c1, 0x80);
+	  /*  Tint = (ATIME + 1) × (ASTEP + 1) × 2.78µs
+	   *  Tint = 50ms
+	   * */
+      setASTEP(599);
+      setATIME(29);
+      setGain(AS7341_GAIN_256X);
+
+      //startReading(); /* reading in a loop */
+
+      uint16_t buff[12];
+      //do{
+		  if(!readAllChannels(buff)){
+
+
+			  //cansend can0 602#3B00180510000000 ask for PDO every 10s
+			  //cansend can0 602#4001640100000000
+			  //!!!!weird number if scan is too fast
+			  CO_OD_RAM.readAnalogueInput16Bit[0] = getChannel(AS7341_CHANNEL_415nm_F1);//getChannel(AS7341_CHANNEL_415nm_F1); //added by me set the value of an object
+			  CO_OD_RAM.readAnalogueInput16Bit[1] = getChannel(AS7341_CHANNEL_445nm_F2);
+			  CO_OD_RAM.readAnalogueInput16Bit[2] = getChannel(AS7341_CHANNEL_480nm_F3);
+
+			  CO_OD_RAM.readAnalogueInput16Bit[3] = getThermocoupleTemp(&module,0);
+			  //scenario();
+			  //startReading();
+		  }
+      //}while(1);
+}
+void scenario(void){
+    uint16_t sharedvar=16;
+    //uint16_t sharedchannel=0xFFFF;
+    //uint16_t shareddelay = 5;
+
+  	 //uint8_t I2C_address = 0x80;
+  	 PCA9685_t module;
+  	 PCA9685begin(&module,hi2c1,3);
+  	 pca9685_init(&module);
+	 pca9685_pwm(&module, 0, 0, 4095);//turn off pwm1
+	 pca9685_pwm(&module, 1, 0, 4095);//turn off pwm2
+	 for(;;){
+	         for(int i=0; i<1024/sharedvar; i++){
+	        	 pca9685_pwm(&module, 0, 0,  4095-(sharedvar*i));//turn off pwm1
+	        	 pca9685_pwm(&module, 1, 0,  4095-(sharedvar*i));//turn off pwm1
+
+	        	 //HAL_Delay(10);
+	        	 //pca9685_mult_pwm(0x80, 1, 0, 4095-(16*i));
+	        	 //pca9685_pwm(0x80, 1, 0, 4095-(16*i));
+	         }
+  	  }
+}
 /*******************************************************************************/
 void programStart(void){
 	  CO_NMT_reset_cmd_t reset = CO_RESET_NOT;
@@ -75,7 +130,7 @@ void programStart(void){
                  setATIME(100);
                  setGain(AS7341_GAIN_256X);
 
-                 uint16_t buff[12];
+                 //uint16_t buff[12];
 
 	          while(reset == CO_RESET_NOT){
 	                  	  /* loop for normal program execution ******************************************/
@@ -120,11 +175,11 @@ void programStart(void){
 	                             //cansend can0 602#3B00180510000000 ask for PDO every 10s
 	                             //cansend can0 602#4001640100000000
 	                             //!!!!weird number if scan is too fast
-	                             CO_OD_RAM.readAnalogueInput16Bit[0] = getChannel(AS7341_CHANNEL_415nm_F1);//getChannel(AS7341_CHANNEL_415nm_F1); //added by me set the value of an object
-	                             CO_OD_RAM.readAnalogueInput16Bit[1] = getChannel(AS7341_CHANNEL_445nm_F2);
-	                             CO_OD_RAM.readAnalogueInput16Bit[1] = getChannel(AS7341_CHANNEL_480nm_F3);
+	                             //CO_OD_RAM.readAnalogueInput16Bit[0] = getChannel(AS7341_CHANNEL_415nm_F1);//getChannel(AS7341_CHANNEL_415nm_F1); //added by me set the value of an object
+	                             //CO_OD_RAM.readAnalogueInput16Bit[1] = getChannel(AS7341_CHANNEL_445nm_F2);
+	                             //CO_OD_RAM.readAnalogueInput16Bit[1] = getChannel(AS7341_CHANNEL_480nm_F3);
 
-	                             CO_OD_RAM.readAnalogueInput16Bit[3] = getThermocoupleTemp(&module,0);
+	                             //CO_OD_RAM.readAnalogueInput16Bit[3] = getThermocoupleTemp(&module,0);
 
 	                             //can be read with cansend can0 60(2)#40 20 21 00 00 00 00 00
 	                             //cansend can0 602#3F006201AF000000
@@ -175,95 +230,40 @@ void programAsync(uint16_t timer1msDiff){
 
 /*******************************************************************************/
 void program1ms(void){
-	scenario();
+	//scenario();
 }
-void spectro(){
-      //PCM9600begin(hi2c1);
-	  //AS7341begin(hi2c1);
-	  PCM9600_t module;
-	  PCM9600begin(&module, hi2c1);
 
-	  AS7341init(hi2c1, 0x80);
-	  /*  Tint = (ATIME + 1) × (ASTEP + 1) × 2.78µs
-	   *  Tint = 50ms
-	   * */
-      setASTEP(599);
-      setATIME(29);
-      setGain(AS7341_GAIN_16X);
-
-      //startReading(); /* reading in a loop */
-
-      uint16_t buff[12];
-      do{
-		  if(!readAllChannels(buff)){
-
-
-			  //cansend can0 602#3B00180510000000 ask for PDO every 10s
-			  //cansend can0 602#4001640100000000
-			  //!!!!weird number if scan is too fast
-			  CO_OD_RAM.readAnalogueInput16Bit[0] = getChannel(AS7341_CHANNEL_415nm_F1);//getChannel(AS7341_CHANNEL_415nm_F1); //added by me set the value of an object
-			  CO_OD_RAM.readAnalogueInput16Bit[1] = getChannel(AS7341_CHANNEL_445nm_F2);
-			  CO_OD_RAM.readAnalogueInput16Bit[2] = getChannel(AS7341_CHANNEL_480nm_F3);
-
-			  CO_OD_RAM.readAnalogueInput16Bit[3] = getThermocoupleTemp(&module,0);
-			  //scenario();
-			  //startReading();
-		  }
-      }while(1);
-}
-void scenario(void){
-    uint16_t sharedvar=16;
-    uint16_t sharedchannel=0xFFFF;
-    uint16_t shareddelay = 5;
-
-  	 uint8_t I2C_address = 0x80;
-  	 PCA9685_t module;
-  	 PCA9685begin(&module,hi2c1,3);
-  	 pca9685_init(&module);
-	 pca9685_pwm(&module, 0, 0, 4095);//turn off pwm1
-	 pca9685_pwm(&module, 1, 0, 4095);//turn off pwm2
-	 for(;;){
-	         for(int i=0; i<1024/sharedvar; i++){
-	        	 pca9685_pwm(&module, 0, 0,  4095-(sharedvar*i));//turn off pwm1
-	        	 pca9685_pwm(&module, 1, 0,  4095-(sharedvar*i));//turn off pwm1
-	        	 //HAL_Delay(10);
-	        	 //pca9685_mult_pwm(0x80, 1, 0, 4095-(16*i));
-	        	 //pca9685_pwm(0x80, 1, 0, 4095-(16*i));
-	         }
-  	  }
-}
 
 /* timer thread executes in constant intervals ********************************/
+/*
 static void tmrTask_thread(void){
 
     for(;;) {
 
-        /* sleep for interval */
+
 
         INCREMENT_1MS(CO_timer1ms);
 
         if(CO->CANmodule[0]->CANnormal) {
             bool_t syncWas;
 
-            /* Process Sync and read inputs */
+
             syncWas = CO_process_SYNC_RPDO(CO, TMR_TASK_INTERVAL);
 
-            /* Further I/O or nonblocking application code may go here. */
 
-            /* Write outputs */
             CO_process_TPDO(CO, syncWas, TMR_TASK_INTERVAL);
 
-            /* verify timer overflow */
+
             if(0) {
                 CO_errorReport(CO->em, CO_EM_ISR_TIMER_OVERFLOW, CO_EMC_SOFTWARE_INTERNAL, 0U);
             }
         }
     }
 }
+*/
 /* CAN interrupt function *****************************************************/
-void /* interrupt */ CO_CAN1InterruptHandler(void){
+/*
+void  CO_CAN1InterruptHandler(void){
     CO_CANinterrupt(CO->CANmodule[0]);
-
-
-    /* clear interrupt flag */
 }
+*/

@@ -41,8 +41,10 @@ Core/Src/application.o: ../Core/Src/application.c ../Core/Inc/CANopen.h \
  D:/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/CanOPEN/CO_SYNC.h \
  D:/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/CanOPEN/CO_PDO.h \
  D:/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/CanOPEN/CO_HBconsumer.h \
- ../Core/Inc/i2c.h ../Core/Inc/AS7341.h ../Core/Inc/MCP9600.h \
- ../Core/Inc/PCA9685.h
+ ../Core/Inc/i2c.h \
+ D:/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/AS7341/AS7341.h \
+ D:/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/MCP9600/MCP9600.h \
+ D:/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/PCA9685/PCA9685.h
 
 ../Core/Inc/CANopen.h:
 
@@ -136,8 +138,8 @@ D:/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/CanOPEN/CO_HBconsumer.h:
 
 ../Core/Inc/i2c.h:
 
-../Core/Inc/AS7341.h:
+D:/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/AS7341/AS7341.h:
 
-../Core/Inc/MCP9600.h:
+D:/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/MCP9600/MCP9600.h:
 
-../Core/Inc/PCA9685.h:
+D:/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/PCA9685/PCA9685.h:

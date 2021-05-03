@@ -138,8 +138,8 @@ void StartDefaultTask(void *argument)
   /* Infinite loop */
   for(;;)
   {
-	  spectro();
-	  //programStart();
+	  //spectro();
+	  programStart();
   }
   /* USER CODE END StartDefaultTask */
 }
