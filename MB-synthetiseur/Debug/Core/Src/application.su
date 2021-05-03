@@ -4,6 +4,6 @@ application.c:165:6:programEnd	4	static
 application.c:171:6:programAsync	16	static
 application.c:177:6:program1ms	8	static
 application.c:180:6:spectro	200	static
-application.c:207:6:scenario	192	static
-application.c:230:13:tmrTask_thread	16	static
-application.c:257:22:CO_CAN1InterruptHandler	8	static
+application.c:214:6:scenario	192	static
+application.c:237:13:tmrTask_thread	16	static
+application.c:264:22:CO_CAN1InterruptHandler	8	static
