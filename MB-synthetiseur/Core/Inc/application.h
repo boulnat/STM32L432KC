@@ -8,6 +8,77 @@
 #ifndef INC_APPLICATION_H_
 #define INC_APPLICATION_H_
 
+  /*!
+   *    @brief  state of the lamp
+   */
+typedef enum {
+	ERROR_STATE,
+	INIT_SENSOR,
+	INIT_CAN,
+	WAIT,
+	CONFIG,
+	RUN
+}SystemState;
+
+typedef enum {
+	ST,
+	CHANNEL_1,
+	T,
+	PWM
+}pidRegister_t;
+
+/*!
+ *    @brief  main application
+ */
+uint8_t application(void);
+
+/*!
+ *    @brief  Sets up the hardware and initializes I2C
+ *    @param  hi2c1
+ *            I2C handle Structure definition
+ *    @return True.
+ */
+uint8_t initCan(void);
+
+/*!
+ *    @brief  Sets up the hardware and initializes I2C
+ *    @param  hi2c1
+ *            I2C handle Structure definition
+ *    @return True.
+ */
+uint8_t initSensor(void);
+
+/*!
+ *    @brief  Sets up the hardware and initializes I2C
+ *    @param  hi2c1
+ *            I2C handle Structure definition
+ *    @return True.
+ */
+void errorHandler(void);
+
+/*!
+ *    @brief  Sets up the hardware and initializes I2C
+ *    @param  hi2c1
+ *            I2C handle Structure definition
+ *    @return True.
+ */
+uint8_t idle(void);
+
+/*!
+ *    @brief  Sets up the hardware and initializes I2C
+ *    @param  hi2c1
+ *            I2C handle Structure definition
+ *    @return True.
+ */
+uint8_t run(void);
+
+/*!
+ *    @brief  Sets up the hardware and initializes I2C
+ *    @param  hi2c1
+ *            I2C handle Structure definition
+ *    @return True.
+ */
+uint8_t config(void);
 
 /**
  * @defgroup CO_application Application interface
@@ -131,5 +202,8 @@ void program1ms(void);
 
 void scenario(void);
 void spectro(void);
+void temperature(void);
+
+uint32_t MAP(uint32_t au32_IN, uint32_t au32_INmin, uint32_t au32_INmax, uint32_t au32_OUTmin, uint32_t au32_OUTmax);
 
 #endif /* INC_APPLICATION_H_ */

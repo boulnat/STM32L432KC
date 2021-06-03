@@ -1,13 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item key="selection" value="0x02"/>
+		<item key="selection" value="2100"/>
 		<item key="wrap" value="false"/>
 		<item key="casesensitive" value="true"/>
 		<item key="wholeword" value="true"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
+			<item value="2100"/>
+			<item value="0x2100"/>
+			<item value="pid."/>
+			<item value="-&gt;"/>
+			<item value="AS7341_STATUS2"/>
+			<item value="AS7341_STATUS"/>
+			<item value="getAllChannels"/>
+			<item value="startReading"/>
 			<item value="0x02"/>
 			<item value="as7341_enable_reg"/>
 			<item value="enableSpectralMeasurement"/>
@@ -15,16 +23,10 @@
 			<item value="powerEnable"/>
 			<item value="enableSMUX"/>
 			<item value="err"/>
-			<item value="getChannel"/>
-			<item value="writeRegister"/>
-			<item value="checkReadingProgress"/>
-			<item value="scenario"/>
-			<item value="as7341_gain_t"/>
-			<item value="HAL"/>
-			<item value="HALµ"/>
-			<item value="init"/>
 		</list>
 		<list key="replacehistory">
+			<item value="pid-&gt;"/>
+			<item value="."/>
 			<item value="as7341._readingState"/>
 			<item value="as7341._channel_readings"/>
 			<item value="&amp;as7341.hi2c"/>

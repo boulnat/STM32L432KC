@@ -13,7 +13,7 @@
 bool PCM9600begin(PCM9600_t *module, I2C_HandleTypeDef hi2c1){
 	module->hi2c = hi2c1;
 	module->sensor_ID = 0x80;
-	return 1;
+	return 0;
 }
 /*
 bool available()

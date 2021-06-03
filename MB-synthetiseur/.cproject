@@ -260,6 +260,8 @@
                                     <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MB-synthetiseur/Drivers/PCA9685}&quot;"/>
                                     									
                                     <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MB-synthetiseur/Drivers/MCP9600}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MB-synthetiseur/Drivers/PID}&quot;"/>
                                     								
                                 </option>
                                 								
@@ -348,6 +350,8 @@
                                     <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MB-synthetiseur/Drivers/PCA9685}&quot;"/>
                                     									
                                     <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MB-synthetiseur/Drivers/MCP9600}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MB-synthetiseur/Drivers/PID}&quot;"/>
                                     								
                                 </option>
                                 								
@@ -642,6 +646,8 @@
                                     <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MB-synthetiseur/Drivers/CanOPEN}&quot;"/>
                                     									
                                     <listOptionValue builtIn="false" value="/MB-synthetiseur/Drivers"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/MB-synthetiseur/Drivers/PID}&quot;"/>
                                     								
                                 </option>
                                 								

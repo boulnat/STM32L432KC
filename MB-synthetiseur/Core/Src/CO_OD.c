@@ -77,6 +77,7 @@ struct sCO_OD_RAM CO_OD_RAM = {
 /*2110*/ {0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L},
 /*2120*/ {0x5, 0x1234567890ABCDEFLL, 0x234567890ABCDEF1LL, 12.345, 456.789, 0},
 /*2130*/ {0x3, {'-', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}, 0, 0x0L},
+/*2500*/ {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}, /* added by me */
 /*6000*/ {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0},
 /*6200*/ {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0},
 /*6401*/ {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -351,6 +352,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
 {0x2112, 0x10, 0xFF,  4, (void*)&CO_OD_EEPROM.variableNVInt32[0]},
 {0x2120, 0x05, 0x00,  0, (void*)&OD_record2120},
 {0x2130, 0x03, 0x00,  0, (void*)&OD_record2130},
+{0x2500, 0x0A, 0xFF,  4, (void*)&CO_OD_RAM.pidRegister[0]}, /* added by me */
 {0x6000, 0x08, 0x76,  1, (void*)&CO_OD_RAM.readInput8Bit[0]},
 {0x6200, 0x08, 0x3E,  1, (void*)&CO_OD_RAM.writeOutput8Bit[0]},
 {0x6401, 0x0C, 0xB6,  2, (void*)&CO_OD_RAM.readAnalogueInput16Bit[0]},

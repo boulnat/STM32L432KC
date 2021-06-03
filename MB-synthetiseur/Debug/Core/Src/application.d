@@ -1,4 +1,6 @@
-Core/Src/application.o: ../Core/Src/application.c ../Core/Inc/CANopen.h \
+Core/Src/application.o: ../Core/Src/application.c \
+ D:/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/PID/PID.h \
+ ../Core/Inc/CANopen.h \
  D:/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/CanOPEN/CO_driver.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h \
  ../Core/Inc/stm32l4xx_hal_conf.h \
@@ -44,7 +46,10 @@ Core/Src/application.o: ../Core/Src/application.c ../Core/Inc/CANopen.h \
  ../Core/Inc/i2c.h \
  D:/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/AS7341/AS7341.h \
  D:/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/MCP9600/MCP9600.h \
- D:/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/PCA9685/PCA9685.h
+ D:/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/PCA9685/PCA9685.h \
+ ../Core/Inc/application.h
+
+D:/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/PID/PID.h:
 
 ../Core/Inc/CANopen.h:
 
@@ -143,3 +148,5 @@ D:/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/AS7341/AS7341.h:
 D:/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/MCP9600/MCP9600.h:
 
 D:/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/PCA9685/PCA9685.h:
+
+../Core/Inc/application.h:

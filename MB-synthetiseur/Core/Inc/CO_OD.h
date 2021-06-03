@@ -107,7 +107,7 @@
 /*******************************************************************************
    OBJECT DICTIONARY
 *******************************************************************************/
-   #define CO_OD_NoOfElements             55
+   #define CO_OD_NoOfElements             56
 
 
 /*******************************************************************************
@@ -187,7 +187,7 @@
 /*******************************************************************************
    STRUCTURES FOR VARIABLES IN DIFFERENT MEMORY LOCATIONS
 *******************************************************************************/
-#define  CO_OD_FIRST_LAST_WORD     0x55 //Any value from 0x01 to 0xFE. If changed, EEPROM will be reinitialized.
+#define  CO_OD_FIRST_LAST_WORD     0x56 //Any value from 0x01 to 0xFE. If changed, EEPROM will be reinitialized.
 
 /***** Structure for RAM variables ********************************************/
 struct sCO_OD_RAM{
@@ -207,6 +207,7 @@ struct sCO_OD_RAM{
 /*2110      */ INTEGER32      variableInt32[16];
 /*2120      */ OD_testVar_t   testVar;
 /*2130      */ OD_time_t      time;
+/*2500		*/ UNSIGNED16	  pidRegister[10]; /* add by me */
 /*6000      */ UNSIGNED8      readInput8Bit[8];
 /*6200      */ UNSIGNED8      writeOutput8Bit[8];
 /*6401      */ INTEGER16      readAnalogueInput16Bit[12];
@@ -415,6 +416,10 @@ extern struct sCO_OD_ROM CO_OD_ROM;
 
 /*2130, Data Type: OD_time_t */
       #define OD_time                                    CO_OD_RAM.time
+
+/*2500, Data Type UNSIGNED16, Array[10]*/
+      #define OD_pidRegister							 CO_OD_RAM.pidRegister	/* added by me */
+	  #define ODL_pidRegister_arrayLength										/* added by me */
 
 /*6000, Data Type: UNSIGNED8, Array[8] */
       #define OD_readInput8Bit                           CO_OD_RAM.readInput8Bit

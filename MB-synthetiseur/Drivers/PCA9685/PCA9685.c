@@ -16,7 +16,7 @@ PCA9685_ReturnError_t errPCA9685 = 0;
 bool PCA9685begin(PCA9685_t *module, I2C_HandleTypeDef hi2c1, uint8_t prescale){
 	module->hi2c = hi2c1;
 	module->sensor_ID = 0x80;
-	return 1;
+	return 0;
 }
 
 void reset(){
