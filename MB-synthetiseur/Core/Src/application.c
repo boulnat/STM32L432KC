@@ -2,7 +2,7 @@
  * application.c
  *
  *  Created on: Apr 17, 2021
- *      Author: boulnat
+ *      Author: Sajl
  */
 
 #include <PID.h>
