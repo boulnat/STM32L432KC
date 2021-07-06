@@ -410,6 +410,7 @@ CO_ReturnError_t CO_init(
     if(err){CO_delete(CANbaseAddress); return err;}
 
 
+
     err = CO_EM_init(
             CO->em,
             CO->emPr,

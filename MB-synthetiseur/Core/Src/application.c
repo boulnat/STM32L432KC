@@ -77,7 +77,7 @@ void spectro(){
 			  //CO_OD_RAM.readAnalogueInput16Bit[0] = getChannel(AS7341_CHANNEL_415nm_F1);//getChannel(AS7341_CHANNEL_415nm_F1); //added by me set the value of an object
 			  //CO_OD_RAM.readAnalogueInput16Bit[1] = getChannel(AS7341_CHANNEL_445nm_F2);
 			  //CO_OD_RAM.readAnalogueInput16Bit[2] = getChannel(AS7341_CHANNEL_480nm_F3);
-			  CO_OD_RAM.pidRegister[CHANNEL_1] = getChannel(AS7341_CHANNEL_590nm_F6);
+			  CO_OD_RAM.spectroRegister[CHANNEL_1] = getChannel(AS7341_CHANNEL_590nm_F6);
 
 			  //CO_OD_RAM.readAnalogueInput16Bit[3] = getThermocoupleTemp(&module,0);
 			  //scenario();
@@ -159,9 +159,15 @@ void programStart(void){
 	          //}
 
 
+
 	          /* Configure Timer interrupt function for execution every 1 millisecond */
 	          /* Configure CAN transmit and receive interrupt */
 	          err = CO_init((uint32_t)&hcan1, 2, 20);
+
+	          //CO_errorReset();
+	          for (int i = 0; i < ODL_errorStatusBits_stringLength; i++) {
+	        	  OD_errorStatusBits[i] = 0;
+	          }
 
 	          if(err != CO_ERROR_NO)
 	             {
@@ -179,6 +185,7 @@ void programStart(void){
 	          //cansend can0 000#010(0)
 	          //CO->NMT->operatingState = CO_NMT_OPERATIONAL;//added by me
 	          //CO_OD_ROM.producerHeartbeatTime = 0x50;//added by me
+	          CO_OD_RAM.errorRegister=0;
 
 	          while(reset_co == CO_RESET_NOT){
 	                  	  /* loop for normal program execution ******************************************/
@@ -191,12 +198,14 @@ void programStart(void){
 
 	                        /* CANopen process */
 
-	                        reset_co = CO_process(CO, timer1msDiff, NULL);
+	                        reset_co = CO_process(CO,100, NULL);
 
 	                        /* Nonblocking application code may go here. */
-	                        if(CO->CANmodule[0]->CANnormal)
+	                        //if(CO->CANmodule[0]->CANnormal)
+	                        if(CO->NMT->operatingState)
 	                        {
-	                             bool_t syncWas;
+
+	                        	bool_t syncWas;
 
 	                             /* Process Sync and read inputs */
 
