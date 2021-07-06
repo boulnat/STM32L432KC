@@ -1,5 +1,5 @@
 Core/Src/CO_OD.o: ../Core/Src/CO_OD.c \
- D:/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/CanOPEN/CO_driver.h \
+ C:/Users/sajl9/OneDrive/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/CanOPEN/CO_driver.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h \
  ../Core/Inc/stm32l4xx_hal_conf.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_rcc.h \
@@ -35,9 +35,9 @@ Core/Src/CO_OD.o: ../Core/Src/CO_OD.c \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart_ex.h \
  ../Core/Inc/can.h ../Core/Inc/main.h ../Core/Inc/CO_OD.h \
- D:/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/CanOPEN/CO_SDO.h
+ C:/Users/sajl9/OneDrive/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/CanOPEN/CO_SDO.h
 
-D:/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/CanOPEN/CO_driver.h:
+C:/Users/sajl9/OneDrive/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/CanOPEN/CO_driver.h:
 
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h:
 
@@ -113,4 +113,4 @@ D:/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/CanOPEN/CO_driver.h:
 
 ../Core/Inc/CO_OD.h:
 
-D:/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/CanOPEN/CO_SDO.h:
+C:/Users/sajl9/OneDrive/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/CanOPEN/CO_SDO.h:

@@ -33,7 +33,7 @@ Drivers/AS7341/AS7341.o: ../Drivers/AS7341/AS7341.c ../Core/Inc/main.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_tim_ex.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart_ex.h \
- D:/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/AS7341/AS7341.h
+ C:/Users/sajl9/OneDrive/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/AS7341/AS7341.h
 
 ../Core/Inc/main.h:
 
@@ -105,4 +105,4 @@ Drivers/AS7341/AS7341.o: ../Drivers/AS7341/AS7341.c ../Core/Inc/main.h \
 
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart_ex.h:
 
-D:/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/AS7341/AS7341.h:
+C:/Users/sajl9/OneDrive/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/AS7341/AS7341.h:

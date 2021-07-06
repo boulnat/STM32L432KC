@@ -27,7 +27,10 @@ extern "C" {
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
+
 /* USER CODE BEGIN Includes */
+
+
 
 /* USER CODE END Includes */
 
@@ -40,6 +43,16 @@ extern I2C_HandleTypeDef hi2c1;
 void MX_I2C1_Init(void);
 
 /* USER CODE BEGIN Prototypes */
+typedef struct
+{
+  I2C_HandleTypeDef   instance;
+  uint16_t            sdaPin;
+  GPIO_TypeDef*       sdaPort;
+  uint16_t            sclPin;
+  GPIO_TypeDef*       sclPort;
+}I2C_Module;
+
+void I2C_ClearBusyFlagErratum(I2C_Module* i2c);
 
 /* USER CODE END Prototypes */
 

@@ -33,7 +33,7 @@ Drivers/PCA9685/PCA9685.o: ../Drivers/PCA9685/PCA9685.c \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_tim_ex.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart_ex.h \
- D:/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/PCA9685/PCA9685.h
+ C:/Users/sajl9/OneDrive/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/PCA9685/PCA9685.h
 
 ../Core/Inc/main.h:
 
@@ -105,4 +105,4 @@ Drivers/PCA9685/PCA9685.o: ../Drivers/PCA9685/PCA9685.c \
 
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart_ex.h:
 
-D:/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/PCA9685/PCA9685.h:
+C:/Users/sajl9/OneDrive/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/PCA9685/PCA9685.h:

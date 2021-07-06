@@ -47,9 +47,9 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Core/Inc/adc.h ../Core/Inc/main.h ../Core/Inc/can.h ../Core/Inc/dma.h \
  ../Core/Inc/i2c.h ../Core/Inc/tim.h ../Core/Inc/usart.h \
  ../Core/Inc/gpio.h \
- D:/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/AS7341/AS7341.h \
- D:/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/MCP9600/MCP9600.h \
- D:/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/PCA9685/PCA9685.h
+ C:/Users/sajl9/OneDrive/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/AS7341/AS7341.h \
+ C:/Users/sajl9/OneDrive/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/MCP9600/MCP9600.h \
+ C:/Users/sajl9/OneDrive/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/PCA9685/PCA9685.h
 
 ../Core/Inc/main.h:
 
@@ -159,8 +159,8 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 
 ../Core/Inc/gpio.h:
 
-D:/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/AS7341/AS7341.h:
+C:/Users/sajl9/OneDrive/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/AS7341/AS7341.h:
 
-D:/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/MCP9600/MCP9600.h:
+C:/Users/sajl9/OneDrive/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/MCP9600/MCP9600.h:
 
-D:/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/PCA9685/PCA9685.h:
+C:/Users/sajl9/OneDrive/Documents/GitHub/STM32L432KC/MB-synthetiseur/Drivers/PCA9685/PCA9685.h:

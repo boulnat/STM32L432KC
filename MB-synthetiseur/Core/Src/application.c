@@ -28,7 +28,24 @@ CO_NMT_reset_cmd_t reset_co = CO_RESET_NOT;
 
 uint8_t initSensor(){
 	uint8_t status = 0;
+	I2C_Module i2cm;
+	i2cm.instance=hi2c1;
+	i2cm.sdaPin=GPIO_PIN_6;
+	i2cm.sdaPort=GPIOB;
+	i2cm.sclPin=GPIO_PIN_7;
+	i2cm.sclPort=GPIOB;
+
+	I2C_ClearBusyFlagErratum(&i2cm);
+
+	do{
+
 	status = PCM9600begin(&module_PCM9600_t, hi2c1);
+
+	status = PCA9685begin(&module_PCA9685_t,hi2c1,3);
+	pca9685_init(&module_PCA9685_t);
+	pca9685_pwm(&module_PCA9685_t, 0, 0, 4095);//turn off pwm1
+	pca9685_pwm(&module_PCA9685_t, 1, 0, 4095);//turn off pwm2
+
 
 	status = AS7341init(hi2c1, 0x80);
 	/*  Tint = (ATIME + 1) × (ASTEP + 1) × 2.78µs
@@ -38,10 +55,9 @@ uint8_t initSensor(){
 	status = setATIME(100);
 	status = setGain(AS7341_GAIN_256X);
 
-	status = PCA9685begin(&module_PCA9685_t,hi2c1,3);
-	pca9685_init(&module_PCA9685_t);
-	pca9685_pwm(&module_PCA9685_t, 0, 0, 4095);//turn off pwm1
-	pca9685_pwm(&module_PCA9685_t, 1, 0, 4095);//turn off pwm2
+	osDelay(5000);
+
+	}while(status!=0);
 
 	return status;
 }
