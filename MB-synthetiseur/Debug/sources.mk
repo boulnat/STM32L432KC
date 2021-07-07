@@ -24,6 +24,7 @@ Core/Src \
 Core/Startup \
 Drivers/AS7341 \
 Drivers/CanOPEN \
+Drivers/INA226 \
 Drivers/MCP9600 \
 Drivers/PCA9685 \
 Drivers/PID \

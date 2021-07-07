@@ -28,6 +28,7 @@
 "Drivers/CanOPEN/CO_driver.o"
 "Drivers/CanOPEN/CO_trace.o"
 "Drivers/CanOPEN/crc16-ccitt.o"
+"Drivers/INA226/INA226.o"
 "Drivers/MCP9600/MCP9600.o"
 "Drivers/PCA9685/PCA9685.o"
 "Drivers/PID/PID.o"

@@ -11,6 +11,7 @@
 #include "AS7341.h"
 #include "MCP9600.h"
 #include "PCA9685.h"
+#include "INA226.h"
 #include "application.h"
 
 #define TMR_TASK_INTERVAL   (1000)          /* Interval of tmrTask thread in microseconds */
@@ -20,7 +21,14 @@
 volatile uint16_t   CO_timer1ms = 0U;   /* variable increments each millisecond */
 PCM9600_t module_PCM9600_t;
 PCA9685_t module_PCA9685_t;
+INA226_t module_INA226_t;
 PID_t module_PID_t;
+
+
+float percent=100;
+float cnst=409.5;
+float ref=4095;
+int go=0;
 
 CO_ReturnError_t err;
 uint16_t timer1msPrevious;
@@ -55,6 +63,12 @@ uint8_t initSensor(){
 	status = setATIME(100);
 	status = setGain(AS7341_GAIN_256X);
 
+	//status = INA226begin(&module_INA226_t, hi2c1);
+	//status = INA226configure(INA226_AVERAGES_1, INA226_BUS_CONV_TIME_1100US, INA226_SHUNT_CONV_TIME_1100US, INA226_MODE_SHUNT_BUS_CONT);
+	// Calibrate INA226. Rshunt = 0.01 ohm, Max excepted current = 4A
+	//status = INA226calibrate(0.01, 4);
+
+
 	osDelay(5000);
 
 	}while(status!=0);
@@ -77,7 +91,16 @@ void spectro(){
 			  //CO_OD_RAM.readAnalogueInput16Bit[0] = getChannel(AS7341_CHANNEL_415nm_F1);//getChannel(AS7341_CHANNEL_415nm_F1); //added by me set the value of an object
 			  //CO_OD_RAM.readAnalogueInput16Bit[1] = getChannel(AS7341_CHANNEL_445nm_F2);
 			  //CO_OD_RAM.readAnalogueInput16Bit[2] = getChannel(AS7341_CHANNEL_480nm_F3);
-			  CO_OD_RAM.spectroRegister[CHANNEL_1] = getChannel(AS7341_CHANNEL_590nm_F6);
+			  CO_OD_RAM.spectroRegister[AS7341_CHANNEL_415nm_F1] = getChannel(AS7341_CHANNEL_415nm_F1);
+			  CO_OD_RAM.spectroRegister[AS7341_CHANNEL_445nm_F2] = getChannel(AS7341_CHANNEL_445nm_F2);
+			  CO_OD_RAM.spectroRegister[AS7341_CHANNEL_480nm_F3] = getChannel(AS7341_CHANNEL_480nm_F3);
+			  CO_OD_RAM.spectroRegister[AS7341_CHANNEL_515nm_F4] = getChannel(AS7341_CHANNEL_515nm_F4);
+			  CO_OD_RAM.spectroRegister[AS7341_CHANNEL_555nm_F5] = getChannel(AS7341_CHANNEL_555nm_F5);
+			  CO_OD_RAM.spectroRegister[AS7341_CHANNEL_590nm_F6] = getChannel(AS7341_CHANNEL_590nm_F6);
+			  CO_OD_RAM.spectroRegister[AS7341_CHANNEL_630nm_F7] = getChannel(AS7341_CHANNEL_630nm_F7);
+			  CO_OD_RAM.spectroRegister[AS7341_CHANNEL_680nm_F8] = getChannel(AS7341_CHANNEL_680nm_F8);
+			  CO_OD_RAM.spectroRegister[AS7341_CHANNEL_CLEAR] = getChannel(AS7341_CHANNEL_CLEAR);
+			  CO_OD_RAM.spectroRegister[AS7341_CHANNEL_NIR] = getChannel(AS7341_CHANNEL_NIR);
 
 			  //CO_OD_RAM.readAnalogueInput16Bit[3] = getThermocoupleTemp(&module,0);
 			  //scenario();
@@ -87,8 +110,15 @@ void spectro(){
 }
 
 void temperature(void){
-	CO_OD_RAM.pidRegister[T] = getThermocoupleTemp(&module_PCM9600_t,0);
+	CO_OD_RAM.temperatureRegister = getThermocoupleTemp(&module_PCM9600_t,0);
 }
+
+void multimetre(void){
+	CO_OD_RAM.elecRegister[0]=getMaxCurrent();
+	CO_OD_RAM.elecRegister[2]=getMaxPower();
+	CO_OD_RAM.elecRegister[1]=(float)CO_OD_RAM.elecRegister[2]/CO_OD_RAM.elecRegister[0];
+}
+
 void scenario(void){
     uint16_t sharedvar=16;
     //uint16_t sharedchannel=0xFFFF;
@@ -108,9 +138,128 @@ void scenario(void){
 	        	 //HAL_Delay(10);
 	        	 //pca9685_mult_pwm(0x80, 1, 0, 4095-(16*i));
 	        	 //pca9685_pwm(0x80, 1, 0, 4095-(16*i));
+
 	         }
   	  }
 }
+void test(void){
+    float percent;
+    float cnst;
+    float ref;
+    int go=0;
+
+    cnst=409.5;
+    percent=100;
+    ref=4095;
+
+  	 //uint8_t I2C_address = 0x80;
+	 pca9685_pwm(&module_PCA9685_t, 0, 0, 4095);//turn off pwm1
+	 pca9685_pwm(&module_PCA9685_t, 1, 0, 4095);//turn off pwm2
+	 /*while(percent!=0){
+	        	 pca9685_pwm(&module_PCA9685_t, 0, 0,  ref);//turn off pwm1
+	        	 pca9685_pwm(&module_PCA9685_t, 1, 0,  ref);//turn off pwm1
+	        	 osDelay(5000);
+
+	        	 //HAL_Delay(10);
+	        	 //pca9685_mult_pwm(0x80, 1, 0, 4095-(16*i));
+	        	 //pca9685_pwm(0x80, 1, 0, 4095-(16*i));
+	        	 CO_OD_RAM.spectroRegister[AS7341_CHANNEL_415nm_F1] = getChannel(AS7341_CHANNEL_415nm_F1);
+	        	 CO_OD_RAM.spectroRegister[AS7341_CHANNEL_445nm_F2] = getChannel(AS7341_CHANNEL_445nm_F2);
+	        	 CO_OD_RAM.spectroRegister[AS7341_CHANNEL_480nm_F3] = getChannel(AS7341_CHANNEL_480nm_F3);
+	        	 CO_OD_RAM.spectroRegister[AS7341_CHANNEL_515nm_F4] = getChannel(AS7341_CHANNEL_515nm_F4);
+	        	 CO_OD_RAM.spectroRegister[AS7341_CHANNEL_555nm_F5] = getChannel(AS7341_CHANNEL_555nm_F5);
+	        	 CO_OD_RAM.spectroRegister[AS7341_CHANNEL_590nm_F6] = getChannel(AS7341_CHANNEL_590nm_F6);
+	        	 CO_OD_RAM.spectroRegister[AS7341_CHANNEL_630nm_F7] = getChannel(AS7341_CHANNEL_630nm_F7);
+	        	 CO_OD_RAM.spectroRegister[AS7341_CHANNEL_680nm_F8] = getChannel(AS7341_CHANNEL_680nm_F8);
+	        	 CO_OD_RAM.spectroRegister[AS7341_CHANNEL_CLEAR] = getChannel(AS7341_CHANNEL_CLEAR);
+	        	 CO_OD_RAM.spectroRegister[AS7341_CHANNEL_NIR] = getChannel(AS7341_CHANNEL_NIR);
+
+	        	 percent-=10;
+	        	 ref=ref-cnst;
+
+	        	 go=1;
+
+	         }
+	         */
+	 for (int i=0;i<2;i++){
+		 if (go==0){
+			 pca9685_pwm(&module_PCA9685_t, 0, 0, 4095);//turn off pwm1
+			 pca9685_pwm(&module_PCA9685_t, 1, 0, 4095);//turn off pwm2
+
+			 CO_OD_RAM.spectroRegister[AS7341_CHANNEL_415nm_F1] = getChannel(AS7341_CHANNEL_415nm_F1);
+			 CO_OD_RAM.spectroRegister[AS7341_CHANNEL_445nm_F2] = getChannel(AS7341_CHANNEL_445nm_F2);
+			 CO_OD_RAM.spectroRegister[AS7341_CHANNEL_480nm_F3] = getChannel(AS7341_CHANNEL_480nm_F3);
+			 CO_OD_RAM.spectroRegister[AS7341_CHANNEL_515nm_F4] = getChannel(AS7341_CHANNEL_515nm_F4);
+			 CO_OD_RAM.spectroRegister[AS7341_CHANNEL_555nm_F5] = getChannel(AS7341_CHANNEL_555nm_F5);
+			 CO_OD_RAM.spectroRegister[AS7341_CHANNEL_590nm_F6] = getChannel(AS7341_CHANNEL_590nm_F6);
+			 CO_OD_RAM.spectroRegister[AS7341_CHANNEL_630nm_F7] = getChannel(AS7341_CHANNEL_630nm_F7);
+			 CO_OD_RAM.spectroRegister[AS7341_CHANNEL_680nm_F8] = getChannel(AS7341_CHANNEL_680nm_F8);
+			 CO_OD_RAM.spectroRegister[AS7341_CHANNEL_CLEAR] = getChannel(AS7341_CHANNEL_CLEAR);
+			 CO_OD_RAM.spectroRegister[AS7341_CHANNEL_NIR] = getChannel(AS7341_CHANNEL_NIR);
+
+			 go=1;
+
+		 }
+
+		 else{
+			 pca9685_pwm(&module_PCA9685_t, CH1, 0, CO_OD_RAM.pidRegister[PWM]);
+			 osDelay(5000);
+
+
+			 CO_OD_RAM.spectroRegister[AS7341_CHANNEL_415nm_F1] = getChannel(AS7341_CHANNEL_415nm_F1);
+			 CO_OD_RAM.spectroRegister[AS7341_CHANNEL_445nm_F2] = getChannel(AS7341_CHANNEL_445nm_F2);
+			 CO_OD_RAM.spectroRegister[AS7341_CHANNEL_480nm_F3] = getChannel(AS7341_CHANNEL_480nm_F3);
+			 CO_OD_RAM.spectroRegister[AS7341_CHANNEL_515nm_F4] = getChannel(AS7341_CHANNEL_515nm_F4);
+			 CO_OD_RAM.spectroRegister[AS7341_CHANNEL_555nm_F5] = getChannel(AS7341_CHANNEL_555nm_F5);
+			 CO_OD_RAM.spectroRegister[AS7341_CHANNEL_590nm_F6] = getChannel(AS7341_CHANNEL_590nm_F6);
+			 CO_OD_RAM.spectroRegister[AS7341_CHANNEL_630nm_F7] = getChannel(AS7341_CHANNEL_630nm_F7);
+			 CO_OD_RAM.spectroRegister[AS7341_CHANNEL_680nm_F8] = getChannel(AS7341_CHANNEL_680nm_F8);
+			 CO_OD_RAM.spectroRegister[AS7341_CHANNEL_CLEAR] = getChannel(AS7341_CHANNEL_CLEAR);
+			 CO_OD_RAM.spectroRegister[AS7341_CHANNEL_NIR] = getChannel(AS7341_CHANNEL_NIR);
+
+			 go=0;
+
+
+		 }
+	 }
+
+
+}
+
+void test2(void){
+	pca9685_pwm(&module_PCA9685_t, 0, 0,  ref);//turn off pwm1
+    pca9685_pwm(&module_PCA9685_t, 1, 0,  ref);//turn off pwm1
+	osDelay(5000);
+
+	//HAL_Delay(10);
+	//pca9685_mult_pwm(0x80, 1, 0, 4095-(16*i));
+	//pca9685_pwm(0x80, 1, 0, 4095-(16*i));
+	if (percent>=0){
+	CO_OD_RAM.spectroRegister[AS7341_CHANNEL_415nm_F1] = getChannel(AS7341_CHANNEL_415nm_F1);
+	CO_OD_RAM.spectroRegister[AS7341_CHANNEL_445nm_F2] = getChannel(AS7341_CHANNEL_445nm_F2);
+	CO_OD_RAM.spectroRegister[AS7341_CHANNEL_480nm_F3] = getChannel(AS7341_CHANNEL_480nm_F3);
+	CO_OD_RAM.spectroRegister[AS7341_CHANNEL_515nm_F4] = getChannel(AS7341_CHANNEL_515nm_F4);
+	CO_OD_RAM.spectroRegister[AS7341_CHANNEL_555nm_F5] = getChannel(AS7341_CHANNEL_555nm_F5);
+	CO_OD_RAM.spectroRegister[AS7341_CHANNEL_590nm_F6] = getChannel(AS7341_CHANNEL_590nm_F6);
+	CO_OD_RAM.spectroRegister[AS7341_CHANNEL_630nm_F7] = getChannel(AS7341_CHANNEL_630nm_F7);
+	CO_OD_RAM.spectroRegister[AS7341_CHANNEL_680nm_F8] = getChannel(AS7341_CHANNEL_680nm_F8);
+	CO_OD_RAM.spectroRegister[AS7341_CHANNEL_CLEAR] = getChannel(AS7341_CHANNEL_CLEAR);
+	CO_OD_RAM.spectroRegister[AS7341_CHANNEL_NIR] = getChannel(AS7341_CHANNEL_NIR);
+	}
+	else{
+		pca9685_pwm(&module_PCA9685_t, 0, 0, 4095);//turn off pwm1
+		pca9685_pwm(&module_PCA9685_t, 1, 0, 4095);//turn off pwm2
+
+	}
+
+	percent-=10;
+	ref=ref-cnst;
+
+	go=1;
+
+
+}
+
 /*******************************************************************************/
 void programStart(void){
 	  CO_NMT_reset_cmd_t reset = CO_RESET_NOT;
@@ -120,17 +269,17 @@ void programStart(void){
 	  //Define Variables we'll be connecting to
 
 	  //Specify the links and initial tuning parameters
-	  uint16_t Kp=10, Ki=2, Kd=2, offset_spectro=0;
-	  double Input, Output, Setpoint;
+	  //uint16_t Kp=10, Ki=2, Kd=2, offset_spectro=0;
+	  //double Input, Output, Setpoint;
 
-	  CO_OD_RAM.pidRegister[0] = Kp;
+	  //CO_OD_RAM.pidRegister[0] = Kp;
 
-	  PID(&module_PID_t, &Input, &Output, &Setpoint, Kp,  Ki,  Kd,  P_ON_M,  DIRECT);
-	  SetMode(&module_PID_t, AUTOMATIC);
-	  Setpoint = 10000;
+	  //PID(&module_PID_t, &Input, &Output, &Setpoint, Kp,  Ki,  Kd,  P_ON_M,  DIRECT);
+	  //SetMode(&module_PID_t, AUTOMATIC);
+	  //Setpoint = 10000;
 
 	  spectro();
-	  offset_spectro = getChannel(AS7341_CHANNEL_590nm_F6);
+	  //multimetre();
 
 	  //PIDInit(&module_PID_t, Kp, Ki, Kd, 0.1, 0, 65535, AUTOMATIC, DIRECT);
 	  //module_PID_t.setpoint = 55000;
@@ -202,15 +351,17 @@ void programStart(void){
 
 	                        /* Nonblocking application code may go here. */
 	                        //if(CO->CANmodule[0]->CANnormal)
-	                        if(CO->NMT->operatingState)
+                        	bool_t syncWas;
+
+                             /* Process Sync and read inputs */
+
+
+                             syncWas = CO_process_SYNC_RPDO(CO, 1000);
+
+
+	                        switch(CO->NMT->operatingState)
 	                        {
-
-	                        	bool_t syncWas;
-
-	                             /* Process Sync and read inputs */
-
-
-	                             syncWas = CO_process_SYNC_RPDO(CO, 1000);
+	                        case CO_NMT_OPERATIONAL:
 
 	                             //Kp = CO_OD_RAM.pidRegister[0];
 
@@ -230,37 +381,34 @@ void programStart(void){
 	                              */
 	                             /* 0x2500 */
 	                             //if(CO_OD_RAM.pidRegister[ST]){
-	                            	 pca9685_pwm(&module_PCA9685_t, CH1, 0, CO_OD_RAM.pidRegister[PWM]);
+	                            	 //pca9685_pwm(&module_PCA9685_t, CH1, 0, CO_OD_RAM.pidRegister[PWM]);
 	                             //}
 	                             spectro();
 	                             temperature();
+	                             test2();
+	                             break;
+	                        case CO_NMT_STOPPED:
+	                        	pca9685_pwm(&module_PCA9685_t, 0, 0, 4095);//turn off pwm1
+	                            pca9685_pwm(&module_PCA9685_t, 1, 0, 4095);//turn off pwm2
+	                            break;
+	                        case CO_NMT_INITIALIZING:
+	                        	initSensor();
+	                        break;
+	                        case CO_NMT_PRE_OPERATIONAL:
 
-	                             /* Write outputs */
-	                             //CO->TPDO[0]->CANtxBuff[0].data[0]=getChannel(AS7341_CHANNEL_415nm_F1); //added by me
-	                             //CO->TPDO[0]->CANtxBuff[0].data[1]=getChannel(AS7341_CHANNEL_415nm_F1); //added by me
-	                             //CO->TPDO[0]->CANtxBuff[0].data[2]=getChannel(AS7341_CHANNEL_480nm_F3); //added by me
-	                             //CO->TPDO[0]->CANtxBuff[0].data[3]=getChannel(AS7341_CHANNEL_515nm_F4); //added by me
-	                             //CO->TPDO[0]->CANtxBuff[0].data[4]=getChannel(AS7341_CHANNEL_555nm_F5); //added by me
-	                             //CO->TPDO[0]->CANtxBuff[0].data[5]=getChannel(AS7341_CHANNEL_590nm_F6); //added by me
-	                             //CO->TPDO[0]->CANtxBuff[0].data[6]=getChannel(AS7341_CHANNEL_630nm_F7); //added by me
-	                             //CO->TPDO[0]->CANtxBuff[0].data[7]=getChannel(AS7341_CHANNEL_680nm_F8); //added by me
+	                        	break;
 
-
-
-
-	                             //can be read with cansend can0 60(2)#40 20 21 00 00 00 00 00
-	                             //cansend can0 602#3F006201AF000000
-	                             //cansend can0 602#4000620100000000
-
-	                             CO_process_TPDO(CO, syncWas, 1000);
-
-	                             CO_CANpolling_Tx(CO->CANmodule[0]);
-
-	                             /* verify timer overflow */
-	                             if(0) {
-	                                 CO_errorReport(CO->em, CO_EM_ISR_TIMER_OVERFLOW, CO_EMC_SOFTWARE_INTERNAL, 0U);
-	                             }
 	                         }
+
+                            //can be read with cansend can0 60(2)#40 20 21 00 00 00 00 00
+                            //cansend can0 602#3F006201AF000000
+                            //cansend can0 602#4000620100000000
+	                        CO_process_TPDO(CO, syncWas, 1000);
+	                        CO_CANpolling_Tx(CO->CANmodule[0]);
+	                        /* verify timer overflow */
+	                        if(0) {
+	                        	CO_errorReport(CO->em, CO_EM_ISR_TIMER_OVERFLOW, CO_EMC_SOFTWARE_INTERNAL, 0U);
+	                        }
 	                        /* Process EEPROM */
 	                    }
 	                }

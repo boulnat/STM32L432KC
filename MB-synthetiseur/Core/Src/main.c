@@ -35,6 +35,7 @@
 #include <AS7341.h>
 #include <MCP9600.h>
 #include <PCA9685.h>
+#include <INA226.h>
 
 /* USER CODE END Includes */
 

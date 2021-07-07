@@ -201,8 +201,11 @@ void programAsync(uint16_t timer1msDiff);
 void program1ms(void);
 
 void scenario(void);
+void test(void);
+void test2(void);
 void spectro(void);
 void temperature(void);
+void multimetre(void);
 
 uint32_t MAP(uint32_t au32_IN, uint32_t au32_INmin, uint32_t au32_INmax, uint32_t au32_OUTmin, uint32_t au32_OUTmax);
 

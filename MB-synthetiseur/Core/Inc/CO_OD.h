@@ -107,7 +107,7 @@
 /*******************************************************************************
    OBJECT DICTIONARY
 *******************************************************************************/
-   #define CO_OD_NoOfElements             56
+   #define CO_OD_NoOfElements             60
 
 
 /*******************************************************************************
@@ -208,7 +208,9 @@ struct sCO_OD_RAM{
 /*2120      */ OD_testVar_t   testVar;
 /*2130      */ OD_time_t      time;
 /*2500		*/ UNSIGNED16	  pidRegister[10]; /* add by me */
-/*2501		*/ UNSIGNED16	  spectroRegister[12]; /* add by me */
+/*2501		*/ UNSIGNED16	  spectroRegister[10]; /* add by me */
+/*2502		*/ UNSIGNED8	  temperatureRegister; /* add by me */
+/*2503		*/ REAL32    	  elecRegister[3]; /* add by me */
 /*6000      */ UNSIGNED8      readInput8Bit[8];
 /*6200      */ UNSIGNED8      writeOutput8Bit[8];
 /*6401      */ INTEGER16      readAnalogueInput16Bit[12];
@@ -420,12 +422,18 @@ extern struct sCO_OD_ROM CO_OD_ROM;
 
 /*2500, Data Type UNSIGNED16, Array[10]*/
       #define OD_pidRegister							 CO_OD_RAM.pidRegister	/* added by me */
-	  #define ODL_pidRegister_arrayLength										/* added by me */
+	  #define ODL_pidRegister_arrayLength				 10					/* added by me */
 
-/*2501, Data Type UNSIGNED16, Array[12]*/
+/*2501, Data Type UNSIGNED16, Array[10]*/
       #define OD_spectroRegister						 CO_OD_RAM.spectroRegister	/* added by me */
-	  #define ODL_spectroRegister_arrayLength										/* added by me */
+	  #define ODL_spectroRegister_arrayLength			 10					/* added by me */
 
+/*2502, Data Type UNSIGNED8*/
+      #define OD_temperatureRegister					 CO_OD_RAM.temperatureRegister	/* added by me */
+
+/*2503, Data Type REAL32, Array[3] */
+      #define OD_elecRegister					         CO_OD_RAM.elecRegister	/* added by me */
+      #define ODL_elecRegister_arrayLength			     3					/* added by me */
 
 /*6000, Data Type: UNSIGNED8, Array[8] */
       #define OD_readInput8Bit                           CO_OD_RAM.readInput8Bit

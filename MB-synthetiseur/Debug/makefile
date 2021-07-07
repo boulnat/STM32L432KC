@@ -17,6 +17,7 @@ RM := rm -rf
 -include Drivers/PID/subdir.mk
 -include Drivers/PCA9685/subdir.mk
 -include Drivers/MCP9600/subdir.mk
+-include Drivers/INA226/subdir.mk
 -include Drivers/CanOPEN/subdir.mk
 -include Drivers/AS7341/subdir.mk
 -include Core/Startup/subdir.mk
