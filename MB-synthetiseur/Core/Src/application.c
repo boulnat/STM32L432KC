@@ -24,11 +24,21 @@ PCA9685_t module_PCA9685_t;
 INA226_t module_INA226_t;
 PID_t module_PID_t;
 
+//Specify the links and initial tuning parameters
+uint16_t Kp=0, Ki=15, Kd=0, offset_spectro=0;
+double Input, Output, Setpoint;
+double desire;
+double outputcorrected;
 
-float percent=100;
+double consigne=0;
+float percent=100;  //calcul the value of the spectro for each 10%
 float cnst=409.5;
 float ref=4095;
 int go=0;
+
+//test PID to get the desired value
+uint16_t colorvalue;
+uint16_t yellowsaturation=65535;
 
 CO_ReturnError_t err;
 uint16_t timer1msPrevious;
@@ -82,6 +92,7 @@ void spectro(){
 
       uint16_t buff[12];
       //do{
+
 		  if(!readAllChannels(buff)){
 
 
@@ -109,6 +120,37 @@ void spectro(){
       //}while(1);
 }
 
+void calibration(){
+	uint16_t buff[12];
+	      //do{
+
+			  if(!readAllChannels(buff)){
+
+
+				  //cansend can0 602#3B00180510000000 ask for PDO every 10s
+				  //cansend can0 602#4001640100000000
+				  //!!!!weird number if scan is too fast
+				  //CO_OD_RAM.readAnalogueInput16Bit[0] = getChannel(AS7341_CHANNEL_415nm_F1);//getChannel(AS7341_CHANNEL_415nm_F1); //added by me set the value of an object
+				  //CO_OD_RAM.readAnalogueInput16Bit[1] = getChannel(AS7341_CHANNEL_445nm_F2);
+				  //CO_OD_RAM.readAnalogueInput16Bit[2] = getChannel(AS7341_CHANNEL_480nm_F3);
+				  CO_OD_RAM.spectroRegister[AS7341_CHANNEL_415nm_F1] = getChannel(AS7341_CHANNEL_415nm_F1);
+				  CO_OD_RAM.spectroRegister[AS7341_CHANNEL_445nm_F2] = getChannel(AS7341_CHANNEL_445nm_F2);
+				  CO_OD_RAM.spectroRegister[AS7341_CHANNEL_480nm_F3] = getChannel(AS7341_CHANNEL_480nm_F3);
+				  CO_OD_RAM.spectroRegister[AS7341_CHANNEL_515nm_F4] = getChannel(AS7341_CHANNEL_515nm_F4);
+				  CO_OD_RAM.spectroRegister[AS7341_CHANNEL_555nm_F5] = getChannel(AS7341_CHANNEL_555nm_F5);
+				  CO_OD_RAM.spectroRegister[AS7341_CHANNEL_590nm_F6] = getChannel(AS7341_CHANNEL_590nm_F6);
+				  CO_OD_RAM.spectroRegister[AS7341_CHANNEL_630nm_F7] = getChannel(AS7341_CHANNEL_630nm_F7);
+				  CO_OD_RAM.spectroRegister[AS7341_CHANNEL_680nm_F8] = getChannel(AS7341_CHANNEL_680nm_F8);
+				  CO_OD_RAM.spectroRegister[AS7341_CHANNEL_CLEAR] = getChannel(AS7341_CHANNEL_CLEAR);
+				  CO_OD_RAM.spectroRegister[AS7341_CHANNEL_NIR] = getChannel(AS7341_CHANNEL_NIR);
+
+
+
+				  offset_spectro+=CO_OD_RAM.spectroRegister[AS7341_CHANNEL_555nm_F5];
+
+
+}
+}
 void temperature(void){
 	CO_OD_RAM.temperatureRegister = getThermocoupleTemp(&module_PCM9600_t,0);
 }
@@ -155,10 +197,12 @@ void test(void){
   	 //uint8_t I2C_address = 0x80;
 	 pca9685_pwm(&module_PCA9685_t, 0, 0, 4095);//turn off pwm1
 	 pca9685_pwm(&module_PCA9685_t, 1, 0, 4095);//turn off pwm2
-	 /*while(percent!=0){
+	 while(percent!=0){
 	        	 pca9685_pwm(&module_PCA9685_t, 0, 0,  ref);//turn off pwm1
 	        	 pca9685_pwm(&module_PCA9685_t, 1, 0,  ref);//turn off pwm1
 	        	 osDelay(5000);
+
+	        	 spectro();
 
 	        	 //HAL_Delay(10);
 	        	 //pca9685_mult_pwm(0x80, 1, 0, 4095-(16*i));
@@ -180,7 +224,7 @@ void test(void){
 	        	 go=1;
 
 	         }
-	         */
+	         /*
 	 for (int i=0;i<2;i++){
 		 if (go==0){
 			 pca9685_pwm(&module_PCA9685_t, 0, 0, 4095);//turn off pwm1
@@ -222,7 +266,7 @@ void test(void){
 
 		 }
 	 }
-
+*/
 
 }
 
@@ -263,26 +307,32 @@ void test2(void){
 /*******************************************************************************/
 void programStart(void){
 	  CO_NMT_reset_cmd_t reset = CO_RESET_NOT;
+	  uint16_t pwmvalue;
 
 	  /* Configure microcontroller. */
 	  initSensor();
 	  //Define Variables we'll be connecting to
 
-	  //Specify the links and initial tuning parameters
-	  //uint16_t Kp=10, Ki=2, Kd=2, offset_spectro=0;
-	  //double Input, Output, Setpoint;
 
-	  //CO_OD_RAM.pidRegister[0] = Kp;
+	  CO_OD_RAM.pidRegister[0] = Kp;
 
-	  //PID(&module_PID_t, &Input, &Output, &Setpoint, Kp,  Ki,  Kd,  P_ON_M,  DIRECT);
-	  //SetMode(&module_PID_t, AUTOMATIC);
-	  //Setpoint = 10000;
 
-	  spectro();
+	  for (int i=0;i<10;i++){
+	  calibration();
+	  }
+
+
+	  offset_spectro=offset_spectro/10;
+
 	  //multimetre();
 
-	  //PIDInit(&module_PID_t, Kp, Ki, Kd, 0.1, 0, 65535, AUTOMATIC, DIRECT);
-	  //module_PID_t.setpoint = 55000;
+	  CO_OD_RAM.pidRegister[0] = Kp;
+
+	  PID(&module_PID_t, &Input, &Output, &Setpoint, Kp,  Ki,  Kd,  P_ON_E,  DIRECT);
+	  SetMode(&module_PID_t, AUTOMATIC);
+	  consigne=(yellowsaturation*0.05);
+	  module_PID_t.mySetpoint=&consigne;
+
 
 	  /* initialize EEPROM */
 	  /* increase variable each startup. Variable is stored in EEPROM. */
@@ -363,29 +413,38 @@ void programStart(void){
 	                        {
 	                        case CO_NMT_OPERATIONAL:
 
-	                             //Kp = CO_OD_RAM.pidRegister[0];
+	                             Kp = CO_OD_RAM.pidRegister[0];
 
 	                             /* Further I/O or nonblocking application code may go here. */
 	                             /* 16 bit to 12 bit */
-	                             //module_PID_t.input = getChannel(AS7341_CHANNEL_590nm_F6);
-	                             //Input = getChannel(AS7341_CHANNEL_590nm_F6);
+	                             colorvalue=getChannel(AS7341_CHANNEL_555nm_F5);
+	                             Input = abs((getChannel(AS7341_CHANNEL_555nm_F5)-offset_spectro));
+	                             //pwmvalue=Kp*(consigne-Input);
+	                             module_PID_t.myInput = &Input;
+	                             Compute(&module_PID_t);
+	                             //pwmvalue=Output*(4095/offset_spectro);
+	                             pca9685_pwm(&module_PCA9685_t, CH1, 0, Output);
+
+	                             //consigne=yellowsaturation*0.8;
+	                             //module_PID_t.mySetpoint=&consigne;
 
 
-	                             /* hysteresis */
-	                             /*
+	                             /* hysteresis
+
 	                             if((Input+10000)>Setpoint||(Input-10000)<Setpoint){
 	                            	 Compute(&module_PID_t);
 	                            	 Output = MAP(Input, 0, (65535-offset_spectro), 0, 4095);
 	                            	 pca9685_pwm(&module_PCA9685_t, CH1, 0, Output);
-	                             }
-	                              */
+	                             }*/
+
 	                             /* 0x2500 */
 	                             //if(CO_OD_RAM.pidRegister[ST]){
 	                            	 //pca9685_pwm(&module_PCA9685_t, CH1, 0, CO_OD_RAM.pidRegister[PWM]);
 	                             //}
 	                             spectro();
+	                             outputcorrected=abs((getChannel(AS7341_CHANNEL_555nm_F5)-offset_spectro));
 	                             temperature();
-	                             test2();
+	                             //test();
 	                             break;
 	                        case CO_NMT_STOPPED:
 	                        	pca9685_pwm(&module_PCA9685_t, 0, 0, 4095);//turn off pwm1

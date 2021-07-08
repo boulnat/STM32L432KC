@@ -200,6 +200,7 @@ void programAsync(uint16_t timer1msDiff);
  */
 void program1ms(void);
 
+void calibration(void);
 void scenario(void);
 void test(void);
 void test2(void);
