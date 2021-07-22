@@ -1,0 +1,8 @@
+CO_Emergency.c:58:27:CO_ODF_1003	0	static
+CO_Emergency.c:105:27:CO_ODF_1014	16	static
+CO_Emergency.c:123:18:CO_EM_init	32	static
+CO_Emergency.c:185:6:CO_EM_initCallback	0	static
+CO_Emergency.c:282:6:CO_errorReport	32	static,ignoring_inline_asm
+CO_Emergency.c:196:6:CO_EM_process	32	static
+CO_Emergency.c:343:6:CO_errorReset	32	static,ignoring_inline_asm
+CO_Emergency.c:402:8:CO_isError	0	static

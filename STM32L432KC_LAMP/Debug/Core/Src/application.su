@@ -1,0 +1,12 @@
+application.c:49:9:initSensor	104	static
+application.c:90:6:spectro	32	static
+application.c:120:6:calibration	32	static
+application.c:151:6:temperature	8	static
+application.c:155:6:multimetre	8	static
+application.c:161:6:scenario	192	static
+application.c:185:6:programStart	24	static
+application.c:332:6:communicationReset	4	static
+application.c:337:6:programEnd	4	static
+application.c:342:6:programAsync	16	static
+application.c:347:6:program1ms	4	static
+application.c:351:10:MAP	24	static

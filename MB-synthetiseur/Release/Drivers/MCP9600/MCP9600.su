@@ -1,0 +1,15 @@
+MCP9600.c:13:6:PCM9600begin	16	static
+MCP9600.c:104:13:getRawADC	32	static
+MCP9600.c:288:9:readSingleRegister	40	static
+MCP9600.c:120:6:isInputRangeExceeded	8	static
+MCP9600.c:138:20:getAmbientResolution	8	static
+MCP9600.c:157:25:getThermocoupleResolution	8	static
+MCP9600.c:183:20:getThermocoupleType	8	static
+MCP9600.c:305:10:readDoubleRegister	40	static
+MCP9600.c:58:9:getThermocoupleTemp	8	static
+MCP9600.c:322:7:writeSingleRegister	32	static
+MCP9600.c:128:6:setAmbientResolution	16	static
+MCP9600.c:144:6:setThermocoupleResolution	16	static
+MCP9600.c:168:9:setThermocoupleType	8	static
+MCP9600.c:333:7:writeDoubleRegister	24	static
+MCP9600.c:36:6:resetToDefaults	24	static

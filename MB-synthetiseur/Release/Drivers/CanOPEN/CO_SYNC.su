@@ -1,0 +1,6 @@
+CO_SYNC.c:202:27:CO_ODF_1019	24	static
+CO_SYNC.c:169:27:CO_ODF_1006	16	static
+CO_SYNC.c:97:27:CO_ODF_1005	32	static
+CO_SYNC.c:60:13:CO_SYNC_receive	0	static
+CO_SYNC.c:240:18:CO_SYNC_init	56	static
+CO_SYNC.c:318:9:CO_SYNC_process	16	static

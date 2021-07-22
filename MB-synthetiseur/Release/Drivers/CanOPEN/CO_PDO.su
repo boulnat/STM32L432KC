@@ -1,0 +1,16 @@
+CO_PDO.c:208:17:CO_PDOfindMap	48	static
+CO_PDO.c:311:17:CO_RPDOconfigMap	64	static
+CO_PDO.c:598:27:CO_ODF_RPDOmap	32	static
+CO_PDO.c:377:17:CO_TPDOconfigMap	64	static
+CO_PDO.c:664:27:CO_ODF_TPDOmap	32	static
+CO_PDO.c:116:13:CO_RPDOconfigCom	32	static
+CO_PDO.c:436:27:CO_ODF_RPDOcom	16	static
+CO_PDO.c:163:13:CO_TPDOconfigCom	16	static
+CO_PDO.c:507:27:CO_ODF_TPDOcom	16	static
+CO_PDO.c:64:13:CO_PDO_receive	20	static
+CO_PDO.c:726:18:CO_RPDO_init	40	static
+CO_PDO.c:776:18:CO_TPDO_init	40	static
+CO_PDO.c:833:9:CO_TPDOisCOS	16	static
+CO_PDO.c:858:9:CO_TPDOsend	8	static
+CO_PDO.c:907:6:CO_RPDO_process	20	static
+CO_PDO.c:972:6:CO_TPDO_process	24	static

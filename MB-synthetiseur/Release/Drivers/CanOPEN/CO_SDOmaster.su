@@ -1,0 +1,10 @@
+CO_SDOmaster.c:314:13:CO_SDOclient_abort	16	static
+CO_SDOmaster.c:118:13:CO_SDOclient_receive	8	static
+CO_SDOmaster.c:231:6:CO_SDOclient_initCallback	0	static
+CO_SDOmaster.c:242:23:CO_SDOclient_setup	40	static
+CO_SDOmaster.c:190:18:CO_SDOclient_init	24	static
+CO_SDOmaster.c:343:23:CO_SDOclientDownloadInitiate	32	static
+CO_SDOmaster.c:420:23:CO_SDOclientDownload	24	static
+CO_SDOmaster.c:750:23:CO_SDOclientUploadInitiate	16	static
+CO_SDOmaster.c:820:23:CO_SDOclientUpload	40	static
+CO_SDOmaster.c:1246:6:CO_SDOclientClose	0	static

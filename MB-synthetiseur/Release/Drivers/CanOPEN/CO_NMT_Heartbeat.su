@@ -1,0 +1,6 @@
+CO_NMT_Heartbeat.c:59:13:CO_NMT_receive	0	static
+CO_NMT_Heartbeat.c:99:18:CO_NMT_init	40	static
+CO_NMT_Heartbeat.c:160:6:CO_NMT_initCallback	0	static
+CO_NMT_Heartbeat.c:174:6:CO_NMT_blinkingProcess50ms	0	static
+CO_NMT_Heartbeat.c:209:20:CO_NMT_process	32	static
+CO_NMT_Heartbeat.c:350:24:CO_NMT_getInternalState	0	static

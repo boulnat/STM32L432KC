@@ -1,0 +1,5 @@
+canOPEN.c:201:18:CO_init	112	static
+canOPEN.c:572:6:CO_delete	24	static
+canOPEN.c:616:20:CO_process	56	static
+canOPEN.c:677:8:CO_process_SYNC_RPDO	24	static
+canOPEN.c:702:6:CO_process_TPDO	40	static
