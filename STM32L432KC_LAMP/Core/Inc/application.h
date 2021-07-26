@@ -202,11 +202,10 @@ void program1ms(void);
 
 void calibration(void);
 void scenario(void);
-void test(void);
-void test2(void);
 void spectro(void);
 void temperature(void);
 void multimetre(void);
+void ventilator(uint32_t fan);
 
 uint32_t MAP(uint32_t au32_IN, uint32_t au32_INmin, uint32_t au32_INmax, uint32_t au32_OUTmin, uint32_t au32_OUTmax);
 
