@@ -207,7 +207,7 @@ struct sCO_OD_RAM{
 /*2110      */ INTEGER32      variableInt32[16];
 /*2120      */ OD_testVar_t   testVar;
 /*2130      */ OD_time_t      time;
-/*2500		*/ UNSIGNED16	  pidRegister[10]; /* add by me */
+/*2500		*/ UNSIGNED16	  pidRegister[16]; /* add by me */
 /*2501		*/ UNSIGNED16	  spectroRegister[10]; /* add by me */
 /*2502		*/ UNSIGNED8	  temperatureRegister; /* add by me */
 /*2503		*/ REAL32    	  elecRegister[3]; /* add by me */
@@ -420,9 +420,9 @@ extern struct sCO_OD_ROM CO_OD_ROM;
 /*2130, Data Type: OD_time_t */
       #define OD_time                                    CO_OD_RAM.time
 
-/*2500, Data Type UNSIGNED16, Array[10]*/
+/*2500, Data Type UNSIGNED16, Array[16]*/
       #define OD_pidRegister							 CO_OD_RAM.pidRegister	/* added by me */
-	  #define ODL_pidRegister_arrayLength				 10					/* added by me */
+	  #define ODL_pidRegister_arrayLength				 16					/* added by me */
 
 /*2501, Data Type UNSIGNED16, Array[10]*/
       #define OD_spectroRegister						 CO_OD_RAM.spectroRegister	/* added by me */

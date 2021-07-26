@@ -81,6 +81,8 @@ uint8_t initSensor() {
 		//status = INA226calibrate(0.01, 4);
 
 		//osDelay(5000);
+		CO_OD_RAM.pidRegister[PCA9685_CHANNEL_0] = 4095;
+		CO_OD_RAM.pidRegister[PCA9685_CHANNEL_1] = 4095;
 
 	} while (status != 0);
 
@@ -211,21 +213,19 @@ void programStart(void) {
 		CO_ReturnError_t err;
 		uint16_t timer1msPrevious;
 
-        /* disable CAN and CAN interrupts */
-	    //HAL_NVIC_SetPriority(CAN1_TX_IRQn, 0, 0);    //added by me
-	    //HAL_NVIC_DisableIRQ(CAN1_TX_IRQn);			 //added by me
-	    //HAL_NVIC_SetPriority(CAN1_RX0_IRQn, 0, 0);	 //added by me
-	    //HAL_NVIC_DisableIRQ(CAN1_RX0_IRQn);			 //added by me
+		/* disable CAN and CAN interrupts */
+		HAL_NVIC_SetPriority(CAN1_TX_IRQn, 0, 0);    //added by me
+		HAL_NVIC_DisableIRQ(CAN1_TX_IRQn);			 //added by me
+		HAL_NVIC_SetPriority(CAN1_RX0_IRQn, 0, 0);	 //added by me
+		HAL_NVIC_DisableIRQ(CAN1_RX0_IRQn);			 //added by me
 		//NVIC_SystemReset(); //added by me
-
 		bool_t syncWas;
 
 		/* initialize CANopen */
 
 		/* Configure Timer interrupt function for execution every 1 millisecond */
 		/* Configure CAN transmit and receive interrupt */
-		err = CO_init((uint32_t)&hcan1, 2, 125);
-
+		err = CO_init((uint32_t) &hcan1, 2, 125);
 
 		for (int i = 0; i < ODL_errorStatusBits_stringLength; i++) {
 			OD_errorStatusBits[i] = 0;
@@ -243,18 +243,18 @@ void programStart(void) {
 		timer1msPrevious = CO_timer1ms;  //added by me
 		//put the device in preoperational waiting for master to put in operational
 		//cansend can0 000#010(0)
-		CO->NMT->operatingState = CO_NMT_OPERATIONAL;//added by me
-		CO_OD_ROM.producerHeartbeatTime = 0x50;//added by me
+		//CO->NMT->operatingState = CO_NMT_OPERATIONAL;//added by me
+		//CO_OD_ROM.producerHeartbeatTime = 0x50;//added by me
+		//CO->NMT->HBproducerTimer = 0xFF;
 
-	    /* CAN1 interrupt Init */
-	    //HAL_NVIC_SetPriority(CAN1_TX_IRQn, 0, 0);
-	    //HAL_NVIC_EnableIRQ(CAN1_TX_IRQn);
-	    //HAL_NVIC_SetPriority(CAN1_RX0_IRQn, 0, 0);
-	    //HAL_NVIC_EnableIRQ(CAN1_RX0_IRQn);
-
+		/* CAN1 interrupt Init */
+		//HAL_NVIC_SetPriority(CAN1_TX_IRQn, 0, 0);
+		//HAL_NVIC_EnableIRQ(CAN1_TX_IRQn);
+		//HAL_NVIC_SetPriority(CAN1_RX0_IRQn, 0, 0);
+		//HAL_NVIC_EnableIRQ(CAN1_RX0_IRQn);
 		while (reset_co == CO_RESET_NOT) {
 			/* loop for normal program execution ******************************************/
-  	  	  	INCREMENT_1MS(CO_timer1ms);
+			INCREMENT_1MS(CO_timer1ms);
 			uint16_t timer1msCopy, timer1msDiff;
 
 			timer1msCopy = CO_timer1ms;
@@ -265,27 +265,60 @@ void programStart(void) {
 
 			reset_co = CO_process(CO, 1, NULL);
 
-
 			/* Nonblocking application code may go here. */
 			if (CO->CANmodule[0]->CANnormal) {
 				/* Process Sync and read inputs */
 				syncWas = CO_process_SYNC_RPDO(CO, TMR_TASK_INTERVAL);
 
-
 				switch (CO->NMT->operatingState) {
 				case CO_NMT_OPERATIONAL:
 					//Further I/O or nonblocking application code may go here. //
+					/*
+					 * Program to control the lamp
+					 *
+					 * cansend can0 602#2300250110000000
+					 * cansend can0 602#23002501A00F0000
+					 * cansend can0 602#23002501B80B0000
+					 *
+					 */
 					if (i < 64) {
-						pca9685_pwm(&module_PCA9685_t, 0, 0, 4095 - (sharedvar * i));	//turn off pwm1
-						//pca9685_pwm(&module, 1, 0,  4095-(sharedvar*i));//turn off pwm1
+						//pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_0, 0, 4095 - (sharedvar * i));	//turn off pwm1
+						//pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_0, 0, 4095 - (sharedvar * i));	//turn off pwm1
+						//pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_1, 0, 4095 - (sharedvar * i));
+						pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_0, 0,
+								CO_OD_RAM.pidRegister[PCA9685_CHANNEL_0]);
+						pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_1, 0,
+								CO_OD_RAM.pidRegister[PCA9685_CHANNEL_1]);
+						pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_2, 0,
+								CO_OD_RAM.pidRegister[PCA9685_CHANNEL_2]);
+						pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_3, 0,
+								CO_OD_RAM.pidRegister[PCA9685_CHANNEL_3]);
+						pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_4, 0,
+								CO_OD_RAM.pidRegister[PCA9685_CHANNEL_4]);
+						pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_5, 0,
+								CO_OD_RAM.pidRegister[PCA9685_CHANNEL_5]);
+						pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_6, 0,
+								CO_OD_RAM.pidRegister[PCA9685_CHANNEL_6]);
+						pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_7, 0,
+								CO_OD_RAM.pidRegister[PCA9685_CHANNEL_7]);
+						pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_8, 0,
+								CO_OD_RAM.pidRegister[PCA9685_CHANNEL_8]);
+
 						spectro();
 
+						/*
+						 * 602#4302250100000000
+						 */
+						//temperature();
 						i++;
 					} else {
 						i = 0;
-						pca9685_pwm(&module_PCA9685_t, 0, 0, 4095);	//turn off pwm1
+						pca9685_pwm(&module_P	CA9685_t, PCA9685_CHANNEL_0, 0,
+								4095);	//turn off pwm1
+						//all_led_off(&module_PCA9685_t);
 
 					}
+
 					//temperature();
 					break;
 				case CO_NMT_STOPPED:
@@ -322,7 +355,7 @@ void programStart(void) {
 	/* stop threads */
 
 	/* delete objects from memory */
-	CO_delete((uint32_t)&hcan1/* CAN module address */);
+	CO_delete((uint32_t) &hcan1/* CAN module address */);
 
 	/* reset */
 	//return 0;

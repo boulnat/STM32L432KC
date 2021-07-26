@@ -355,7 +355,7 @@ const CO_OD_entry_t CO_OD[CO_OD_NoOfElements] = {
 {0x2112, 0x10, 0xFF,  4, (void*)&CO_OD_EEPROM.variableNVInt32[0]},
 {0x2120, 0x05, 0x00,  0, (void*)&OD_record2120},
 {0x2130, 0x03, 0x00,  0, (void*)&OD_record2130},
-{0x2500, 0x0A, 0xFF,  4, (void*)&CO_OD_RAM.pidRegister[0]}, /* added by me */
+{0x2500, 0x10, 0xFF,  4, (void*)&CO_OD_RAM.pidRegister[0]}, /* added by me */
 {0x2501, 0x0A, 0xFF,  2, (void*)&CO_OD_RAM.spectroRegister[0]}, /* added by me */
 {0x2502, 0x01, 0xFF,  2, (void*)&CO_OD_RAM.temperatureRegister}, /* added by me */
 {0x2503, 0x03, 0xFF,  4, (void*)&CO_OD_RAM.elecRegister}, /* added by me */

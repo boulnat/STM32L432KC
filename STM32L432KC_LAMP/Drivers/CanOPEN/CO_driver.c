@@ -247,7 +247,7 @@ CO_ReturnError_t CO_CANmodule_init(
 	*/
 
 	CANmodule->CANbaseAddress->Instance = CAN1;
-	//CANmodule->CANbaseAddress->Prescaler = 40;
+	CANmodule->CANbaseAddress->Init.Prescaler = 40;
 	CANmodule->CANbaseAddress->Init.Mode = CAN_MODE_NORMAL;
 	CANmodule->CANbaseAddress->Init.SyncJumpWidth = CAN_SJW_1TQ;
 	CANmodule->CANbaseAddress->Init.TimeSeg1 = CAN_BS1_2TQ;
@@ -380,9 +380,9 @@ CO_ReturnError_t CO_CANrxBufferInit(
 			FilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
 			FilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
 			FilterConfig.FilterIdHigh = 0x033<<5;
-			FilterConfig.FilterIdLow = 0x0;
-			FilterConfig.FilterMaskIdHigh = 0x0;
-			FilterConfig.FilterMaskIdLow = 0x0;
+			FilterConfig.FilterIdLow = 0x0000;
+			FilterConfig.FilterMaskIdHigh = 0x0000;
+			FilterConfig.FilterMaskIdLow = 0x0000;
 			FilterConfig.FilterFIFOAssignment = CAN_RX_FIFO0;
 			FilterConfig.FilterActivation = ENABLE;
 			FilterConfig.SlaveStartFilterBank = 14;

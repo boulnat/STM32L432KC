@@ -87,7 +87,24 @@ typedef struct {
 	CHANNEL_t			channel;
 }PCA9685_t;
 
-
+typedef enum {
+  PCA9685_CHANNEL_0,
+  PCA9685_CHANNEL_1,
+  PCA9685_CHANNEL_2,
+  PCA9685_CHANNEL_3,
+  PCA9685_CHANNEL_4,
+  PCA9685_CHANNEL_5,
+  PCA9685_CHANNEL_6,
+  PCA9685_CHANNEL_7,
+  PCA9685_CHANNEL_8,
+  PCA9685_CHANNEL_9,
+  PCA9685_CHANNEL_10,
+  PCA9685_CHANNEL_11,
+  PCA9685_CHANNEL_12,
+  PCA9685_CHANNEL_13,
+  PCA9685_CHANNEL_14,
+  PCA9685_CHANNEL_15,
+} PCA9685_color_channel_t;
 /*!
  *    @brief  Sets up the hardware and initializes I2C
  *    @param  hi2c1
