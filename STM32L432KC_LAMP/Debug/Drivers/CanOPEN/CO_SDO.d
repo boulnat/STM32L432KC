@@ -22,6 +22,8 @@ Drivers/CanOPEN/CO_SDO.o: ../Drivers/CanOPEN/CO_SDO.c \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_adc.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_adc_ex.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_can.h \
+ ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_dac.h \
+ ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_dac_ex.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_exti.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_flash.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_flash_ex.h \
@@ -82,6 +84,10 @@ Drivers/CanOPEN/CO_SDO.o: ../Drivers/CanOPEN/CO_SDO.c \
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_adc_ex.h:
 
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_can.h:
+
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_dac.h:
+
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_dac_ex.h:
 
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_exti.h:
 

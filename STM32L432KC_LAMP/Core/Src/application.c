@@ -61,29 +61,41 @@ uint8_t initSensor() {
 	 */
 	do {
 
-		status = PCM9600begin(&module_PCM9600_t, hi2c1);
+		//status = PCM9600begin(&module_PCM9600_t, hi2c1);
 
 		status = PCA9685begin(&module_PCA9685_t, hi2c1, 3);
 		pca9685_init(&module_PCA9685_t);
 		pca9685_pwm(&module_PCA9685_t, 0, 0, 4095);  //turn off pwm1
 		pca9685_pwm(&module_PCA9685_t, 1, 0, 4095);  //turn off pwm2
 
-		status = AS7341init(hi2c1, 0x80);
+		//status = AS7341init(hi2c1, 0x80);
 		/*  Tint = (ATIME + 1) × (ASTEP + 1) × 2.78µs
 		 *  Tint = 50ms
 		 * */
-		status = setASTEP(999);
-		status = setATIME(100);
-		status = setGain(AS7341_GAIN_256X);
-
+		//status = setASTEP(999);
+		//status = setATIME(100);
+		//status = setGain(AS7341_GAIN_256X);
 		//status = INA226begin(&module_INA226_t, hi2c1);
 		//status = INA226configure(INA226_AVERAGES_1, INA226_BUS_CONV_TIME_1100US, INA226_SHUNT_CONV_TIME_1100US, INA226_MODE_SHUNT_BUS_CONT);
 		// Calibrate INA226. Rshunt = 0.01 ohm, Max excepted current = 4A
 		//status = INA226calibrate(0.01, 4);
-
 		//osDelay(5000);
 		CO_OD_RAM.pidRegister[PCA9685_CHANNEL_0] = 4095;
 		CO_OD_RAM.pidRegister[PCA9685_CHANNEL_1] = 4095;
+		CO_OD_RAM.pidRegister[PCA9685_CHANNEL_2] = 4095;
+		CO_OD_RAM.pidRegister[PCA9685_CHANNEL_3] = 4095;
+		CO_OD_RAM.pidRegister[PCA9685_CHANNEL_4] = 4095;
+		CO_OD_RAM.pidRegister[PCA9685_CHANNEL_5] = 4095;
+		CO_OD_RAM.pidRegister[PCA9685_CHANNEL_6] = 4095;
+		CO_OD_RAM.pidRegister[PCA9685_CHANNEL_7] = 4095;
+		CO_OD_RAM.pidRegister[PCA9685_CHANNEL_8] = 4095;
+		CO_OD_RAM.pidRegister[PCA9685_CHANNEL_9] = 4095;
+		CO_OD_RAM.pidRegister[PCA9685_CHANNEL_10] = 4095;
+		CO_OD_RAM.pidRegister[PCA9685_CHANNEL_11] = 4095;
+		CO_OD_RAM.pidRegister[PCA9685_CHANNEL_12] = 4095;
+		CO_OD_RAM.pidRegister[PCA9685_CHANNEL_13] = 4095;
+		CO_OD_RAM.pidRegister[PCA9685_CHANNEL_14] = 4095;
+		CO_OD_RAM.pidRegister[PCA9685_CHANNEL_15] = 4095;
 
 	} while (status != 0);
 
@@ -308,31 +320,84 @@ void programStart(void) {
 					pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_8, 0,
 							CO_OD_RAM.pidRegister[PCA9685_CHANNEL_8]);
 
-					spectro();
+					pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_9, 0,
+							CO_OD_RAM.pidRegister[PCA9685_CHANNEL_9]);
+					pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_10, 0,
+							CO_OD_RAM.pidRegister[PCA9685_CHANNEL_10]);
+					pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_11, 0,
+							CO_OD_RAM.pidRegister[PCA9685_CHANNEL_11]);
+					pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_12, 0,
+							CO_OD_RAM.pidRegister[PCA9685_CHANNEL_12]);
+					pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_13, 0,
+							CO_OD_RAM.pidRegister[PCA9685_CHANNEL_13]);
+					pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_14, 0,
+							CO_OD_RAM.pidRegister[PCA9685_CHANNEL_14]);
+					pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_15, 0,
+							CO_OD_RAM.pidRegister[PCA9685_CHANNEL_15]);
 
+					HAL_Delay(500);
+
+					pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_0, 0, 3000);
+					pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_1, 0, 3000);
+					pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_2, 0, 3000);
+					pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_3, 0, 3000);
+					pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_4, 0, 3000);
+					pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_5, 0, 3000);
+					pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_6, 0, 3000);
+					pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_7, 0, 3000);
+					pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_8, 0, 3000);
+
+					pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_9, 0, 3000);
+					pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_10, 0, 3000);
+					pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_11, 0, 3000);
+					pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_12, 0, 3000);
+					pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_13, 0, 3000);
+					pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_14, 0, 3000);
+					pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_15, 0, 3000);
+
+
+					HAL_Delay(500);
+
+					pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_0, 0, 3);
+					pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_1, 0, 3);
+					pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_2, 0, 3);
+					pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_3, 0, 3);
+					pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_4, 0, 3);
+					pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_5, 0, 3);
+					pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_6, 0, 3);
+					pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_7, 0, 3);
+					pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_8, 0, 3);
+
+					pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_9, 0, 3);
+					pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_10, 0, 3);
+					pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_11, 0, 3);
+					pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_12, 0, 3);
+					pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_13, 0, 3);
+					pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_14, 0, 3);
+					pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_15, 0, 3);
+
+					HAL_Delay(500);
 					//ventilator(255);
-					HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_12B_R,
-							4096);
+					//HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_12B_R,4096);
 					/*
 					 * 602#4302250100000000
 					 */
 					//temperature();
 					//all_led_off(&module_PCA9685_t);
-				}
-
-				//temperature();
-				break;
+					//temperature();
+					break;
 				case CO_NMT_STOPPED:
-				pca9685_pwm(&module_PCA9685_t, 0, 0, 4095);	//turn off pwm1
-				pca9685_pwm(&module_PCA9685_t, 1, 0, 4095);	//turn off pwm2
-				break;
+					pca9685_pwm(&module_PCA9685_t, 0, 0, 4095);	//turn off pwm1
+					pca9685_pwm(&module_PCA9685_t, 1, 0, 4095);	//turn off pwm2
+					break;
 				case CO_NMT_INITIALIZING:
-				initSensor();
-				break;
+					initSensor();
+					break;
 				case CO_NMT_PRE_OPERATIONAL:
 
-				break;
+					break;
 
+				}
 			}
 
 			//can be read with cansend can0 60(2)#40 20 21 00 00 00 00 00

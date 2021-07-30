@@ -22,6 +22,8 @@ Core/Src/application.o: ../Core/Src/application.c ../Drivers/PID/PID.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_ll_adc.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_adc_ex.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_can.h \
+ ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_dac.h \
+ ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_dac_ex.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_exti.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_flash.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_flash_ex.h \
@@ -40,7 +42,7 @@ Core/Src/application.o: ../Core/Src/application.c ../Drivers/PID/PID.h \
  ../Drivers/CanOPEN/CO_PDO.h ../Drivers/CanOPEN/CO_HBconsumer.h \
  ../Core/Inc/i2c.h ../Drivers/AS7341/AS7341.h \
  ../Drivers/MCP9600/MCP9600.h ../Drivers/PCA9685/PCA9685.h \
- ../Drivers/INA226/INA226.h ../Core/Inc/application.h
+ ../Drivers/INA226/INA226.h ../Core/Inc/application.h ../Core/Inc/dac.h
 
 ../Drivers/PID/PID.h:
 
@@ -91,6 +93,10 @@ Core/Src/application.o: ../Core/Src/application.c ../Drivers/PID/PID.h \
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_adc_ex.h:
 
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_can.h:
+
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_dac.h:
+
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_dac_ex.h:
 
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_exti.h:
 
@@ -145,3 +151,5 @@ Core/Src/application.o: ../Core/Src/application.c ../Drivers/PID/PID.h \
 ../Drivers/INA226/INA226.h:
 
 ../Core/Inc/application.h:
+
+../Core/Inc/dac.h:

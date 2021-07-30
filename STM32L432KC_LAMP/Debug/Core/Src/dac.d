@@ -1,5 +1,4 @@
-Drivers/CanOPEN/CO_PDO.o: ../Drivers/CanOPEN/CO_PDO.c \
- ../Drivers/CanOPEN/CO_driver.h \
+Core/Src/dac.o: ../Core/Src/dac.c ../Core/Inc/dac.h ../Core/Inc/main.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h \
  ../Core/Inc/stm32l4xx_hal_conf.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_rcc.h \
@@ -35,12 +34,11 @@ Drivers/CanOPEN/CO_PDO.o: ../Drivers/CanOPEN/CO_PDO.c \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_tim.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_tim_ex.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h \
- ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart_ex.h \
- ../Core/Inc/can.h ../Core/Inc/main.h ../Drivers/CanOPEN/CO_SDO.h \
- ../Drivers/CanOPEN/CO_Emergency.h ../Drivers/CanOPEN/CO_NMT_Heartbeat.h \
- ../Drivers/CanOPEN/CO_SYNC.h ../Drivers/CanOPEN/CO_PDO.h
+ ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart_ex.h
 
-../Drivers/CanOPEN/CO_driver.h:
+../Core/Inc/dac.h:
+
+../Core/Inc/main.h:
 
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h:
 
@@ -113,17 +111,3 @@ Drivers/CanOPEN/CO_PDO.o: ../Drivers/CanOPEN/CO_PDO.c \
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h:
 
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart_ex.h:
-
-../Core/Inc/can.h:
-
-../Core/Inc/main.h:
-
-../Drivers/CanOPEN/CO_SDO.h:
-
-../Drivers/CanOPEN/CO_Emergency.h:
-
-../Drivers/CanOPEN/CO_NMT_Heartbeat.h:
-
-../Drivers/CanOPEN/CO_SYNC.h:
-
-../Drivers/CanOPEN/CO_PDO.h:
