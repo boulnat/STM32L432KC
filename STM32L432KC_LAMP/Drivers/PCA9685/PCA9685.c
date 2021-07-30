@@ -52,6 +52,7 @@ void pca9685_init(PCA9685_t *module)
 {
  uint8_t initStruct[2];
  uint8_t prescale = 0x03; // hardcoded
+
  errPCA9685 = HAL_I2C_Master_Transmit(&module->hi2c, 0x80, PCA9685_MODE1, 1, 1);
  uint8_t oldmode = 0x00; // hardcoded
  //uint8_t oldmode = PCA9685_read(hi2c,address,PCA9685_MODE1);
