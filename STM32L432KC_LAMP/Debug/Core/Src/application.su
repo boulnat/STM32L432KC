@@ -6,9 +6,9 @@ application.c:184:6:multimetre	8	static
 application.c:190:6:ventilator	16	static
 application.c:194:6:scenario	192	static
 application.c:217:6:test_cycle	16	static
-application.c:318:6:programStart	24	static
-application.c:484:6:communicationReset	4	static
-application.c:489:6:programEnd	4	static
-application.c:494:6:programAsync	16	static
-application.c:499:6:program1ms	4	static
-application.c:503:10:MAP	24	static
+application.c:320:6:programStart	24	static
+application.c:489:6:communicationReset	4	static
+application.c:494:6:programEnd	4	static
+application.c:499:6:programAsync	16	static
+application.c:504:6:program1ms	4	static
+application.c:508:10:MAP	24	static

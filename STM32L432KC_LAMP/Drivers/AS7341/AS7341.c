@@ -553,6 +553,7 @@ bool enableFlickerDetection(bool enable_fd){
 void FDConfig(void){
 	  // SMUX Config for Flicker- register (0x13)left set to ADC6 for flicker
 	  // detection
+
 	  writeRegister((0x00), (0x00)); // disabled
 	  writeRegister((0x01), (0x00)); // disabled
 	  writeRegister((0x02), (0x00)); // reserved/disabled

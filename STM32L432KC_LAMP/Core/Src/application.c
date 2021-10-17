@@ -215,11 +215,13 @@ void scenario(void) {
 }
 
 void test_cycle(void) {
-	for(int a = 0; a<16; a++){
+	for(int a = 0; a<8; a++){
 		pca9685_pwm(&module_PCA9685_t, a, 0, 4000);
+		pca9685_pwm(&module_PCA9685_t, a+8, 0, 4000);
 		HAL_Delay(500);
 
 		pca9685_pwm(&module_PCA9685_t, a, 0, 4095);
+		pca9685_pwm(&module_PCA9685_t, a+8, 0, 4095);
 		HAL_Delay(500);
 
 	}
@@ -423,7 +425,10 @@ void programStart(void) {
 					//temperature();
 					//all_led_off(&module_PCA9685_t);
 					//temperature();
+					pca9685_pwm(&module_PCA9685_t, PCA9685_CHANNEL_0, 0,
+								CO_OD_RAM.pidRegister[PCA9685_CHANNEL_0]);
 					test_cycle();
+
 					break;
 				case CO_NMT_STOPPED:
 					pca9685_pwm(&module_PCA9685_t, 0, 0, 4095);	//turn off pwm1
